@@ -1,0 +1,28 @@
+\documentclass[a4paper, 11pt, twoside, english, ngerman]{book}
+% Remove ngerman for English version
+
+\input{setup/packages}
+\input{setup/metadata}
+\input{setup/customcommands}
+\input{setup/settings}
+\input{setup/blockschaltbilder}
+
+\input{auxfiles/abbreviationsAndAcronyms}
+
+\begin{document}
+
+  \input{auxfiles/__frontMatter}
+
+  % ==================================================================
+  % Main matter
+  % ==================================================================
+  \mainmatter
+  \pagestyle{fancy}
+
+  \include{chapters/howTo}
+
+  % ==================================================================
+
+  \input{auxfiles/__backMatter}
+
+\end{document}

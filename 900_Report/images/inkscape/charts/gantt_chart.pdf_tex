@@ -1,0 +1,101 @@
+%% Creator: Inkscape 0.48.5, www.inkscape.org
+%% PDF/EPS/PS + LaTeX output extension by Johan Engelen, 2010
+%% Accompanies image file 'gantt_chart.pdf' (pdf, eps, ps)
+%%
+%% To include the image in your LaTeX document, write
+%%   \input{<filename>.pdf_tex}
+%%  instead of
+%%   \includegraphics{<filename>.pdf}
+%% To scale the image, write
+%%   \def\svgwidth{<desired width>}
+%%   \input{<filename>.pdf_tex}
+%%  instead of
+%%   \includegraphics[width=<desired width>]{<filename>.pdf}
+%%
+%% Images with a different path to the parent latex file can
+%% be accessed with the `import' package (which may need to be
+%% installed) using
+%%   \usepackage{import}
+%% in the preamble, and then including the image with
+%%   \import{<path to file>}{<filename>.pdf_tex}
+%% Alternatively, one can specify
+%%   \graphicspath{{<path to file>/}}
+%% 
+%% For more information, please see info/svg-inkscape on CTAN:
+%%   http://tug.ctan.org/tex-archive/info/svg-inkscape
+%%
+\begingroup%
+  \makeatletter%
+  \providecommand\color[2][]{%
+    \errmessage{(Inkscape) Color is used for the text in Inkscape, but the package 'color.sty' is not loaded}%
+    \renewcommand\color[2][]{}%
+  }%
+  \providecommand\transparent[1]{%
+    \errmessage{(Inkscape) Transparency is used (non-zero) for the text in Inkscape, but the package 'transparent.sty' is not loaded}%
+    \renewcommand\transparent[1]{}%
+  }%
+  \providecommand\rotatebox[2]{#2}%
+  \ifx\svgwidth\undefined%
+    \setlength{\unitlength}{407.63732468bp}%
+    \ifx\svgscale\undefined%
+      \relax%
+    \else%
+      \setlength{\unitlength}{\unitlength * \real{\svgscale}}%
+    \fi%
+  \else%
+    \setlength{\unitlength}{\svgwidth}%
+  \fi%
+  \global\let\svgwidth\undefined%
+  \global\let\svgscale\undefined%
+  \makeatother%
+  \begin{picture}(1,0.41748221)%
+    \put(0,0){\includegraphics[width=\unitlength]{gantt_chart.pdf}}%
+    \put(0.91992883,0.36588079){\color[rgb]{0,0,0}\makebox(0,0)[lb]{\smash{RT}}}%
+    \put(0.96263345,0.36588079){\color[rgb]{0,0,0}\makebox(0,0)[lb]{\smash{AM}}}%
+    \put(0.9252669,0.33563168){\color[rgb]{0,0,0}\makebox(0,0)[lb]{\smash{8}}}%
+    \put(0.97153025,0.30716193){\color[rgb]{0,0,0}\makebox(0,0)[lb]{\smash{6}}}%
+    \put(0.91992883,0.27869218){\color[rgb]{0,0,0}\makebox(0,0)[lb]{\smash{12}}}%
+    \put(0.96619217,0.19328292){\color[rgb]{0,0,0}\makebox(0,0)[lb]{\smash{12}}}%
+    \put(0.9252669,0.16481317){\color[rgb]{0,0,0}\makebox(0,0)[lb]{\smash{9}}}%
+    \put(0.97153025,0.13634342){\color[rgb]{0,0,0}\makebox(0,0)[lb]{\smash{9}}}%
+    \put(0.9252669,0.10787367){\color[rgb]{0,0,0}\makebox(0,0)[lb]{\smash{7}}}%
+    \put(0.97153025,0.07762456){\color[rgb]{0,0,0}\makebox(0,0)[lb]{\smash{9}}}%
+    \put(0.91992883,0.04559609){\color[rgb]{0,0,0}\makebox(0,0)[lb]{\smash{36}}}%
+    \put(0.96619217,0.04737545){\color[rgb]{0,0,0}\makebox(0,0)[lb]{\smash{36}}}%
+    \put(0.73309609,0.36588079){\color[rgb]{0,0,0}\makebox(0,0)[lb]{\smash{Q9}}}%
+    \put(0.77402135,0.36588079){\color[rgb]{0,0,0}\makebox(0,0)[lb]{\smash{Q10}}}%
+    \put(0.82206406,0.36588079){\color[rgb]{0,0,0}\makebox(0,0)[lb]{\smash{Q11}}}%
+    \put(0.86654804,0.36588079){\color[rgb]{0,0,0}\makebox(0,0)[lb]{\smash{Q12}}}%
+    \put(0.45551601,0.36588079){\color[rgb]{0,0,0}\makebox(0,0)[lb]{\smash{Q3}}}%
+    \put(0.50177936,0.36588079){\color[rgb]{0,0,0}\makebox(0,0)[lb]{\smash{Q4}}}%
+    \put(0.44427074,0.39435054){\color[rgb]{0,0,0}\makebox(0,0)[b]{\smash{\bf Year 1}}}%
+    \put(0.5480427,0.36588079){\color[rgb]{0,0,0}\makebox(0,0)[lb]{\smash{Q5}}}%
+    \put(0.59430605,0.36588079){\color[rgb]{0,0,0}\makebox(0,0)[lb]{\smash{Q6}}}%
+    \put(0.6405694,0.36588079){\color[rgb]{0,0,0}\makebox(0,0)[lb]{\smash{Q7}}}%
+    \put(0.68683274,0.36588079){\color[rgb]{0,0,0}\makebox(0,0)[lb]{\smash{Q8}}}%
+    \put(0.36298932,0.36588079){\color[rgb]{0,0,0}\makebox(0,0)[lb]{\smash{Q1}}}%
+    \put(0.40925267,0.36588079){\color[rgb]{0,0,0}\makebox(0,0)[lb]{\smash{Q2}}}%
+    \put(0.0554077,0.2912004){\color[rgb]{0,0,0}\makebox(0,0)[lt]{\begin{minipage}{0.27696787\unitlength}\raggedright Parametric basis for nonlinear systems\end{minipage}}}%
+    \put(0.05462087,0.23336761){\color[rgb]{0,0,0}\makebox(0,0)[lt]{\begin{minipage}{0.28208232\unitlength}\raggedright Simulation-free hyper-reduction\end{minipage}}}%
+    \put(0.05422744,0.17946904){\color[rgb]{0,0,0}\makebox(0,0)[lt]{\begin{minipage}{0.28208232\unitlength}\raggedright Hyper-reduction for nonlinear parametric systems\end{minipage}}}%
+    \put(0.02602269,0.38189502){\color[rgb]{0,0,0}\makebox(0,0)[b]{\smash{\bf WP}}}%
+    \put(0.20145827,0.38189502){\color[rgb]{0,0,0}\makebox(0,0)[b]{\smash{\bf Title}}}%
+    \put(0.05501428,0.34785293){\color[rgb]{0,0,0}\makebox(0,0)[lt]{\begin{minipage}{0.29073759\unitlength}\raggedright Calculation and validation of bases for nonlinear systems \end{minipage}}}%
+    \put(0.05580113,0.12045602){\color[rgb]{0,0,0}\makebox(0,0)[lt]{\begin{minipage}{0.2777547\unitlength}\raggedright Validation through benchmarks and case study\end{minipage}}}%
+    \put(0.62926678,0.39435054){\color[rgb]{0,0,0}\makebox(0,0)[b]{\smash{\bf Year 2}}}%
+    \put(0.81434883,0.39435054){\color[rgb]{0,0,0}\makebox(0,0)[b]{\smash{\bf Year 3}}}%
+    \put(0.95339213,0.39592422){\color[rgb]{0,0,0}\makebox(0,0)[b]{\smash{\bf PM}}}%
+    \put(0.37643859,0.04964038){\color[rgb]{0,0,0}\makebox(0,0)[lb]{\smash{\textcolor{tum orange}{\normalsize $\blacklozenge$} WS1}}}%
+    \put(0.67189719,0.04924702){\color[rgb]{0,0,0}\makebox(0,0)[lb]{\smash{\textcolor{tum orange}{\normalsize $\blacklozenge$} WS2}}}%
+    \put(0.8909822,0.05003375){\color[rgb]{0,0,0}\makebox(0,0)[rb]{\smash{WS3 \textcolor{tum orange}{\normalsize $\blacklozenge$}}}}%
+    \put(0.05516014,0.00435682){\color[rgb]{0,0,0}\makebox(0,0)[lb]{\smash{Chair of Automatic Control (RT)}}}%
+    \put(0.43856463,0.00465629){\color[rgb]{0,0,0}\makebox(0,0)[lb]{\smash{Chair of Applied Mechanics (AM)}}}%
+    \put(0.79110613,0.00379504){\color[rgb]{0,0,0}\makebox(0,0)[lb]{\smash{Workshop / Milestone}}}%
+    \put(0.78659901,0.00526602){\color[rgb]{0,0,0}\makebox(0,0)[rb]{\smash{\textcolor{tum orange}{\normalsize $\blacklozenge$}}}}%
+    \put(0.02780965,0.32267401){\color[rgb]{0,0,0}\makebox(0,0)[b]{\smash{1}}}%
+    \put(0.02680283,0.26501115){\color[rgb]{0,0,0}\makebox(0,0)[b]{\smash{2}}}%
+    \put(0.02689993,0.207619){\color[rgb]{0,0,0}\makebox(0,0)[b]{\smash{3}}}%
+    \put(0.02677727,0.14980266){\color[rgb]{0,0,0}\makebox(0,0)[b]{\smash{4}}}%
+    \put(0.02680283,0.09252311){\color[rgb]{0,0,0}\makebox(0,0)[b]{\smash{5}}}%
+  \end{picture}%
+\endgroup%
