@@ -28,6 +28,15 @@
 \newcommand{\RealNonPos}{\RealNeg \cup \lbrace 0 \rbrace}
 % Set of complex numbers (blackboard typesetting)
 \newcommand{\Complex}{\mathbb{C}}
+% Special orthogonal and Euclidean groups
+\newcommand{\SO}[1]{\mathrm{SO}(#1)}
+\newcommand{\SE}[1]{\mathrm{SE}(#1)}
+% Lie algebras of the special orthogonal and Euclidean groups
+\newcommand{\so}[1]{\mathfrak{so}(#1)}
+\newcommand{\se}[1]{\mathfrak{se}(#1)}
+% Hat and vee maps
+\newcommand{\hatmap}[1]{\widehat{#1}}
+\newcommand{\veemap}[1]{\left(#1\right)^\vee}
 % Pseudoinverse
 \newcommand{\pinv}{{{}+{}}}
 % Transpose operator
@@ -58,6 +67,12 @@
 \renewcommand{\Im}{\mathrm{Im}}
 % Distance between subspaces
 \DeclareMathOperator{\dist}{dist}
+% Optimization operators
+\DeclareMathOperator*{\argmin}{arg\,min}
+\DeclareMathOperator*{\argmax}{arg\,max}
+% Exponential and logarithm maps
+\DeclareMathOperator{\Exp}{Exp}
+\DeclareMathOperator{\Log}{Log}
 % Machine epsilon
 \newcommand{\macheps}{\epsilonAm}
 
@@ -133,209 +148,113 @@
 
 
 % ======================================================================
-% English/German counterparts: Theorem-like environments
+% Theorem-like environments
 % ======================================================================
 
 % Define theorem name
-\IfLanguageName{english}{\def\nameThTheorem{Theorem}}{}
-\IfLanguageName{british}{\def\nameThTheorem{Theorem}}{}
-\IfLanguageName{ngerman}{\def\nameThTheorem{Satz}}{}
-\IfLanguageName{german}{\def\nameThTheorem{Satz}}{}
+\IfLanguageName{american}{\def\nameThTheorem{Theorem}}{}
 % Define lemma name
-\IfLanguageName{english}{\def\nameThLemma{Lemma}}{}
-\IfLanguageName{british}{\def\nameThLemma{Lemma}}{}
-\IfLanguageName{ngerman}{\def\nameThLemma{Lemma}}{}
-\IfLanguageName{german}{\def\nameThLemma{Lemma}}{}
+\IfLanguageName{american}{\def\nameThLemma{Lemma}}{}
 % Define proposition name
-\IfLanguageName{english}{\def\nameThProposition{Proposition}}{}
-\IfLanguageName{british}{\def\nameThProposition{Proposition}}{}
-\IfLanguageName{ngerman}{\def\nameThProposition{Behauptung}}{}
-\IfLanguageName{german}{\def\nameThProposition{Behauptung}}{}
+\IfLanguageName{american}{\def\nameThProposition{Proposition}}{}
 % Define corollary name
-\IfLanguageName{english}{\def\nameThCorollary{Corollary}}{}
-\IfLanguageName{british}{\def\nameThCorollary{Corollary}}{}
-\IfLanguageName{ngerman}{\def\nameThCorollary{Korollar}}{}
-\IfLanguageName{german}{\def\nameThCorollary{Korollar}}{}
+\IfLanguageName{american}{\def\nameThCorollary{Corollary}}{}
 % Define remark name
-\IfLanguageName{english}{\def\nameThRemark{Remark}}{}
-\IfLanguageName{british}{\def\nameThRemark{Remark}}{}
-\IfLanguageName{ngerman}{\def\nameThRemark{Anmerkung}}{}
-\IfLanguageName{german}{\def\nameThRemark{Anmerkung}}{}
+\IfLanguageName{american}{\def\nameThRemark{Remark}}{}
 % Define example name
-\IfLanguageName{english}{\def\nameThExample{Example}}{}
-\IfLanguageName{british}{\def\nameThExample{Example}}{}
-\IfLanguageName{ngerman}{\def\nameThExample{Beispiel}}{}
-\IfLanguageName{german}{\def\nameThExample{Beispiel}}{}
+\IfLanguageName{american}{\def\nameThExample{Example}}{}
 % Define definition name
-\IfLanguageName{english}{\def\nameThDefinition{Definition}}{}
-\IfLanguageName{british}{\def\nameThDefinition{Definition}}{}
-\IfLanguageName{ngerman}{\def\nameThDefinition{Definition}}{}
-\IfLanguageName{german}{\def\nameThDefinition{Definition}}{}
+\IfLanguageName{american}{\def\nameThDefinition{Definition}}{}
 
 % ======================================================================
 
 
 % ======================================================================
-% English/German counterparts: Captions
+% Captions
 % ======================================================================
 
 % Define date for the title page
-\IfLanguageName{english}{\def\nameDateTitlePage{\thesisDateEN}}{}
-\IfLanguageName{british}{\def\nameDateTitlePage{\thesisDateEN}}{}
-\IfLanguageName{ngerman}{\def\nameDateTitlePage{\thesisDateDE}}{}
-\IfLanguageName{german}{\def\nameDateTitlePage{\thesisDateDE}}{}
+\IfLanguageName{american}{\def\nameDateTitlePage{\thesisDateEN}}{}
 
 % Define primary thesis title for the title page
-\IfLanguageName{english}{\def\primaryTitle{\thesisTitleEN}}{}
-\IfLanguageName{british}{\def\primaryTitle{\thesisTitleEN}}{}
-\IfLanguageName{ngerman}{\def\primaryTitle{\thesisTitleDE}}{}
-\IfLanguageName{german}{\def\primaryTitle{\thesisTitleDE}}{}
+\IfLanguageName{american}{\def\primaryTitle{\thesisTitleEN}}{}
 
 % Define secondary thesis title for the title page
-\IfLanguageName{english}{\def\secondaryTitle{\thesisTitleDE}}{}
-\IfLanguageName{british}{\def\secondaryTitle{\thesisTitleDE}}{}
-\IfLanguageName{ngerman}{\def\secondaryTitle{\thesisTitleEN}}{}
-\IfLanguageName{german}{\def\secondaryTitle{\thesisTitleEN}}{}
+\IfLanguageName{american}{\def\secondaryTitle{\thesisTitleEN}}{}
 
 % Define primary thesis subtitle for the subtitle page
-\IfLanguageName{english}{\def\primarySubtitle{\thesisSubtitleEN}}{}
-\IfLanguageName{british}{\def\primarySubtitle{\thesisSubtitleEN}}{}
-\IfLanguageName{ngerman}{\def\primarySubtitle{\thesisSubtitleDE}}{}
-\IfLanguageName{german}{\def\primarySubtitle{\thesisSubtitleDE}}{}
+\IfLanguageName{american}{\def\primarySubtitle{\thesisSubtitleEN}}{}
 
 % Define secondary thesis subtitle for the subtitle page
-\IfLanguageName{english}{\def\secondarySubtitle{\thesisSubtitleDE}}{}
-\IfLanguageName{british}{\def\secondarySubtitle{\thesisSubtitleDE}}{}
-\IfLanguageName{ngerman}{\def\secondarySubtitle{\thesisSubtitleEN}}{}
-\IfLanguageName{german}{\def\secondarySubtitle{\thesisSubtitleEN}}{}
+\IfLanguageName{american}{\def\secondarySubtitle{\thesisSubtitleEN}}{}
 
 % Define chair name
-\IfLanguageName{english}{\def\nameCaChair{Chair of Automatic Control}}{}
-\IfLanguageName{british}{\def\nameCaChair{Chair of Automatic Control}}{}
-\IfLanguageName{ngerman}{\def\nameCaChair{Lehrstuhl für Regelungstechnik}}{}
-\IfLanguageName{german}{\def\nameCaChair{Lehrstuhl für Regelungstechnik}}{}
+\IfLanguageName{american}{\def\nameCaChair{Chair of Sensor Based Robotic Systems and Intelligent Assistance Systems}}{}
 
 % Define TUM name
-\IfLanguageName{english}{\def\nameCaTUM{Technical University of Munich}}{}
-\IfLanguageName{british}{\def\nameCaTUM{Technical University of Munich}}{}
-\IfLanguageName{ngerman}{\def\nameCaTUM{Technische Universität München}}{}
-\IfLanguageName{german}{\def\nameCaTUM{Technische Universität München}}{}
+\IfLanguageName{american}{\def\nameCaTUM{Technical University of Munich}}{}
 
 % Define Faculty addition for title page
-\IfLanguageName{english}{\def\nameCaMW{at the TUM School of Engineering and Design}}{}
-\IfLanguageName{british}{\def\nameCaMW{at the TUM School of Engineering and Design}}{}
-\IfLanguageName{ngerman}{\def\nameCaMW{an der TUM School of Engineering and Design}}{}
-\IfLanguageName{german}{\def\nameCaMW{an der TUM School of Engineering and Design}}{}
+\IfLanguageName{american}{\def\nameCaMW{at the TUM School of Engineering and Design}}{}
 
 
 % Define supervisor(s)
-\IfLanguageName{english}{\def\nameCaSupervisors{Supervisor}}{}
-\IfLanguageName{british}{\def\nameCaSupervisors{Supervisor}}{}
-\IfLanguageName{ngerman}{\def\nameCaSupervisors{Themensteller/in}}{}
-\IfLanguageName{german}{\def\nameCaSupervisors{Themensteller/in}}{}
+\IfLanguageName{american}{\def\nameCaSupervisors{Supervisor}}{}
 
 % Define advisor(s)
-\IfLanguageName{english}{\def\nameCaAdvisors{Advisor}}{}
-\IfLanguageName{british}{\def\nameCaAdvisors{Advisor}}{}
-\IfLanguageName{ngerman}{\def\nameCaAdvisors{Betreuer/in}}{}
-\IfLanguageName{german}{\def\nameCaAdvisors{Betreuer/in}}{}
+\IfLanguageName{american}{\def\nameCaAdvisors{Advisor}}{}
 
 % Define submission prefix
-\IfLanguageName{english}{\def\nameCaSubPrefix{Submitted by}}{}
-\IfLanguageName{british}{\def\nameCaSubPrefix{Submitted by}}{}
-\IfLanguageName{ngerman}{\def\nameCaSubPrefix{Eingereicht von}}{}
-\IfLanguageName{german}{\def\nameCaSubPrefix{Eingereicht von}}{}
+\IfLanguageName{american}{\def\nameCaSubPrefix{Submitted by}}{}
 
 % Define submission date
-\IfLanguageName{english}{\def\nameCaSubDate{Submission date}}{}
-\IfLanguageName{british}{\def\nameCaSubDate{Submission date}}{}
-\IfLanguageName{ngerman}{\def\nameCaSubDate{Eingereicht am}}{}
-\IfLanguageName{german}{\def\nameCaSubDate{Eingereicht am}}{}
+\IfLanguageName{american}{\def\nameCaSubDate{Submission date}}{}
 
 % Define title page
-\IfLanguageName{english}{\def\nameCaTitlePage{Title Page}}{}
-\IfLanguageName{british}{\def\nameCaTitlePage{Title Page}}{}
-\IfLanguageName{ngerman}{\def\nameCaTitlePage{Titelseite}}{}
-\IfLanguageName{german}{\def\nameCaTitlePage{Titelseite}}{}
+\IfLanguageName{american}{\def\nameCaTitlePage{Title Page}}{}
 
 % Define acknowledgments
-\IfLanguageName{english}{\def\nameCaAcknowledgments{Acknowledgments}}{}
-\IfLanguageName{british}{\def\nameCaAcknowledgments{Acknowledgements}}{}
-\IfLanguageName{ngerman}{\def\nameCaAcknowledgments{Danksagung}}{}
-\IfLanguageName{german}{\def\nameCaAcknowledgments{Danksagung}}{}
+\IfLanguageName{american}{\def\nameCaAcknowledgments{Acknowledgments}}{}
 
 % Define acronyms
-\IfLanguageName{english}{\def\nameCaAcronyms{Abbreviations and acronyms}}{}
-\IfLanguageName{british}{\def\nameCaAcronyms{Abbreviations and acronyms}}{}
-\IfLanguageName{ngerman}{\def\nameCaAcronyms{Liste der Abkürzungen}}{}
-\IfLanguageName{german}{\def\nameCaAcronyms{Liste der Abkürzungen}}{}
+\IfLanguageName{american}{\def\nameCaAcronyms{Abbreviations and acronyms}}{}
 
 % Define symbols
-\IfLanguageName{english}{\def\nameCaSymbols{List of symbols}}{}
-\IfLanguageName{british}{\def\nameCaSymbols{List of symbols}}{}
-\IfLanguageName{ngerman}{\def\nameCaSymbols{Liste der Symbole}}{}
-\IfLanguageName{german}{\def\nameCaSymbols{Liste der Symbole}}{}
+\IfLanguageName{american}{\def\nameCaSymbols{List of symbols}}{}
 
 % Define task description
-\IfLanguageName{english}{\def\nameCaTaskDescription{Task Description}}{}
-\IfLanguageName{british}{\def\nameCaTaskDescription{Task Description}}{}
-\IfLanguageName{ngerman}{\def\nameCaTaskDescription{Aufgabenstellung}}{}
-\IfLanguageName{german}{\def\nameCaTaskDescription{Aufgabenstellung}}{}
+\IfLanguageName{american}{\def\nameCaTaskDescription{Task Description}}{}
 
 % Define list of theorems
-\IfLanguageName{english}{\def\nameLoTheorems{List of Theorems and Other Statements}}{}
-\IfLanguageName{british}{\def\nameLoTheorems{List of Theorems and Other Statements}}{}
-\IfLanguageName{ngerman}{\def\nameLoTheorems{Satzverzeichnis}}{}
-\IfLanguageName{german}{\def\nameLoTheorems{Satzverzeichnis}}{}
+\IfLanguageName{american}{\def\nameLoTheorems{List of Theorems and Other Statements}}{}
 % Define list of algorithms
-\IfLanguageName{english}{\def\nameLoAlgorithms{List of Algorithms}}{}
-\IfLanguageName{british}{\def\nameLoAlgorithms{List of Algorithms}}{}
-\IfLanguageName{ngerman}{\def\nameLoAlgorithms{Algorithmenverzeichnis}}{}
-\IfLanguageName{german}{\def\nameLoAlgorithms{Algorithmenverzeichnis}}{}
+\IfLanguageName{american}{\def\nameLoAlgorithms{List of Algorithms}}{}
 % Define list of figures
-\IfLanguageName{english}{\def\nameLoFigures{List of Figures}}{}
-\IfLanguageName{british}{\def\nameLoFigures{List of Figures}}{}
-\IfLanguageName{ngerman}{\def\nameLoFigures{Abbildungsverzeichnis}}{}
-\IfLanguageName{german}{\def\nameLoFigures{Abbildungsverzeichnis}}{}
+\IfLanguageName{american}{\def\nameLoFigures{List of Figures}}{}
 % Define list of tables
-\IfLanguageName{english}{\def\nameLoTables{List of Tables}}{}
-\IfLanguageName{british}{\def\nameLoTables{List of Tables}}{}
-\IfLanguageName{ngerman}{\def\nameLoTables{Tabellenverzeichnis}}{}
-\IfLanguageName{german}{\def\nameLoTables{Tabellenverzeichnis}}{}
+\IfLanguageName{american}{\def\nameLoTables{List of Tables}}{}
 % Define list of listings
-\IfLanguageName{english}{\def\nameLoListings{List of Listings}}{}
-\IfLanguageName{british}{\def\nameLoListings{List of Listings}}{}
-\IfLanguageName{ngerman}{\def\nameLoListings{Listingsverzeichnis}}{}
-\IfLanguageName{german}{\def\nameLoListings{Listingsverzeichnis}}{}
+\IfLanguageName{american}{\def\nameLoListings{List of Listings}}{}
 
 % Define references' name
-\IfLanguageName{english}{\def\nameCaReferences{References}}{}
-\IfLanguageName{british}{\def\nameCaReferences{References}}{}
-\IfLanguageName{ngerman}{\def\nameCaReferences{Literaturverzeichnis}}{}
-\IfLanguageName{german}{\def\nameCaReferences{Literaturverzeichnis}}{}
+\IfLanguageName{american}{\def\nameCaReferences{References}}{}
 % ======================================================================
 
 
 % ======================================================================
-% English/German counterparts: Locale
+% Locale
 % ======================================================================
 
 % Define locale (esp. for siunitx)
-\IfLanguageName{english}{\def\SISetupLocale{\sisetup{locale=US}}}{}
-\IfLanguageName{british}{\def\SISetupLocale{\sisetup{locale=UK}}}{}
-\IfLanguageName{ngerman}{\def\SISetupLocale{\sisetup{locale=DE}}}{}
-\IfLanguageName{german}{\def\SISetupLocale{\sisetup{locale=DE}}}{}
+\IfLanguageName{american}{\def\SISetupLocale{\sisetup{locale=US}}}{}
 % ======================================================================
 
 
 
 % ======================================================================
-% English/German: Workaround for `algorithm2e`
+% Workaround for `algorithm2e`
 % ======================================================================
 
 % Define bibliography style
-\IfLanguageName{english}{\renewcommand{\algorithmcfname}{Algorithm}}{}
-\IfLanguageName{british}{\renewcommand{\algorithmcfname}{Algorithm}}{}
-\IfLanguageName{ngerman}{\renewcommand{\algorithmcfname}{Algorithmus}}{}
-\IfLanguageName{german}{\renewcommand{\algorithmcfname}{Algorithmus}}{}
+\IfLanguageName{american}{\renewcommand{\algorithmcfname}{Algorithm}}{}
 % ======================================================================

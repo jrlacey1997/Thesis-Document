@@ -1,0 +1,473 @@
+% $ biblatex auxiliary file $
+% $ biblatex bbl format version 3.3 $
+% Do not modify the above lines!
+%
+% This is an auxiliary file used by the 'biblatex' package.
+% This file may safely be deleted. It will be recreated by
+% biber as required.
+%
+\begingroup
+\makeatletter
+\@ifundefined{ver@biblatex.sty}
+  {\@latex@error
+     {Missing 'biblatex' package}
+     {The bibliography requires the 'biblatex' package.}
+      \aftergroup\endinput}
+  {}
+\endgroup
+
+
+\refsection{0}
+  \datalist[entry]{nty/global//global/global/global}
+    \entry{Adamy2009}{book}{}{}
+      \name{author}{1}{}{%
+        {{hash=4edea4189187594eb2e98d5778052403}{%
+           family={Adamy},
+           familyi={A\bibinitperiod},
+           given={Jürgen},
+           giveni={J\bibinitperiod}}}%
+      }
+      \list{publisher}{1}{%
+        {Springer Berlin Heidelberg}%
+      }
+      \strng{namehash}{4edea4189187594eb2e98d5778052403}
+      \strng{fullhash}{4edea4189187594eb2e98d5778052403}
+      \strng{fullhashraw}{4edea4189187594eb2e98d5778052403}
+      \strng{bibnamehash}{4edea4189187594eb2e98d5778052403}
+      \strng{authorbibnamehash}{4edea4189187594eb2e98d5778052403}
+      \strng{authornamehash}{4edea4189187594eb2e98d5778052403}
+      \strng{authorfullhash}{4edea4189187594eb2e98d5778052403}
+      \strng{authorfullhashraw}{4edea4189187594eb2e98d5778052403}
+      \field{sortinit}{A}
+      \field{sortinithash}{2f401846e2029bad6b3ecc16d50031e2}
+      \field{labelnamesource}{author}
+      \field{labeltitlesource}{title}
+      \field{isbn}{978-3-642-00793-4}
+      \field{title}{Nichtlineare {R}egelungen}
+      \field{year}{2009}
+      \verb{doi}
+      \verb 10.1007/978-3-642-00794-1
+      \endverb
+    \endentry
+    \entry{Bronstein2012}{book}{}{}
+      \name{author}{4}{}{%
+        {{hash=b59a85b0113416631e3e1794372f95d1}{%
+           family={Bronstein},
+           familyi={B\bibinitperiod},
+           given={Ilja\bibnamedelima N.},
+           giveni={I\bibinitperiod\bibinitdelim N\bibinitperiod}}}%
+        {{hash=780302b9b95a6e702a3f5963b1c478fe}{%
+           family={Semendjajew},
+           familyi={S\bibinitperiod},
+           given={Konstantin\bibnamedelima A.},
+           giveni={K\bibinitperiod\bibinitdelim A\bibinitperiod}}}%
+        {{hash=ca90565672fff206abb043828675b925}{%
+           family={Musiol},
+           familyi={M\bibinitperiod},
+           given={Gerhard},
+           giveni={G\bibinitperiod}}}%
+        {{hash=c144da914abb951808e409fc432a2377}{%
+           family={Mühlig},
+           familyi={M\bibinitperiod},
+           given={Heiner},
+           giveni={H\bibinitperiod}}}%
+      }
+      \list{publisher}{1}{%
+        {Verlag Harri Deutsch}%
+      }
+      \strng{namehash}{cb15a8ed21630fef3dd055b25340a049}
+      \strng{fullhash}{8adbd40532bcaf42483b10a40c6b381b}
+      \strng{fullhashraw}{8adbd40532bcaf42483b10a40c6b381b}
+      \strng{bibnamehash}{cb15a8ed21630fef3dd055b25340a049}
+      \strng{authorbibnamehash}{cb15a8ed21630fef3dd055b25340a049}
+      \strng{authornamehash}{cb15a8ed21630fef3dd055b25340a049}
+      \strng{authorfullhash}{8adbd40532bcaf42483b10a40c6b381b}
+      \strng{authorfullhashraw}{8adbd40532bcaf42483b10a40c6b381b}
+      \field{sortinit}{B}
+      \field{sortinithash}{d7095fff47cda75ca2589920aae98399}
+      \field{labelnamesource}{author}
+      \field{labeltitlesource}{title}
+      \field{edition}{8th}
+      \field{isbn}{978-3-8171-2008-6}
+      \field{title}{Taschenbuch der {M}athematik}
+      \field{year}{2012}
+    \endentry
+    \entry{Follinger2013}{book}{}{}
+      \name{author}{1}{}{%
+        {{hash=29fc0f5227661ff694100ad3ed346fbf}{%
+           family={Föllinger},
+           familyi={F\bibinitperiod},
+           given={Otto},
+           giveni={O\bibinitperiod}}}%
+      }
+      \list{publisher}{1}{%
+        {VDE Verlag}%
+      }
+      \strng{namehash}{29fc0f5227661ff694100ad3ed346fbf}
+      \strng{fullhash}{29fc0f5227661ff694100ad3ed346fbf}
+      \strng{fullhashraw}{29fc0f5227661ff694100ad3ed346fbf}
+      \strng{bibnamehash}{29fc0f5227661ff694100ad3ed346fbf}
+      \strng{authorbibnamehash}{29fc0f5227661ff694100ad3ed346fbf}
+      \strng{authornamehash}{29fc0f5227661ff694100ad3ed346fbf}
+      \strng{authorfullhash}{29fc0f5227661ff694100ad3ed346fbf}
+      \strng{authorfullhashraw}{29fc0f5227661ff694100ad3ed346fbf}
+      \field{sortinit}{F}
+      \field{sortinithash}{2638baaa20439f1b5a8f80c6c08a13b4}
+      \field{labelnamesource}{author}
+      \field{labeltitlesource}{title}
+      \field{edition}{11th}
+      \field{isbn}{978-3-8007-3231-9}
+      \field{title}{Regelungstechnik: {E}inführung in die {M}ethoden und ihre {A}nwendung}
+      \field{year}{2013}
+    \endentry
+    \entry{Gamma2004}{book}{}{}
+      \name{author}{4}{}{%
+        {{hash=abd927bf30d6566be0ac66a66e893fdd}{%
+           family={Gamma},
+           familyi={G\bibinitperiod},
+           given={Erich},
+           giveni={E\bibinitperiod}}}%
+        {{hash=233f891813bda0f3920985f97a4a7554}{%
+           family={Helm},
+           familyi={H\bibinitperiod},
+           given={Richard},
+           giveni={R\bibinitperiod}}}%
+        {{hash=fd79e5e249b219ff553fc2d811104d78}{%
+           family={Johnson},
+           familyi={J\bibinitperiod},
+           given={Ralph},
+           giveni={R\bibinitperiod}}}%
+        {{hash=e032589f0b9a38804483ab7cf5ccad7f}{%
+           family={Vlissides},
+           familyi={V\bibinitperiod},
+           given={John},
+           giveni={J\bibinitperiod}}}%
+      }
+      \list{publisher}{1}{%
+        {Pearson Education}%
+      }
+      \strng{namehash}{4d2492409a24d4ed208ae6670cb91945}
+      \strng{fullhash}{5cb4a6d7baf30d11bae6682eca698b4f}
+      \strng{fullhashraw}{5cb4a6d7baf30d11bae6682eca698b4f}
+      \strng{bibnamehash}{4d2492409a24d4ed208ae6670cb91945}
+      \strng{authorbibnamehash}{4d2492409a24d4ed208ae6670cb91945}
+      \strng{authornamehash}{4d2492409a24d4ed208ae6670cb91945}
+      \strng{authorfullhash}{5cb4a6d7baf30d11bae6682eca698b4f}
+      \strng{authorfullhashraw}{5cb4a6d7baf30d11bae6682eca698b4f}
+      \field{sortinit}{G}
+      \field{sortinithash}{32d67eca0634bf53703493fb1090a2e8}
+      \field{labelnamesource}{author}
+      \field{labeltitlesource}{title}
+      \field{isbn}{9788131700075}
+      \field{series}{Addison-Wesley Professional Computing Series}
+      \field{title}{Design Patterns: Elements of Reusable Object-Oriented Software}
+      \field{year}{2004}
+    \endentry
+    \entry{Gantmacher2000a}{book}{}{}
+      \name{author}{1}{}{%
+        {{hash=ce253c3b6f3290786fc2d98d06a9dbef}{%
+           family={Gantmacher},
+           familyi={G\bibinitperiod},
+           given={F.R.},
+           giveni={F\bibinitperiod}}}%
+      }
+      \list{publisher}{1}{%
+        {American Mathematical Society}%
+      }
+      \strng{namehash}{ce253c3b6f3290786fc2d98d06a9dbef}
+      \strng{fullhash}{ce253c3b6f3290786fc2d98d06a9dbef}
+      \strng{fullhashraw}{ce253c3b6f3290786fc2d98d06a9dbef}
+      \strng{bibnamehash}{ce253c3b6f3290786fc2d98d06a9dbef}
+      \strng{authorbibnamehash}{ce253c3b6f3290786fc2d98d06a9dbef}
+      \strng{authornamehash}{ce253c3b6f3290786fc2d98d06a9dbef}
+      \strng{authorfullhash}{ce253c3b6f3290786fc2d98d06a9dbef}
+      \strng{authorfullhashraw}{ce253c3b6f3290786fc2d98d06a9dbef}
+      \field{extraname}{1}
+      \field{sortinit}{G}
+      \field{sortinithash}{32d67eca0634bf53703493fb1090a2e8}
+      \field{labelnamesource}{author}
+      \field{labeltitlesource}{title}
+      \field{isbn}{0-8218-1376-5}
+      \field{title}{The Theory of Matrices}
+      \field{volume}{1}
+      \field{volumes}{2}
+      \field{year}{2000}
+    \endentry
+    \entry{Gantmacher2000b}{book}{}{}
+      \name{author}{1}{}{%
+        {{hash=ce253c3b6f3290786fc2d98d06a9dbef}{%
+           family={Gantmacher},
+           familyi={G\bibinitperiod},
+           given={F.R.},
+           giveni={F\bibinitperiod}}}%
+      }
+      \list{publisher}{1}{%
+        {American Mathematical Society}%
+      }
+      \strng{namehash}{ce253c3b6f3290786fc2d98d06a9dbef}
+      \strng{fullhash}{ce253c3b6f3290786fc2d98d06a9dbef}
+      \strng{fullhashraw}{ce253c3b6f3290786fc2d98d06a9dbef}
+      \strng{bibnamehash}{ce253c3b6f3290786fc2d98d06a9dbef}
+      \strng{authorbibnamehash}{ce253c3b6f3290786fc2d98d06a9dbef}
+      \strng{authornamehash}{ce253c3b6f3290786fc2d98d06a9dbef}
+      \strng{authorfullhash}{ce253c3b6f3290786fc2d98d06a9dbef}
+      \strng{authorfullhashraw}{ce253c3b6f3290786fc2d98d06a9dbef}
+      \field{extraname}{2}
+      \field{sortinit}{G}
+      \field{sortinithash}{32d67eca0634bf53703493fb1090a2e8}
+      \field{labelnamesource}{author}
+      \field{labeltitlesource}{title}
+      \field{isbn}{0-8218-2664-6}
+      \field{title}{The Theory of Matrices}
+      \field{volume}{1}
+      \field{volumes}{2}
+      \field{year}{2000}
+    \endentry
+    \entry{Golub2013}{book}{}{}
+      \name{author}{2}{}{%
+        {{hash=8b856da92ad549d323acc679ecf7f474}{%
+           family={Golub},
+           familyi={G\bibinitperiod},
+           given={Gene\bibnamedelima H.},
+           giveni={G\bibinitperiod\bibinitdelim H\bibinitperiod}}}%
+        {{hash=4ed2d13e66ef340bd8d892c23333c87b}{%
+           family={Van\bibnamedelima Loan},
+           familyi={V\bibinitperiod\bibinitdelim L\bibinitperiod},
+           given={Charles\bibnamedelima F.},
+           giveni={C\bibinitperiod\bibinitdelim F\bibinitperiod}}}%
+      }
+      \list{publisher}{1}{%
+        {Johns Hopkins University Press}%
+      }
+      \strng{namehash}{315525c1558db03561c0e8a8b605758b}
+      \strng{fullhash}{315525c1558db03561c0e8a8b605758b}
+      \strng{fullhashraw}{315525c1558db03561c0e8a8b605758b}
+      \strng{bibnamehash}{315525c1558db03561c0e8a8b605758b}
+      \strng{authorbibnamehash}{315525c1558db03561c0e8a8b605758b}
+      \strng{authornamehash}{315525c1558db03561c0e8a8b605758b}
+      \strng{authorfullhash}{315525c1558db03561c0e8a8b605758b}
+      \strng{authorfullhashraw}{315525c1558db03561c0e8a8b605758b}
+      \field{sortinit}{G}
+      \field{sortinithash}{32d67eca0634bf53703493fb1090a2e8}
+      \field{labelnamesource}{author}
+      \field{labeltitlesource}{title}
+      \field{edition}{4th}
+      \field{isbn}{978-1-4214-0794-4}
+      \field{series}{Johns Hopkins Studies in the Mathematical Sciences}
+      \field{title}{Matrix Computations}
+      \field{year}{2013}
+    \endentry
+    \entry{Horn2013}{book}{}{}
+      \name{author}{2}{}{%
+        {{hash=472bb8160d835c69b57bcf72a2e976f2}{%
+           family={Horn},
+           familyi={H\bibinitperiod},
+           given={Roger\bibnamedelima A.},
+           giveni={R\bibinitperiod\bibinitdelim A\bibinitperiod}}}%
+        {{hash=dac60894a8d7e4e7a13519d50f5fbf9a}{%
+           family={Johnson},
+           familyi={J\bibinitperiod},
+           given={Charles\bibnamedelima R.},
+           giveni={C\bibinitperiod\bibinitdelim R\bibinitperiod}}}%
+      }
+      \list{publisher}{1}{%
+        {Cambridge University Press}%
+      }
+      \strng{namehash}{eecf59942273a63031b3fcbcfd5fa22f}
+      \strng{fullhash}{eecf59942273a63031b3fcbcfd5fa22f}
+      \strng{fullhashraw}{eecf59942273a63031b3fcbcfd5fa22f}
+      \strng{bibnamehash}{eecf59942273a63031b3fcbcfd5fa22f}
+      \strng{authorbibnamehash}{eecf59942273a63031b3fcbcfd5fa22f}
+      \strng{authornamehash}{eecf59942273a63031b3fcbcfd5fa22f}
+      \strng{authorfullhash}{eecf59942273a63031b3fcbcfd5fa22f}
+      \strng{authorfullhashraw}{eecf59942273a63031b3fcbcfd5fa22f}
+      \field{extraname}{1}
+      \field{sortinit}{H}
+      \field{sortinithash}{23a3aa7c24e56cfa16945d55545109b5}
+      \field{labelnamesource}{author}
+      \field{labeltitlesource}{title}
+      \field{edition}{2nd}
+      \field{isbn}{978-0-521-54823-6}
+      \field{title}{Matrix Analysis}
+      \field{year}{2013}
+    \endentry
+    \entry{Horn1994}{book}{}{}
+      \name{author}{2}{}{%
+        {{hash=472bb8160d835c69b57bcf72a2e976f2}{%
+           family={Horn},
+           familyi={H\bibinitperiod},
+           given={Roger\bibnamedelima A.},
+           giveni={R\bibinitperiod\bibinitdelim A\bibinitperiod}}}%
+        {{hash=dac60894a8d7e4e7a13519d50f5fbf9a}{%
+           family={Johnson},
+           familyi={J\bibinitperiod},
+           given={Charles\bibnamedelima R.},
+           giveni={C\bibinitperiod\bibinitdelim R\bibinitperiod}}}%
+      }
+      \list{publisher}{1}{%
+        {Cambridge University Press}%
+      }
+      \strng{namehash}{eecf59942273a63031b3fcbcfd5fa22f}
+      \strng{fullhash}{eecf59942273a63031b3fcbcfd5fa22f}
+      \strng{fullhashraw}{eecf59942273a63031b3fcbcfd5fa22f}
+      \strng{bibnamehash}{eecf59942273a63031b3fcbcfd5fa22f}
+      \strng{authorbibnamehash}{eecf59942273a63031b3fcbcfd5fa22f}
+      \strng{authornamehash}{eecf59942273a63031b3fcbcfd5fa22f}
+      \strng{authorfullhash}{eecf59942273a63031b3fcbcfd5fa22f}
+      \strng{authorfullhashraw}{eecf59942273a63031b3fcbcfd5fa22f}
+      \field{extraname}{2}
+      \field{sortinit}{H}
+      \field{sortinithash}{23a3aa7c24e56cfa16945d55545109b5}
+      \field{labelnamesource}{author}
+      \field{labeltitlesource}{title}
+      \field{isbn}{123456789}
+      \field{title}{Topics in Matrix Analysis}
+      \field{year}{1994}
+    \endentry
+    \entry{LaSalle1961}{book}{}{}
+      \name{author}{2}{}{%
+        {{hash=110368a6215bd1a7db57ec804364b98a}{%
+           family={{L}a\bibnamedelima {S}alle},
+           familyi={L\bibinitperiod\bibinitdelim S\bibinitperiod},
+           given={Joseph\bibnamedelima P.},
+           giveni={J\bibinitperiod\bibinitdelim P\bibinitperiod}}}%
+        {{hash=7d8a0c5addc2c706c6549e76bff41991}{%
+           family={Lefschetz},
+           familyi={L\bibinitperiod},
+           given={Solomon},
+           giveni={S\bibinitperiod}}}%
+      }
+      \list{publisher}{1}{%
+        {Academic Press}%
+      }
+      \strng{namehash}{b3fac1e9829944246e8863ea5f1dea72}
+      \strng{fullhash}{b3fac1e9829944246e8863ea5f1dea72}
+      \strng{fullhashraw}{b3fac1e9829944246e8863ea5f1dea72}
+      \strng{bibnamehash}{b3fac1e9829944246e8863ea5f1dea72}
+      \strng{authorbibnamehash}{b3fac1e9829944246e8863ea5f1dea72}
+      \strng{authornamehash}{b3fac1e9829944246e8863ea5f1dea72}
+      \strng{authorfullhash}{b3fac1e9829944246e8863ea5f1dea72}
+      \strng{authorfullhashraw}{b3fac1e9829944246e8863ea5f1dea72}
+      \field{sortinit}{L}
+      \field{sortinithash}{7c47d417cecb1f4bd38d1825c427a61a}
+      \field{labelnamesource}{author}
+      \field{labeltitlesource}{title}
+      \field{series}{Mathematics in science and engineering}
+      \field{title}{Stability by {L}iapunov's Direct Method: With Applications}
+      \field{year}{1961}
+    \endentry
+    \entry{Mehlhorn2008}{book}{}{}
+      \name{author}{2}{}{%
+        {{hash=c2f239e3cf9c48b72ce5f4ca9b5e478e}{%
+           family={Mehlhorn},
+           familyi={M\bibinitperiod},
+           given={Kurt},
+           giveni={K\bibinitperiod}}}%
+        {{hash=be6c7f12620ef1a8d1d85d96d476a158}{%
+           family={Sanders},
+           familyi={S\bibinitperiod},
+           given={Peter},
+           giveni={P\bibinitperiod}}}%
+      }
+      \list{publisher}{1}{%
+        {Springer}%
+      }
+      \strng{namehash}{83db01c125531396385c0293b2187d95}
+      \strng{fullhash}{83db01c125531396385c0293b2187d95}
+      \strng{fullhashraw}{83db01c125531396385c0293b2187d95}
+      \strng{bibnamehash}{83db01c125531396385c0293b2187d95}
+      \strng{authorbibnamehash}{83db01c125531396385c0293b2187d95}
+      \strng{authornamehash}{83db01c125531396385c0293b2187d95}
+      \strng{authorfullhash}{83db01c125531396385c0293b2187d95}
+      \strng{authorfullhashraw}{83db01c125531396385c0293b2187d95}
+      \field{sortinit}{M}
+      \field{sortinithash}{4625c616857f13d17ce56f7d4f97d451}
+      \field{labelnamesource}{author}
+      \field{labeltitlesource}{title}
+      \field{isbn}{978-3-540-77977-3}
+      \field{title}{Algorithms and Data Structures: The Basic Toolbox}
+      \field{year}{2008}
+      \verb{doi}
+      \verb 10.1007/978-3-540-77978-0
+      \endverb
+      \verb{urlraw}
+      \verb http://link.springer.com/book/10.1007%2F978-3-540-77978-0
+      \endverb
+      \verb{url}
+      \verb http://link.springer.com/book/10.1007%2F978-3-540-77978-0
+      \endverb
+    \endentry
+    \entry{Sontag1998}{book}{}{}
+      \name{author}{1}{}{%
+        {{hash=7feb6b8c21c43545012178b1bdb5ac6d}{%
+           family={Sontag},
+           familyi={S\bibinitperiod},
+           given={Eduardo\bibnamedelima D.},
+           giveni={E\bibinitperiod\bibinitdelim D\bibinitperiod}}}%
+      }
+      \list{location}{1}{%
+        {New York, NY, USA}%
+      }
+      \list{publisher}{1}{%
+        {Springer-Verlag New York, Inc.}%
+      }
+      \strng{namehash}{7feb6b8c21c43545012178b1bdb5ac6d}
+      \strng{fullhash}{7feb6b8c21c43545012178b1bdb5ac6d}
+      \strng{fullhashraw}{7feb6b8c21c43545012178b1bdb5ac6d}
+      \strng{bibnamehash}{7feb6b8c21c43545012178b1bdb5ac6d}
+      \strng{authorbibnamehash}{7feb6b8c21c43545012178b1bdb5ac6d}
+      \strng{authornamehash}{7feb6b8c21c43545012178b1bdb5ac6d}
+      \strng{authorfullhash}{7feb6b8c21c43545012178b1bdb5ac6d}
+      \strng{authorfullhashraw}{7feb6b8c21c43545012178b1bdb5ac6d}
+      \field{sortinit}{S}
+      \field{sortinithash}{b164b07b29984b41daf1e85279fbc5ab}
+      \field{labelnamesource}{author}
+      \field{labeltitlesource}{title}
+      \field{edition}{2nd}
+      \field{isbn}{0-387-98489-5}
+      \field{series}{Texts in Applied Mathematics}
+      \field{title}{Mathematical Control Theory: Deterministic Finite Dimensional Systems}
+      \field{volume}{6}
+      \field{year}{1998}
+      \verb{urlraw}
+      \verb http://www.math.rutgers.edu/~sontag/mct.html
+      \endverb
+      \verb{url}
+      \verb http://www.math.rutgers.edu/~sontag/mct.html
+      \endverb
+    \endentry
+    \entry{Watkins2002}{book}{}{}
+      \name{author}{1}{}{%
+        {{hash=48bc089615df693df1f3ca88f0ff89ae}{%
+           family={Watkins},
+           familyi={W\bibinitperiod},
+           given={David\bibnamedelima S.},
+           giveni={D\bibinitperiod\bibinitdelim S\bibinitperiod}}}%
+      }
+      \list{publisher}{1}{%
+        {John Wiley \& Sons, Inc.}%
+      }
+      \strng{namehash}{48bc089615df693df1f3ca88f0ff89ae}
+      \strng{fullhash}{48bc089615df693df1f3ca88f0ff89ae}
+      \strng{fullhashraw}{48bc089615df693df1f3ca88f0ff89ae}
+      \strng{bibnamehash}{48bc089615df693df1f3ca88f0ff89ae}
+      \strng{authorbibnamehash}{48bc089615df693df1f3ca88f0ff89ae}
+      \strng{authornamehash}{48bc089615df693df1f3ca88f0ff89ae}
+      \strng{authorfullhash}{48bc089615df693df1f3ca88f0ff89ae}
+      \strng{authorfullhashraw}{48bc089615df693df1f3ca88f0ff89ae}
+      \field{sortinit}{W}
+      \field{sortinithash}{4315d78024d0cea9b57a0c6f0e35ed0d}
+      \field{labelnamesource}{author}
+      \field{labeltitlesource}{title}
+      \field{isbn}{0-471-21394-2}
+      \field{month}{5}
+      \field{title}{Fundamentals of Matrix Computations}
+      \field{year}{2002}
+      \verb{doi}
+      \verb 10.1002/0471249718
+      \endverb
+    \endentry
+  \enddatalist
+\endrefsection
+\endinput
+

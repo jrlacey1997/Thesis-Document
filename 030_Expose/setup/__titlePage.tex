@@ -19,10 +19,6 @@
   \node[anchor = north west, tum blue] (_title_page_chair_name)
     at ([yshift = \titlePageUpperSpacing, xshift = \titlePageLeftMargin] current page.north west)
     {\fontfamily{phv}\selectfont\scriptsize{}\nameCaChair};
-  \begin{scope}[shift=(_title_page_chair_name.north west), yshift = 0.36 cm, x = 0.9 cm, y = 0.9 cm]
-    \input{./images/__titlePage/logo-chair}
-  \end{scope}
-
   \node[anchor = north east, tum blue] (_title_page_tum_name)
     at ([yshift = \titlePageUpperSpacing, xshift = -\titlePageRightMargin] current page.north east)
     {\fontfamily{phv}\selectfont\scriptsize{}\nameCaTUM};

@@ -417,37 +417,9 @@ disp(['a=[''',a,'''];',10,[a-10,']]);']]);
 \lstinputlisting[language = Python, label = lst:sierpinski, caption = {Sierpinski carpet in Python}]{./sources/sierpinski.py}
 
 
-\section{Languages support}
-\subsection{Typesetting non-English texts}
-Use the \verb|otherlanguage| environment to typeset non-English texts:
-\begin{center}
-  \fbox{%
-    \begin{minipage}{0.7\linewidth}
-      \begin{otherlanguage}{ngerman}
-        Franz jagt im komplett verwahrlosten
-        Taxi quer durch Bayern. Zwölf Boxkämpfer jagen Viktor
-        quer über den großen Sylter Deich. Vogel Quax zwickt
-        Johnys Pferd Bim. Sylvia wagt quick den Jux bei
-        Pforzheim. Polyfon zwitschernd aßen Mäxchens Vögel
-        Rüben, Joghurt und Quark. \glqq Fix, Schwyz!\grqq\ quäkt
-        Jürgen blöd vom Paß. Victor jagt zwölf Boxkämpfer quer
-        über den großen Sylter Deich. Falsches Üben von
-        Xylophonmusik quält jeden größeren Zwerg.
-        Heizölrückstoßabdämpfung.
-      \end{otherlanguage}
-    \end{minipage}
-  }
-\end{center}
-
-\subsection{Changing the main document language}
-\label{sc:changingMainDocumentLanguage}
-To use German as a default language, edit the first line in \verb|_thesis.tex|:
-Change\\
-\verb|\documentclass[<...>, ngerman, english]{book}|\\
-to\\
-\verb|\documentclass[<...>, english, ngerman]{book}|.
-
-You can also use \verb|british| instead of \verb|english| if you prefer BrE.
+\section{Language support}
+This template is configured for English throughout. The document class and all generated
+front matter use English as the only document language.
 
 
 \section{Abbreviations and acronyms}

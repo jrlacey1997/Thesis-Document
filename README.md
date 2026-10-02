@@ -1,7 +1,7 @@
 # RT thesis template
 Welcome to RT! We have prepared a template for you, which contains a practical folder structure for your project and LaTeX document templates for the exposé and the final report.
 
-:warning: Please _do not distribute_ this repo nor make it public in _any_ way. It contains intellectual property of the Technische Universität München such as TUM colours, TUM logo and the logo of the Chair of Automatic Control.
+:warning: Please _do not distribute_ this repo nor make it public in _any_ way. It contains intellectual property of the Technische Universität München such as TUM colours and TUM logo.
 
 ## Document Templates
 This repository contains two document templates:

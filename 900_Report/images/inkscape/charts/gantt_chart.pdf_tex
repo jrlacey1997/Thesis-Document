@@ -88,7 +88,7 @@
     \put(0.37643859,0.04964038){\color[rgb]{0,0,0}\makebox(0,0)[lb]{\smash{\textcolor{tum orange}{\normalsize $\blacklozenge$} WS1}}}%
     \put(0.67189719,0.04924702){\color[rgb]{0,0,0}\makebox(0,0)[lb]{\smash{\textcolor{tum orange}{\normalsize $\blacklozenge$} WS2}}}%
     \put(0.8909822,0.05003375){\color[rgb]{0,0,0}\makebox(0,0)[rb]{\smash{WS3 \textcolor{tum orange}{\normalsize $\blacklozenge$}}}}%
-    \put(0.05516014,0.00435682){\color[rgb]{0,0,0}\makebox(0,0)[lb]{\smash{Chair of Automatic Control (RT)}}}%
+    \put(0.05516014,0.00435682){\color[rgb]{0,0,0}\makebox(0,0)[lb]{\smash{Chair of Sensor Based Robotic Systems and Intelligent Assistance Systems (RT)}}}%
     \put(0.43856463,0.00465629){\color[rgb]{0,0,0}\makebox(0,0)[lb]{\smash{Chair of Applied Mechanics (AM)}}}%
     \put(0.79110613,0.00379504){\color[rgb]{0,0,0}\makebox(0,0)[lb]{\smash{Workshop / Milestone}}}%
     \put(0.78659901,0.00526602){\color[rgb]{0,0,0}\makebox(0,0)[rb]{\smash{\textcolor{tum orange}{\normalsize $\blacklozenge$}}}}%
