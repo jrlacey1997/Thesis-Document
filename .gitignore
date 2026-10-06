@@ -124,6 +124,7 @@ _*.pdf
 *.tps
 *.dpth
 *.run.xml
+*.fls
 
 # tikzedt stuff
 *.preview.*
