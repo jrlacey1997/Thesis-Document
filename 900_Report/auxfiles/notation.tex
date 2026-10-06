@@ -38,11 +38,11 @@ $\iprd[\T{I}]{\T{u}}{\T{v}} = \iprd{\T{u}}{\T{v}} = \T{u}^* \T{v}$.
 \subsubsection*{Typographical symbols}
 \S\ chapter, section, subsection
 
-$\blacksquare$ end of a proof
-
-$\vartriangle$ end of a remark or example
-
-$\blacktriangle$ end of a definition
+% $\blacksquare$ end of a proof
+% 
+% $\vartriangle$ end of a remark or example
+% 
+% $\blacktriangle$ end of a definition
 
 \subsubsection*{Mathematical symbols}
 
@@ -60,15 +60,57 @@ $\T{T}$ transformation matrix
 
 $\T{\mathit{R}}(\phi)$ rotation matrix
 
-$\cond{(\T{A})}$ condition number of $\T{A}$
+$\mathbb{R}^n$ n-dimensional real space
 
-$\lambda(\T{A})$ eigenvalue of $\T{A}$
+$\SO{3}$ special orthogonal group of three-dimensional rotations
 
-$\sigma(\T{A})$ singular value of $\T{A}$
+$\so{3}$ Lie algebra of $\SO{3}$
 
-$\mathscr{H}_p$ Hardy $p$-norm
+$\SE{3}$ special Euclidean group of three-dimensional rigid-body motions
 
-$\mathscr{L}_p$ Lebesgue $p$-norm
+$\se{3}$ Lie algebra of $\SE{3}$
+
+${}^{A}\T{R}_{B}$ rotation matrix that maps coordinates from frame $B$ to frame $A$
+
+${}^{A}\T{p}_{B}$ position of the origin of frame $B$ expressed in frame $A$
+
+${}^{A}\T{T}_{B}$ homogeneous transformation from frame $B$ to frame $A$
+
+\begin{equation}
+  {}^{A}\T{T}_{B} =
+  \begin{bmatrix}
+    {}^{A}\T{R}_{B} & {}^{A}\T{p}_{B} \\
+    \T{0}_{1\times 3} & 1
+  \end{bmatrix}.
+\end{equation}
+
+$\T{q} = [q_w, q_x, q_y, q_z]^{\mathsf{T}}$ unit quaternion, with
+$q_w^2 + q_x^2 + q_y^2 + q_z^2 = 1$
+
+$\overline{\T{q}}$ quaternion conjugate
+
+$\hatmap{\T{v}}$ skew-symmetric matrix associated with vector $\T{v}$
+
+\subsubsection*{Craig modified Denavit--Hartenberg parameters}
+
+$a_{i-1}$ link length
+
+$\alpha_{i-1}$ link twist
+
+$d_i$ link offset
+
+$\theta_i$ joint angle
+
+In the Craig modified Denavit--Hartenberg convention, the transform from frame
+$i$ to frame $i-1$ is
+\begin{equation}
+  {}^{i-1}\T{T}_{i} =
+  \mathrm{Rot}_{x}(\alpha_{i-1})\,
+  \mathrm{Trans}_{x}(a_{i-1})\,
+  \mathrm{Rot}_{z}(\theta_i)\,
+  \mathrm{Trans}_{z}(d_i).
+\end{equation}
+
 
 \section{\nameCaAcronyms}
 \label{sc:abbreviationsAndAcronyms}
