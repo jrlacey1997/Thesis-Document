@@ -1,42 +1,47 @@
 \chapter{Notation}
 \section{Special operators and symbols}
-\subsection*{Matrix diagonal extraction}
-Operator $\diag$ extracts the elements on the
-main diagonal of a matrix, i.e.\
-$\diag\T{A} = a_{ii}$.
+\subsection*{Identity matrix}
+\begin{equation}
+  \T{I}_{n \times n}
+  =
+  \begin{bmatrix}
+    1 & 0 & \cdots & 0 \\
+    0 & 1 & \cdots & 0 \\
+    \vdots & \vdots & \ddots & \vdots \\
+    0 & 0 & \cdots & 1
+  \end{bmatrix}
+  \label{eq:identity_matrix}
+\end{equation}
 
-\subsection*{Matrix direct sum}
-A direct sum of two matrices is defined as
+\subsection*{Skew-symmetric matrix}
 \begin{equation}
-  \T{A} \oplus \T{B} =
+  [\mathbf{v}]_\times =
   \begin{bmatrix}
-    \T{A} & \T{0} \\
-    \T{0} & \T{B}
-  \end{bmatrix}.
+    0 & -v_z & v_y \\
+    v_z & 0 & -v_x \\
+    -v_y & v_x & 0
+  \end{bmatrix}
+  \label{eq:skew_symmetric_matrix}
 \end{equation}
-Furthermore, a sum of $n$ elements is defined as
-\begin{equation}
-  \bigoplus_{i = 1}^n \T{A}_i =
-  \begin{bmatrix}
-    \T{A}_1 & \T{0}   & \cdots & \T{0}   \\
-    \T{0}   & \T{A}_2 & \cdots & \T{0}   \\
-    \vdots  & \vdots  & \ddots & \vdots  \\
-    \T{0}   & \T{0}   & \cdots & \T{A}_n
-  \end{bmatrix}.
-\end{equation}
+
 
 \subsection*{Inner product}
-A bilinear form $\iprd[\T{A}]{\,\cdot\,}{\,\cdot\,}  : \Complex^n \times \Complex^n \to \Complex$
-named $\T{A}$-inner product is defined as $\iprd[\T{A}]{\T{u}}{\T{v}} = \T{u}^* \T{A} \T{v}$.
-In the special case of $\T{A} = \T{I}$, which is denoted by simply
-$\iprd{\,\cdot\,}{\,\cdot\,}$, the
-inner product is equivalent to the dot product of two vectors:
-$\iprd[\T{I}]{\T{u}}{\T{v}} = \iprd{\T{u}}{\T{v}} = \T{u}^* \T{v}$.
+\begin{equation}
+  \iprd{\T{u}}{\T{v}} = \T{u}^{\mathsf{T}} \T{v}
+  \label{eq:inner_product}
+\end{equation}
 
-\section{\nameCaSymbols}
+\subsection*{Cross product}
+\begin{equation}
+  \mathbf{a} \times \mathbf{b} = [\mathbf{a}]_\times \mathbf{b} = 
+  \begin{bmatrix}
+      a_2 b_3 - a_3 b_2 \\
+      a_3 b_1 - a_1 b_3 \\
+      a_1 b_2 - a_2 b_1
+  \end{bmatrix}
+  \label{eq:cross_product}
+\end{equation}
 
-\subsubsection*{Typographical symbols}
-\S\ chapter, section, subsection
 
 % $\blacksquare$ end of a proof
 % 
