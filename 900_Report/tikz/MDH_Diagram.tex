@@ -1,0 +1,181 @@
+% \documentclass[a4paper, 11pt, twoside, american]{book}
+% \usepackage[T1]{fontenc}
+% \usepackage{babel}
+% \usepackage[scaled=0.92]{helvet}
+% \usepackage{lmodern}
+% \usepackage{mathrsfs}
+% \usepackage{tikz,pgfplots}
+% \usetikzlibrary{arrows.meta, calc, decorations.pathreplacing}
+
+% \begin{document}
+\begin{tikzpicture}[>=Stealth, line cap=round, line join=round]
+
+% Color definitions to match the exact diagram
+\colorlet{mygreen}{green!60!cyan!80}
+\colorlet{mygreendark}{green!50!cyan!80!black}
+\colorlet{mycyan}{cyan!55!white}
+\colorlet{mycyandark}{cyan!60!black}
+\colorlet{myred}{red!90!black}
+\colorlet{myblue}{blue!90!black}
+\colorlet{mygreenax}{green!80!black}
+
+% Styles
+\tikzset{
+    ax/.style={draw=black, double=#1, double distance=2pt, line width=0.8pt, -{Stealth[fill=#1, color=black, length=5mm, width=3mm]}},
+    dashedline/.style={dashed, thick, black},
+    linktop/.style={fill=#1, draw=black, thick},
+    linkside/.style={fill=#1, draw=black, thick}
+}
+
+% --- BACKGROUND DASHED LINES ---
+% Bottom horizontal dashed line (X_{i-2})
+\draw[dashedline] (2.32, 0.72) -- (7, 1.5);
+% Vertical dashed line O_{i-1} to P (Z_{i-1} axis)
+\draw[dashedline] (7, 1.5) -- (7, 8);
+% Dashed line P to O_i (X_i axis)
+\draw[dashedline] (7, 8) -- (14, 10.73);
+% Dashed line Z_i up
+\draw[dashedline] (11.75, 9.85) -- (11.25, 11.85);
+% Dashed line Z_i down (Joint_{i+1} axis)
+\draw[dashedline] (11.75, 9.85) -- (12.56, 6.71) -- (13.25, 3.96);
+% Vertical guide above O_i
+\draw[dashedline] (11.75, 9.85) -- (11.75, 11.5);
+% Arc between the vertical guide and Z_i dashed line
+\draw[->, black, line width=1.4pt] ($(11.75, 9.85) + (90:1.5)$)
+    arc[start angle=90, end angle=104.04, radius=1.55];
+
+% --- O_{i-1} FRAME ---
+\coordinate (O0) at (7, 1.5);
+\draw[ax=myred] (O0) -- ++(21.31:1.035) node[below=10pt, black, inner sep=1pt] {\Large $\mathbf{X_{i-1}}$};
+\draw[ax=mygreenax] (O0) -- ++(111.31:1.035) node[above left=-2pt, black, inner sep=1pt] {\Large $\mathbf{Y_{i-1}}$};
+\draw[ax=myblue] (O0) -- ++(0, 1.035) node[right=3pt, black, inner sep=1pt] {\Large $\mathbf{Z_{i-1}}$};
+\draw[dashedline] ($(O0) + (21.31:1.035)$) -- ++(21.31:5.685);
+\node[below, black] at (6.9, 1.3) {\Large $\mathbf{O_{i-1}}$};
+
+% --- GREEN LINK (Link i-1) ---
+% Side face
+\path[linkside=mygreendark] (2, 2.3) -- (7, 3.3) -- (7, 3.7) -- (2, 2.7) -- cycle;
+% Top face
+\path[linktop=mygreen] (2, 2.7) -- (7, 3.7) -- (7, 4.1) -- (2, 3.1) -- cycle;
+
+% --- LEFT CYLINDER (Joint i-1) ---
+\begin{scope}[shift={(2, 2.65)}, rotate=9.46]
+    \path[linkside=mygreen] (-0.7, -0.55) -- (-0.7, 0.55)
+        arc (180:360:0.7 and 0.25) -- (0.7, -0.55)
+        arc (360:180:0.7 and 0.25);
+    \path[linktop=gray!30] (0, 0.55) ellipse (0.7 and 0.25);
+    \path[linktop=gray!60] (0, 0.55) ellipse (0.2 and 0.08);
+\end{scope}
+
+% --- MIDDLE CYLINDER BOTTOM HALF (Green) ---
+\path[linkside=mygreen] (6.3, 3.1) -- (6.3, 4.3) arc (180:360:0.7 and 0.25) -- (7.7, 3.1) arc (360:180:0.7 and 0.25);
+
+% --- CYAN LINK (Link i) ---
+% Side face
+\path[linkside=mycyandark] (7, 4.3) -- (12.8, 5.0) -- (12.8, 5.4) -- (7, 4.7) -- cycle;
+% Top face
+\path[linktop=mycyan] (7, 4.7) -- (12.8, 5.4) -- (12.8, 5.8) -- (7, 5.1) -- cycle;
+
+% --- RIGHT CYLINDER (Joint i+1) ---
+\begin{scope}[shift={(12.95, 5.16)}, rotate=194.04]
+    \path[linkside=mycyan] (-0.7, -1.2) -- (-0.7, 0.4) arc (180:360:0.7 and 0.25) -- (0.7, -1.2) arc (360:180:0.7 and 0.25);
+    \path[linktop=gray!30] (0, 0.4) ellipse (0.7 and 0.25);
+    \path[linktop=gray!60] (0, 0.4) ellipse (0.2 and 0.08);
+\end{scope}
+
+% TRUNCATED PARTIAL LINK i
+\begin{scope}[shift={(12.56, 7.0)}, rotate=284.04]
+    \path[fill=myred, draw=black, thick]
+        (-0.35, 0) -- (0.35, 0) -- (0.35, 2.3)
+        -- (0.18, 2.5) -- (0, 2.3) -- (-0.18, 2.5)
+    -- (-0.35, 2.3) -- cycle;
+    \path[fill=myred!70!black, draw=none]
+        (0, 0) -- (0.35, 0) -- (0.35, 2.3)
+        -- (0.18, 2.5) -- (0, 2.3) -- cycle;
+    \draw[black, thick] (0, 0) -- (0, 2.3);
+\end{scope}
+
+% RED CYLINDER ABOVE THE RIGHTMOST CYLINDER
+\begin{scope}[shift={(12.56, 6.71)}, rotate=194.04]
+    \path[linkside=myred] (-0.7, -1.2) -- (-0.7, 0.4) arc (180:360:0.7 and 0.25) -- (0.7, -1.2) arc (360:180:0.7 and 0.25);
+\end{scope}
+
+% --- MIDDLE CYLINDER TOP HALF (Cyan) ---
+\path[linkside=mycyan] (6.3, 4.3) -- (6.3, 5.5) arc (180:360:0.7 and 0.25) -- (7.7, 4.3) arc (360:180:0.7 and 0.25);
+\path[linktop=gray!30] (7, 5.5) ellipse (0.7 and 0.25);
+\path[linktop=gray!60] (7, 5.5) ellipse (0.2 and 0.08);
+
+% --- JOINT AXES OVER THE JOINTS ---
+\draw[dashedline] (2.32, 0.72) -- (7, 1.5);
+\draw[dashedline] (7, 1.5) -- (7, 8);
+\draw[dashedline] (7, 8) -- (14, 10.73);
+\draw[dashedline] (11.75, 9.85) -- (11.25, 11.85);
+\draw[dashedline] (11.75, 9.85) -- (12.56, 6.71) -- (13.25, 3.96);
+\draw[dashedline] (11.75, 9.85) -- (11.75, 11.5);
+\draw[dashedline] ($(O0) + (21.31:1.035)$) -- ++(21.31:5.685);
+
+% Right-angle markers for the a_{i-1} construction line
+\draw[black, line width=1pt]
+    ($(O0) + (21.31:0.35)$) -- ($(O0) + (21.31:0.35) + (0,0.35)$)
+    -- ($(O0) + (0,0.35)$);
+\draw[black, line width=1pt]
+    ($(13.25,3.96) + (201.31:0.35)$)
+    -- ($(13.25,3.96) + (201.31:0.35) + (104.04:0.35)$)
+    -- ($(13.25,3.96) + (104.04:0.35)$);
+
+% --- TOP MIDDLE FRAME (Intersection P) ---
+\coordinate (P) at (7, 8);
+\draw[ax=myred] (P) -- ++(21.31:2.2);
+\draw[ax=mygreenax] (P) -- ++(111.31:1.4);
+\draw[ax=myblue] (P) -- ++(0, 1.5);
+
+% --- O_i FRAME ---
+\coordinate (O1) at (11.75, 9.85);
+\draw[ax=myred] (O1) -- ++(36.31:2.5) node[right, black] {\Large $\mathbf{X_{i}}$};
+\draw[ax=mygreenax] (O1) -- ++(140:1.4) node[above left, black] {\Large $\mathbf{Y_{i}}$};
+\draw[ax=myblue] (O1) -- ++(-0.5, 2.0) node[above, black] {\Large $\mathbf{Z_{i}}$};
+\node[below=16pt, right=4pt, black] at (O1) {\Large $\mathbf{O_{i}}$};
+
+% --- DH PARAMETERS (Red Annotations) ---
+% theta_i
+\draw[->, black, line width=1.4pt] ($(O1) + (21.31:1.9)$)
+    arc[start angle=21.31, end angle=36.31, radius=1.9]
+    node[midway, below=25pt, right=0pt, yshift=-20pt, text=myred] {\Large $\mathbf{\theta_{i-1}}$};
+    
+% d_{i-1}
+\draw[decorate, decoration={brace, amplitude=8pt, mirror, aspect=0.75}, line width=1.2pt]
+    (13.25, 3.96) -- (11.75, 9.85)
+    node[pos=0.75, below=-4pt, right=7pt, text=myred] {\Large $\mathbf{d_{i-1}}$};
+a
+% a_{i-1}
+\draw[decorate, decoration={brace, amplitude=8pt, mirror}, line width=1.2pt]
+    (7, 1.5) -- (13.25, 3.96)
+    node[midway, below=25pt, right=-8pt, yshift=-20pt, text=myred] {\Large $\mathbf{a_{i-1}}$};
+
+% alpha_i
+\node[text=myred] at (12.1, 11.6) {\Large $\mathbf{\alpha_{i-1}}$};
+
+% --- TEXT LABELS & POINTERS ---
+% Joint_{i-1}
+\coordinate (J1Label) at ($(2, 2.65) + (99.46:3.85)$);
+\coordinate (J1AxisBottom) at (2.32, 0.72);
+\node[font=\ttfamily\bfseries\Large] (J1) at (J1Label) {Joint$_{i-2}$};
+\draw[dashedline] (J1) -- (J1AxisBottom);
+
+% Joint_i
+\node[font=\ttfamily\bfseries\Large] (J2) at (7, 9.8) {Joint$_{i-1}$};
+
+% Joint_{i}
+\node[font=\ttfamily\bfseries\Large] (J3) at (13.2,3.2) {Joint$_{i}$};
+
+% Link_{i-2}
+\node[font=\ttfamily\bfseries\Large, rotate=11] at (4.5, 4.) {Link$_{i-2}$};
+
+% Link_{i-1}
+\node[font=\ttfamily\bfseries\Large, rotate=7] at (10.2, 5.9) {Link$_{i-1}$};
+
+% Link_i
+\node[font=\ttfamily\bfseries\Large, rotate=14] at (14.15, 8.2) {Link$_i$};
+
+\end{tikzpicture}
+% \end{document}

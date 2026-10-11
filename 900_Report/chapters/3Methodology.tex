@@ -1,6 +1,6 @@
 \todoZ{3.1: Cover SO(3) parameterizations with quaternions, MRPs, and axis-angle representations}
 \todoZ{3.1: Detail conversions, singularities, and representation choices for optimization versus sampling}
-\todoX{3.1: Define the Modified (Craig) Denavit-Hartenberg convention for the 7-DOF manipulator}
+\todoZ{3.1: Define the Modified (Craig) Denavit-Hartenberg convention for the 7-DOF manipulator}
 \todoX{3.2: Formulate spacecraft attitude dynamics on SO(3)}
 \todoX{3.2: Formulate 7-DOF robotic manipulator dynamics}
 \todoX{3.2: Define state, input, and kinodynamic constraint envelopes for both systems}
@@ -65,8 +65,8 @@ An example of the relative orientation of the inertial and body frames is shown 
 \begin{figure}[htbp]
 	\centering
 	\input{tikz/DCM-2D}
-	\caption{Inertial frame $\{\hat{\mathbf{I}}_x, \hat{\mathbf{I}}_y, \hat{\mathbf{I}}_z\}$ and body frame $\{\hat{\mathbf{B}}_x, \hat{\mathbf{B}}_y, \hat{\mathbf{B}}_z\}$ rotated by angle $\theta$ about the common $z$-axis.}
-	\label{fig:dcm-2d}
+	\caption{Rotation of the body frame $\{\hat{\mathbf{B}}_x, \hat{\mathbf{B}}_y, \hat{\mathbf{B}}_z\}$ by angle $\alpha$ about the $z$-axis to the inertial frame $\{\hat{\mathbf{I}}_x, \hat{\mathbf{I}}_y, \hat{\mathbf{I}}_z\}$.}
+    \label{fig:dcm-2d}
 \end{figure}
 
 Rotation matrices are the core mathematical representation used in this work to perform coordinate transformations of vectors, points, and coordinate frames. 
@@ -197,9 +197,11 @@ A homogeneous transformation matrix \(\mathbf{T}_{\text{ib}}\) can be expressed 
         \mathbf{R}_{\text{ib}} & {}^{\text{i}}\mathbf{x}_{\text{b}} \\
         \mathbf{0}^\mathsf{T}_{1 \times 3} & 1
     \end{bmatrix} \in \SE{3},
+    \label{eq:homogeneous-transformation-matrix}
 \end{equation}
-where \(\mathbf{R}_{\text{ib}} \in \SO{3}\) and \(\mathbf{p} \in \mathbb{R}^3\) is the position of the body frame origin relative to the inertial frame's origin, expressed in the inertial frame.
+where \(\mathbf{R}_{\text{ib}} \in \SO{3}\) and \({}^{\text{i}}\mathbf{x}_{\text{b}} \in \mathbb{R}^3\) is the position of the body frame origin relative to the inertial frame's origin, expressed in the inertial frame.
 The homogeneous transformation matrix \(\mathbf{T}_{\text{ib}}\) thus defines the \emph{special Euclidean group} \(\SE{3}\), which encompasses all possible rigid body transformations in three-dimensional space.
+Like rotation matrices, homogeneous transformation matrices may be multiplied from right to left to compose multiple transformations, allowing the transformation from one frame to another through intermediate frames.
 
 The homogeneous transformation, along with the \ac{DH} parameters, provides a systematic way to describe the kinematics of robotic manipulators and the various transformations between different coordinate frames.
 
@@ -364,7 +366,7 @@ Conversion between \ac{MRPs} and quaternions or rotation matrices occur via:
 \label{eq:MRP2quat}
 \end{equation}
 \begin{equation}
-    R_{bi}(\mathbf{p}) = 
+    \mathbf{R}_{bi}(\mathbf{p}) = 
     I_{3 \times 3} - \frac{4(1 - p^2)}{(1 + p^2)^2}[\mathbf{p}]_\times + \frac{8}{(1 + p^2)^2}[\mathbf{p}]_\times^2
 \label{eq:MRP2rot}
 \end{equation}
@@ -383,6 +385,57 @@ Naturally, \ac{MRPs} come with their own set of tradeoffs:
     \item Singular or Discontinuous: Avoiding singularities involves switching to the shadow set for rotations greater than $\pi$, which can introduce discontinuities; without the shadow set, the representation is smooth but contains singularities.
     \item Spatial Warping: Due to \ac{MRPs} being a \emph{stereographic projection} of a \ac{4-D} hypersphere onto a \ac{3-D} hyperplane, straight paths in the MRP space  \emph{generally} do not correspond geodesics (great circles) on \ac{SO3}; a straight line trajectory only yields a true geodesic if the trajectory passes through the origin ($\mathbf{p}=\mathbf{0}$) and typically requires the use of relative rotations between coordinate frames to help align maneuvers with the origin. The distortion induces a change in the loss landscape, which affects optimization and control strategies.
 \end{itemize}
+
+\subsubsection{Manipulator Kinematics}
+\label{sec:manipulator-kinematics}
+To describe the kinematics of the 7-\ac{DOF} robotic arm, the \ac{MDH} parameter convention is employed to relate consecutive link coordinate frames and systematically generate homogeneous transformation matrices in \cref{eq:homogeneous-transformation-matrix}. 
+The \ac{MDH} convention was introduced by John J. Craig \cite{Craig05}, and is a slight reformation of the standard \ac{DH} convention, where the coordinate frames are attached differently to the links, primarily in how the parameters are defined relative to the link origins.
+\ac{MDH} uses four parameters to describe the 6-\ac{DOF} pose between link frames.
+
+\begin{figure}[htbp]
+    \centering
+    \input{tikz/MDH_Diagram}
+    \caption{Modified Denavit--Hartenberg (MDH) parameters for consecutive link frames.}
+    \label{fig:MDH-diagram}
+\end{figure}
+
+\paragraph{Modified Denavit--Hartenberg Parameters}
+\label{par:modified-dh}
+Unlike the standard \ac{DH} convention which attaches frame $i$ to the end-effector side--where link $i$ connects to link $i+1$--the modified convention attaches frame $i$ to the base side--where link $i$ connects to link $i-1$--as shown in \cref{fig:MDH-diagram}.
+The mapping of frame $i$ to frame $i-1$ is characterized by four geometric parameters \cite{Craig05}:
+\begin{itemize}
+    \item[$\bullet$] $\alpha_{i-1}$: \textbf{Link twist}, the angle from $\hat{\mathbf{Z}}_{i-1}$ to $\hat{\mathbf{Z}}_i$ about the $\hat{\mathbf{X}}_{i-1}$ axis.
+    \item[$\bullet$] $a_{i-1}$: \textbf{Link length}, the distance from $\hat{\mathbf{Z}}_{i-1}$ to $\hat{\mathbf{Z}}_i$ along the $\hat{\mathbf{X}}_{i-1}$ axis.
+    \item[$\bullet$] $\theta_{i-1}$: \textbf{Joint angle}, the angle from $\hat{\mathbf{X}}_{i-1}$ to $\hat{\mathbf{X}}_i$ about the $\hat{\mathbf{Z}}_i$ axis.
+    \item[$\bullet$] $d_{i-1}$: \textbf{Link offset}, the distance from $\hat{\mathbf{X}}_{i-1}$ to $\hat{\mathbf{X}}_i$ along the $\hat{\mathbf{Z}}_i$ axis.
+\end{itemize}
+
+For a revolute joint, $\theta_{i-1}$ is the variable \ac{DOF}, while $a_{i-1}$, $\alpha_{i-1}$, and $d_{i-1}$ are constants unique to the link geometry. 
+The homogeneous transformation matrix $\mathbf{T}_{i,i-1} \in \SE{3}$ connecting to frame $i$ from frame $i-1$ is constructed from the transformation sequence: $\alpha_{i-1}$, $a_{i-1}$, $\theta_{i-1}$, and $d_{i-1}$. 
+Multiplying these sequential transformations yields the homogeneous transformation matrix:
+
+\begin{equation}
+    \mathbf{T}_{i,i-1}(\theta_{i-1}) = 
+    \begin{bmatrix} 
+        cos\theta_{i-1} & -sin\theta_{i-1} & 0 & a_{i-1} \\ 
+        sin\theta_{i-1}cos\alpha_{i-1} & cos\theta_{i-1}cos\alpha_{i-1} & -sin\alpha_{i-1} & -sin\alpha_{i-1}d_{i-1} \\ 
+        sin\theta_{i-1}sin\alpha_{i-1} & cos\theta_{i-1}sin\alpha_{i-1} & cos\alpha_{i-1} & cos\alpha_{i-1}d_{i-1} \\ 
+        0 & 0 & 0 & 1 
+    \end{bmatrix}
+\label{eq:modified-dh-matrix}
+\end{equation}
+
+By defining these four parameters for each of the seven joints of the manipulator, the forward kinematics may be computed. 
+As described in \cref{par:homogeneous-transformation}, homogeneous transformation matrices can be multiplied to represent successive coordinate changes. 
+In this manner, the pose of the end-effector (frame 7) relative to the manipulator base (frame 0) is obtained by chaining successive transformations:
+
+\begin{equation}
+    \mathbf{T}_{0, 7} = \prod_{i=1}^{7} \mathbf{T}_{i-1, i} = \mathbf{T}_{0, 1} \mathbf{T}_{1, 2} \cdots \mathbf{T}_{6, 7}
+\label{eq:forward-kinematics-chain}
+\end{equation}
+
+This transformation matrix $\mathbf{T}_{0, 7} \in \SE{3}$ yields the complete 6-D pose of the end-effector. 
+Within the scope of this work, generating these transformation matrices forms the foundation of the manipulator's kinematic model.
 
 \subsection{Dynamic Systems \& Constraints}
 \label{sec:methodology-dynamics}
