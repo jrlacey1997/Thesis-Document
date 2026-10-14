@@ -23,7 +23,7 @@ Further details on how to use the templates are given below and in the templates
 * Get [TeXstudio](http://www.texstudio.org/).
 * Make sure the following settings are correct:
 	* Go to Options / Configure TeXstudio.
-	* In the Build section make sure that PdfLaTeX is chosen as the default compiler and Biber as the default bibliography tool.
+    * In the Build section make sure that PdfLaTeX is chosen as the default compiler and Biber as the default bibliography tool. SyncTeX is enabled in the document entry points, so PDF source linking remains available even when PdfLaTeX is run directly.
 	* Click 'Compile & View' or F5 to create the document.
 
 

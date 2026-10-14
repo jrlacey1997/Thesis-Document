@@ -121,10 +121,12 @@ slprj
 *.bib$
 _*.pdf
 *.pdf
+!900_Report/_thesis.pdf
 *.tps
 *.dpth
 *.run.xml
 *.fls
+.vscode/*
 
 # tikzedt stuff
 *.preview.*
