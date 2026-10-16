@@ -5,8 +5,8 @@
 \todoZ{3.2: Formulate 7-DOF robotic manipulator dynamics}
 \todoZ{3.2: Define state, input, and kinodynamic constraint envelopes for both systems}
 \todoZ{3.2: Specify actuator, joint, angular-velocity, and angular-acceleration limits}
-\todoX{3.3: Formalize the continuous-time optimal control problem}
-\todoX{3.3: Transcribe the OCP into a discrete nonlinear program}
+\todoZ{3.3: Formalize the continuous-time optimal control problem}
+\todoZ{3.3: Transcribe the OCP into a discrete nonlinear program}
 \todoZ{3.3: Detail B-spline parameterization of state and control trajectories}
 \todoZ{3.3: Describe the IPOPT interface, discretization, and constraint handling}
 \todoZ{3.4: Present MC-GBO, RRT*-GBO, P-HO, and IPSO consistently}
@@ -16,18 +16,15 @@
 \todoX{3.5: Locally densify time-grid nodes to enforce feasibility}
 \todoX{3.6: Prove and analytically verify the unconstrained SO(3) maneuver baseline}
 
-\section{Methodology}
+\chapter{Methodology}
 \label{sec:methodology}
 
-This chapter is to be completed according to the following checklist.
+\todoX{Write a short intro to this section}
 
-\subsection{Mathematical Foundations \& Representations}
+\section{Mathematical Foundations \& Representations}
 \label{sec:methodology-foundations}
-\begin{itemize}
-	\item[$\square$] \textbf{Manipulator kinematics:} Define the Modified (Craig) Denavit--Hartenberg (DH) parameter convention used for the 7-DOF manipulator.
-\end{itemize}
 
-\subsubsection{Attitude Representations}
+\subsection{Attitude Representations}
 \label{sec:attitude-representations}
 The attitude of a rigid body in \ac{3-D} space can be represented using a myriad of parameterizations, each with its own advantages and limitations. 
 Common representations include rotation matrices, quaternions, \ac{MRPs}, Euler angles, and axis--angle representations.
@@ -40,7 +37,7 @@ Euler angles are also a minimal representation with very intuitive geometric int
 Finally, axis--angle representations describe rotations using a rotation axis and an angle about that axis. 
 They provide a clear geometric interpretation and are minimal, but they become singular at zero rotation whereby the axis-of-rotation becomes ill-defined.
 
-\paragraph{Coordinate Systems}
+\subsubsection{Coordinate Systems}
 \label{par:coordinate-systems}
 To describe the attitude of a rigid body, it is first essential to describe the coordinate systems involved. Throughout this description, we consider two coordinate systems:
 \begin{itemize}
@@ -53,7 +50,7 @@ Vectors are expressed with respect to a specific coordinate system, with the pre
 
 While in principle, the inertial frame is fixed in space, in practice a convenient approximation is to consider merely a very slowly moving frame, such as one attached to the Earth or center of the Solar system.
 
-\paragraph{Rotation Matrices}
+\subsubsection{Rotation Matrices}
 \label{par:rotation-matrices}
 A rotation matrix--also known as a \ac{DCM} \cite{Schuster93}--is a matrix which, when multiplied with a vector expressed in one coordinate frame, transforms it into another coordinate frame. 
 Alternatively, it can be seen as an operator that rotates a vector while preserving its length \cite{Diebel06}.
@@ -186,7 +183,7 @@ We conclude with a brief discussion of the drawbacks and benefits of using rotat
     \item Interpolation: Interpolating between rotation matrices is not straightforward and often requires conversion to other representations like quaternions for smooth interpolation.
 \end{itemize}
 
-\paragraph{Homogeneous Transformation Matrices}
+\subsubsection{Homogeneous Transformation Matrices}
 \label{par:homogeneous-transformation}
 A common extension of the rotation matrix representation is the homogeneous transformation matrix \cite{Diebel06}, often used in robotics, 
 which incorporates both rotation and translation components as described in \cref{eq:point-transformation-simplified}. 
@@ -205,7 +202,7 @@ Like rotation matrices, homogeneous transformation matrices may be multiplied fr
 
 The homogeneous transformation, along with the \ac{DH} parameters, provides a systematic way to describe the kinematics of robotic manipulators and the various transformations between different coordinate frames.
 
-\paragraph{Quaternions}
+\subsubsection{Quaternions}
 \label{par:quaternions}
 Quaternions, specifically \emph{unit} quaternions are an efficient representation of rotations very commonly used in aerospace and robotics.
 They form the backbone of this work as it applies to optimization problems on \ac{SO3}. 
@@ -334,7 +331,7 @@ Like rotation matrices, quaternions have their own set of pros and cons:
     \item Geometrically Confusing: Being four-dimensional hyperspheres, quaternions are not easily conceptualized in comparison to other attitude representations.
 \end{itemize}
 
-\paragraph{\ac{MRPs}}
+\subsubsection{\ac{MRPs}}
 \label{par:mrps}
 
 \ac{MRPs} represent the final attitude representation discussed in this work, offering a three-parameter minimal parameterization of rotations derived as stereographic projections of the unit quaternion hypersphere onto a \ac{3-D} hyperplane \cite{Schuster93}.
@@ -386,7 +383,7 @@ Naturally, \ac{MRPs} come with their own set of tradeoffs:
     \item Spatial Warping: Due to \ac{MRPs} being a \emph{stereographic projection} of a \ac{4-D} hypersphere onto a \ac{3-D} hyperplane, straight paths in the MRP space  \emph{generally} do not correspond geodesics (great circles) on \ac{SO3}; a straight line trajectory only yields a true geodesic if the trajectory passes through the origin ($\mathbf{p}=\mathbf{0}$) and typically requires the use of relative rotations between coordinate frames to help align maneuvers with the origin. The distortion induces a change in the loss landscape, which affects optimization and control strategies.
 \end{itemize}
 
-\subsubsection{Manipulator Kinematics}
+\subsection{Manipulator Kinematics}
 \label{sec:manipulator-kinematics}
 To describe the kinematics of the 7-\ac{DOF} robotic arm, the \ac{MDH} parameter convention is employed to relate consecutive link coordinate frames and systematically generate homogeneous transformation matrices in \cref{eq:homogeneous-transformation-matrix}. 
 The \ac{MDH} convention was introduced by John J. Craig \cite{Craig05}, and is a slight reformation of the standard \ac{DH} convention, where the coordinate frames are attached differently to the links, primarily in how the parameters are defined relative to the link origins.
@@ -399,7 +396,7 @@ The \ac{MDH} convention was introduced by John J. Craig \cite{Craig05}, and is a
     \label{fig:MDH-diagram}
 \end{figure}
 
-\paragraph{Modified Denavit--Hartenberg Parameters}
+\subsubsection{Modified Denavit--Hartenberg Parameters}
 \label{par:modified-dh}
 Unlike the standard \ac{DH} convention which attaches frame $i$ to the end-effector side--where link $i$ connects to link $i+1$--the modified convention attaches frame $i$ to the base side--where link $i$ connects to link $i-1$--as shown in \cref{fig:MDH-diagram}.
 The mapping of frame $i$ to frame $i-1$ is characterized by four geometric parameters \cite{Craig05}:
@@ -437,7 +434,7 @@ In this manner, the pose of the end-effector (frame 7) relative to the manipulat
 This transformation matrix $\mathbf{T}_{0, 7} \in \SE{3}$ yields the complete 6-D pose of the end-effector. 
 Within the scope of this work, generating these transformation matrices forms the foundation of the manipulator's kinematic model.
 
-\subsection{B-Splines}
+\section{B-Splines}
 \label{sec:methodology-bsplines}
 
 To transcribe the continuous-time \ac{OCP} into a discretized time, finite-dimensional \ac{NLPn} solvable by algorithms such as \ac{IPOPT}, the state and control trajectories are parameterized using B-splines.
@@ -467,13 +464,13 @@ The basis functions $N_{i,p}(s)$ are computed recursively over a knot vector $\m
 \end{equation}
 In this formulation, $0/0 \equiv 0$ explicitly to handle identical sequential knots.
 
-\paragraph{Knot Vector and Clamping}
+\subsubsection{Knot Vector and Clamping}
 This work employs \emph{clamped, uniform} knot vectors. 
 A clamped knot vector duplicates the first and last knots $p+1$ times which forces the curve to exactly start and end at the first and last control vertices: $\mathbf{x}(0) = \mathbf{c}_0$ and $\mathbf{x}(1) = \mathbf{c}_{n-1}$. 
 The clamped structure ensures the trajectory deterministically obeys the boundary conditions of the \ac{NLPn}--such as the initial and final orientation of a spacecraft slew, or the terminal intercept position of a robotic manipulator--through the corresponding boundary control vertices.
 The uniform property means the internal knots are uniformly distributed--with equal knot spans between consecutive knots--simplifying the evaluation time grid.
 
-\paragraph{Properties Critical for Trajectory Optimization}
+\subsubsection{Properties Critical for Trajectory Optimization}
 The B-spline parameterization provides three mathematical properties essential for formulating kinodynamic optimization problems:
 \begin{itemize}
 \item \textbf{Convex Hull Property:} A B-spline curve is strictly contained within the convex hull of the control vertices defining any given segment--i.e. the values of the trajectory are bounded by the values of the influencing control vertices. 
@@ -502,7 +499,19 @@ where the velocity control vertices are defined as:
 All higher-order derivatives (acceleration, jerk, etc.) follow the same pattern, eliminating the need for finite-difference approximations or numerical integration when evaluating the forward and inverse dynamics of the spacecraft and robotic manipulator models.
 \end{itemize}
 
-\paragraph{B-Spline Trajectory Time Scaling}
+% insert 1d_bspline.png here
+\begin{figure}[htbp]
+    \centering
+    \includegraphics[width=\textwidth]{images/1d_bspline.png}    
+    \caption{1-D cubic B-spline trajectory demonstrating the local support property and control vertex influence at an example point $t = 0.55\,\text{s}$. 
+    The active knot span $[t_7, t_8] = [0.50, 0.62]\,\text{s}$ dictates that the curve value is determined by control vertices $\mathbf{c}_4$ through $\mathbf{c}_7$, with basis weights $N_{i,3}$ corresponding to active basis functions.
+    Basis weights vary depending on the value of the basis functions for the evaluated point $t$, respective only to its location within the active knot span. 
+    Clamping the knot vector ($\{t_0, \dots, t_3\}$ and $\{t_{11}, \dots, t_{14}\}$) anchors the curve endpoints to $\mathbf{c}_0$ and $\mathbf{c}_{10}$, while repeating the initial and final three control vertex values enforces zero derivatives up to second order ($\dot{\mathbf{q}} = \mathbf{0}, \ddot{\mathbf{q}} = \mathbf{0}$) at the boundaries. 
+    The grey shaded region indicates local convex hull bounds $[5, 10]$.}
+    \label{fig:1d_bspline_diagram}
+\end{figure}
+
+\subsubsection{B-Spline Trajectory Time Scaling}
 The normalized spline parameter $s \in [0, 1]$ maps to physical time $t \in [t_0, t_f]$ via $s(t) = \frac{t - t_0}{T}$, where $T = t_f - t_0$ represents the total trajectory duration. 
 The physical trajectory $\mathbf{x}(t)$ is evaluated from the normalized parameterization as:
 \begin{equation}
@@ -518,7 +527,7 @@ Applying the chain rule yields the physical time derivatives required for evalua
 Consequently, the physical velocity $\dot{\mathbf{x}}(t)$ and acceleration $\ddot{\mathbf{x}}(t)$ are given by scaling the parameter derivatives by $\frac{1}{T^k}$. 
 If $T$ is optimized as a decision variable in a free-final-time \ac{OCP}, this scaling directly influences the path constraints and required control torques.
 
-\subsection{Physical Models, Kinematics, Dynamics, \& Constraints}
+\section{Physical Models, Kinematics, Dynamics, \& Constraints}
 \label{sec:methodology-dynamics}
 
 This thesis establishes two physical models:
@@ -532,15 +541,16 @@ Consequently, higher-order dynamic effects—including structural flexibility, f
 
 Our implementation uses a direct B-spline inverse-dynamic trajectory parameterization for both models, 
 whereby the continuous-time state trajectories are evaluated at discrete sampling times for enforcing control and kinodynamic constraints, 
-eliminating the need for numerical integration of the equations of motion.
+eliminating the need for numerical integration of the \ac{EOM}.
 
 This section introduces both kindodynamic plant models and their associated constraints.
 
-\subsubsection{Spacecraft Model}
+\subsection{Spacecraft Model}
+\label{sec:methodology_dynamics_spacecraft_model}
 The spacecraft model describes pure rotational motion--existing on \ac{SO3}--ignoring any translational motion--which would be encompassed by \ac{SE3}.
 The optimization parameters are purely the B-spline control vertices for the quaternion trajectory, $\mathbf{q}$,with all other kinematic and dynamic quantities derived from the quaternions and their derivatives.
 
-\paragraph{Quaternion Trajectories and Their Derivatives}
+\subsubsection{Quaternion Trajectories and Their Derivatives}
 If the quaternion control vertex matrix is $\mathbf{P} \in \mathbb{R}^{4 \times n_{ctrl}}$ and the B-spline basis matrix is $\boldsymbol{\phi} \in \mathbb{R}^{n_{ctrl} \times 1}$:
 \begin{equation}
 \mathbf{q} = \mathbf{P} \boldsymbol{\phi} \in \mathbb{R}^{4 \times 1},
@@ -589,7 +599,7 @@ $n_{ctrl}$ is the number of control vertices--equivalently the number of element
 
 \todoX{maybe include the EOMs for the MRP formulation???}
 
-\paragraph{Equations of Motion}
+\subsubsection{Equations of Motion (EOM)}
 The state vector of the spacecraft is defined as $\mathbf{x} = [\mathbf{q}^\top, \boldsymbol{\omega}^\top]^\top$, 
 where $\mathbf{q} \in S^3 \subset \mathbb{H}$ represents the attitude quaternion and $\boldsymbol{\omega} \in \mathbb{R}^3$ is the angular velocity vector.
 The rotational dynamics of the spacecraft are governed by Euler's equation:
@@ -669,7 +679,227 @@ For the interior of the \ac{OCP}, where the optimizer has freedom to optimize in
 While at the initial and final boundaries, where the quaternion and its derivatives are constrained by equality constraints, the exterior control vertices $\mathbf{c}_{ext}$ are determined by:
 \boxed{ \mathbf{q}, \boldsymbol{\omega}, \dot{\boldsymbol{\omega}}, \ddot{\boldsymbol{\omega}} \longrightarrow \dot{\mathbf{q}}, \ddot{\mathbf{q}}, \dddot{\mathbf{q}} \longrightarrow \mathbf{c}_{ext}}.
 
-\paragraph{State and Control Vertex Bounds}
+\subsubsection{Exterior Control Vertex Calculation}
+
+As stated in the previous section, the exterior control vertices are determined by the boundary conditions on the quaternion trajectory and its derivatives. 
+This section details the procedure for analytically and deterministically calculating the outermost control vertices of the B-spline trajectory. 
+This reduces both the number of optimization variables and the computational complexity of the OCP as boundary condition kinematics are directly solved rather than passed to the optimizer to be enforced via equality constraints.
+
+The quaternion B-spline control-vertex matrix is partitioned into the
+boundary and interior control vertices:
+\begin{equation}
+    \mathbf{P}
+    =
+    \begin{bmatrix}
+        \mathbf{P}_0 &
+        \mathbf{P}_{\mathrm{int}} &
+        \mathbf{P}_f
+    \end{bmatrix}
+    \in
+    \mathbb{R}^{4 \times n_{ctrl}},
+\end{equation}
+where $\mathbf{P}_0$ contains the first $n_{\mathrm{BC}}$ control
+vertices, $\mathbf{P}_f$ contains the last $n_{\mathrm{BC}}$ control
+vertices, and $\mathbf{P}_{\mathrm{int}}$ contains the interior free
+control vertices.
+
+Consequently,
+\begin{equation}
+    n_{ctrl}
+    =
+    n_{\mathrm{FCV}}+2n_{\mathrm{BC}},
+\end{equation}
+where $n_{\mathrm{FCV}}$ is the number of free control vertices. After
+the exterior vertices are determined from the boundary conditions, only
+$\mathbf{P}_{\mathrm{int}}$ is treated as an optimization variable.
+
+Let $\boldsymbol{\varphi}^{(r)}(t)$ denote the $r$th derivative of the
+B-spline basis vector at time $t$. The boundary basis matrices are formed
+from the active control-vertex entries at the initial and final times:
+\begin{equation}
+    \mathbf{B}_0
+    =
+    \begin{bmatrix}
+        \boldsymbol{\varphi}^{(0)}_0 &
+        \boldsymbol{\varphi}^{(1)}_0 &
+        \boldsymbol{\varphi}^{(2)}_0
+    \end{bmatrix}
+    \in
+    \mathbb{R}^{n_{\mathrm{BC}}\times n_{\mathrm{BC}}},
+\end{equation}
+\begin{equation}
+    \mathbf{B}_f
+    =
+    \begin{bmatrix}
+        \boldsymbol{\varphi}^{(0)}_f &
+        \boldsymbol{\varphi}^{(1)}_f &
+        \boldsymbol{\varphi}^{(2)}_f
+    \end{bmatrix}
+    \in
+    \mathbb{R}^{n_{\mathrm{BC}}\times n_{\mathrm{BC}}},
+\end{equation}
+where
+\begin{equation}
+    \boldsymbol{\varphi}^{(r)}_0
+    =
+    \boldsymbol{\varphi}^{(r)}(t_0)
+\end{equation}
+contains the first $n_{\mathrm{BC}}$ entries, and
+\begin{equation}
+    \boldsymbol{\varphi}^{(r)}_f
+    =
+    \boldsymbol{\varphi}^{(r)}(t_f)
+\end{equation}
+contains the last $n_{\mathrm{BC}}$ entries.
+
+For the default case, $n_{\mathrm{BC}}=3$, the prescribed boundary
+conditions are quaternion position, quaternion rate, and quaternion
+acceleration:
+\begin{equation}
+    \mathbf{Y}_0
+    =
+    \begin{bmatrix}
+        \mathbf{q}_0 &
+        \dot{\mathbf{q}}_0 &
+        \ddot{\mathbf{q}}_0
+    \end{bmatrix}
+    \in
+    \mathbb{R}^{4\times 3},
+\end{equation}
+\begin{equation}
+    \mathbf{Y}_f
+    =
+    \begin{bmatrix}
+        \mathbf{q}_f &
+        \dot{\mathbf{q}}_f &
+        \ddot{\mathbf{q}}_f
+    \end{bmatrix}
+    \in
+    \mathbb{R}^{4\times 3}.
+\end{equation}
+
+Using
+\begin{equation}
+    \mathbf{q}^{(r)}(t)
+    =
+    \mathbf{P}\boldsymbol{\varphi}^{(r)}(t),
+\end{equation}
+the boundary conditions can be written as
+\begin{equation}
+    \mathbf{P}_0\mathbf{B}_0
+    =
+    \mathbf{Y}_0,
+    \qquad
+    \mathbf{P}_f\mathbf{B}_f
+    =
+    \mathbf{Y}_f.
+\end{equation}
+
+The exterior control vertices are therefore obtained analytically as
+\begin{equation}
+    \mathbf{P}_0
+    =
+    \mathbf{Y}_0\mathbf{B}_0^{-1},
+    \qquad
+    \mathbf{P}_f
+    =
+    \mathbf{Y}_f\mathbf{B}_f^{-1}.
+    \label{eq:solveP_from_YB}
+\end{equation}
+
+\begin{quote} 
+    \textit{Invertibility note.} For a clamped B-spline, the zeroth-order basis function at $t=0$ depends only on the first control vertex.
+    The first derivative introduces the second control vertex, the second derivative introduces the third control vertex, and so on. 
+    Therefore, for $N_{\mathrm{BC}}=3$, 
+    \begin{equation} 
+        \mathbf{B}_0 = 
+        \begin{bmatrix}
+            \boldsymbol{\varphi}^{(0)}_0 & \boldsymbol{\varphi}^{(1)}_0 &
+            \boldsymbol{\varphi}^{(2)}_0 
+        \end{bmatrix} 
+    \end{equation} 
+    has an upper-triangular structure 
+    \begin{equation} 
+        \mathbf{B}_0 \sim 
+        \begin{bmatrix} 
+            \star & \star & \star \\ 
+            0 & \star & \star \\ 
+            0 & 0 & \star 
+        \end{bmatrix}. 
+    \end{equation}
+
+    The final endpoint matrix has an analogous lower-triangular structure:
+    \begin{equation} 
+        \mathbf{B}_f \sim 
+        \begin{bmatrix} 
+            \star & 0 & 0 \\ 
+            \star & \star & 0 \\ 
+            \star & \star & \star 
+        \end{bmatrix}. 
+    \end{equation}
+    The diagonal entries are nonzero if 
+    \begin{equation} 
+        \text{degree} \geq N_{\mathrm{BC}}-1, 
+    \end{equation} 
+    Hence, 
+    \begin{equation} 
+        \det(\mathbf{B}_0)\neq 0, \qquad
+        \det(\mathbf{B}_f)\neq 0, 
+    \end{equation} 
+    guaranteeing that $\mathbf{B}_0$ and $\mathbf{B}_f$ are invertible and \cref{eq:solveP_from_YB} exists and is unique.
+\end{quote}
+
+The quaternion derivatives appearing in $\mathbf{Y}_0$ and $\mathbf{Y}_f$ are obtained from the angular quantities using \cref{eq:q_dot_from_omega}--\cref{eq:q_dddot_from_omega}. 
+
+If $n_{\mathrm{BC}}=4$, jerk is also imposed at both boundaries. In that
+case,
+\begin{equation}
+    \mathbf{Y}_0
+    =
+    \begin{bmatrix}
+        \mathbf{q}_0 &
+        \dot{\mathbf{q}}_0 &
+        \ddot{\mathbf{q}}_0 &
+        \dddot{\mathbf{q}}_0
+    \end{bmatrix},
+\end{equation}
+\begin{equation}
+    \mathbf{Y}_f
+    =
+    \begin{bmatrix}
+        \mathbf{q}_f &
+        \dot{\mathbf{q}}_f &
+        \ddot{\mathbf{q}}_f &
+        \dddot{\mathbf{q}}_f
+    \end{bmatrix},
+\end{equation}
+and the boundary matrices become
+\begin{equation}
+    \mathbf{B}_0
+    =
+    \begin{bmatrix}
+        \boldsymbol{\varphi}^{(0)}_0 &
+        \boldsymbol{\varphi}^{(1)}_0 &
+        \boldsymbol{\varphi}^{(2)}_0 &
+        \boldsymbol{\varphi}^{(3)}_0
+    \end{bmatrix},
+\end{equation}
+\begin{equation}
+    \mathbf{B}_f
+    =
+    \begin{bmatrix}
+        \boldsymbol{\varphi}^{(0)}_f &
+        \boldsymbol{\varphi}^{(1)}_f &
+        \boldsymbol{\varphi}^{(2)}_f &
+        \boldsymbol{\varphi}^{(3)}_f
+    \end{bmatrix}.
+\end{equation}
+
+Therefore, the exterior control vertices are fixed deterministically from
+the boundary conditions, while the optimizer searches only over
+$\mathbf{P}_{\mathrm{int}}$.
+
+\subsubsection{State and Control Vertex Bounds}
 A helpful property of parameterizing \ac{SO3} via unit quaternions $\mathbf{q} \in S^3 \subset \mathbb{R}^4$ is that $S^3$ is a compact manifold, meaning its search space in the Euclidean $\mathbb{R}^4$ is both bounded and closed.
 \begin{dfn}[Bounded]
     A set $\mathcal{S} \subset \mathbb{R}^n$ of a Euclidean space is said to be \emph{bounded} if there exists a finite upper bound $M > 0$ on the magnitude of all its vectors: $\vert \mathbf{x} \vert_2 \leq M, \forall \mathbf{x} \in \mathcal{S}$.
@@ -689,7 +919,7 @@ On $S^3$, all quaternion elements $q_i$ belong to the compact set $[-1,1] / \lVe
 While individual B-spline control vertices $\mathbf{P}$ parameterizing $\mathbf{q}$ may extend beyond $[-1,1]^4$, the unit norm enforcement at each via point keeps the control vertex polygon tightly constrained near the unit quaternion bounds.
 This allows us to easily condition the search space of the optimizer. 
 
-\paragraph{Kinodynamic Constraints}
+\subsubsection{Kinodynamic Constraints}
 Constraints imposed on the \ac{OCP} are divided into two categories: (initial or final) boundary conditions, and path constraints.
 
 The collection of boundary condition equality constraints is straightforward:
@@ -711,7 +941,7 @@ Kinematic and dynamic path constraints consist of:
 where ${}^b\mathbf{\hat{s}}$ is the sensor direction vector, ${}^i\mathbf{\hat{e}}$ is the exclusion direction vector in the inertial coordinate frame, and $\theta_{\text{exclusion}}$ is the angular radius of the \ac{EZ}. 
 The quaternion unit norm equality constraint was relaxed to a narrow inequality constraint to improve the optimizer's ability to explore the search space where instead of a 3-D manifold, a thin 4-D shell is permitted.
 
-\paragraph{Sampling on \ac{SO3}}
+\subsubsection{Sampling on \ac{SO3}}
 When searching the Special Orthogonal group $SO(3)$, sampling orientations requires careful consideration to ensure that the sample distribution corresponds to the Haar measure—the unique bi-invariant volume measure on the rotation group \cite{LaValle06, Kuffner04}. 
 A naïve approach to quaternion sampling consists of independently drawing four scalar components $w, x, y, z \sim \mathcal{U}[-1, 1]$ in $\mathbb{R}^4$ and normalizing the resulting vector to unit length. 
 This approach fails to produce a uniform distribution on $S^3$; 
@@ -748,13 +978,15 @@ The naive sampling method produces a highly non-uniform ditributions with cluste
 This parametrization maps the 3D unit cube $[0,1]^3$ directly onto the 3-sphere $S^3$ with uniform surface density, satisfying $\|\mathbf{q}\|_2 = 1$ identically without requiring normalization \cite{Kuffner04, LaValle06}. 
 We account for the double-cover property of quaternions ($\mathbf{q} \sim -\mathbf{q}$) by mapping any sample located in the lower hemisphere ($w < 0$) to its antipodal equivalent $-\mathbf{q}$ without distorting the uniform density \cite{LaValle06}.
 
-\subsubsection{7-\ac{DOF} Robotic Manipulator Model}
+\subsection{7-\ac{DOF} Robotic Manipulator Model}
+\label{sec:methodology_dynamics_arm7_model}
+
 The robotic manipulator model describes the joint-space kinematics and dynamics of a redundant 7-\ac{DOF} arm conisisting of revolute joints existing on a bounded joint space $\mathcal{Q} \subset \mathbb{R}^7$. 
 Task space end-effector poses belong to \ac{SE3}.
 The optimization parameters are purely the B-spline control vertices for the joint-position trajectories, $\mathbf{q}(t)$, with all other kinematic (joint velocities, accelerations, jerks, end-effector poses, and Jacobians) 
 and dynamic (joint torques) quantities derived directly from the joint trajectories and their derivatives. 
 
-\paragraph{Joint Trajectories and Their Derivatives}
+\subsubsection{Joint Trajectories and Their Derivatives}
 If the joint control vertex matrix is $\mathbf{P} \in \mathbb{R}^{7 \times n_{\text{ctrl}}}$ and the B-spline basis vector evaluated over normalized time $s = \frac{t - t_0}{T} \in [0,1]$ is $\boldsymbol{\varphi}(s) \in \mathbb{R}^{n_{\text{ctrl}} \times 1}$, the joint position trajectory is given by:
 \begin{equation}
 \mathbf{q}(s) = \mathbf{P} \boldsymbol{\varphi}(s) \in \mathbb{R}^{7 \times 1},
@@ -795,11 +1027,11 @@ Because time-scaling to the total trajectory duration $T = t_{\text{catch}} - t_
 \label{eq_jointddd_mat_bspline}
 \end{equation}
 
-\paragraph{Equations of Motion}
+\subsubsection{Equations of Motion (EOM)}
 The state vector of the robot is defined as $\mathbf{x} = [\mathbf{q}^\top, \dot{\mathbf{q}}^\top]^\top$,
 where $\mathbf{q} \in \mathbb{R}^7$ is the vector of joint positions and $\dot{\mathbf{q}} \in \mathbb{R}^7$ is the vector of joint velocities.
 
-The joint-space dynamics of the manipulator are governed by the equation of motion:
+The joint-space dynamics of the manipulator are governed by the \ac{EOM}:
 \begin{equation}
     \boldsymbol{\tau} = \mathbf{M}(\mathbf{q})\ddot{\mathbf{q}} + \mathbf{c}(\mathbf{q},\dot{\mathbf{q}}) - \mathbf{g}(\mathbf{q}),
     \label{eq:robot_inverse_dynamics}
@@ -873,7 +1105,135 @@ This analytical reduction leaves the remaining $n-5$ control vertices as the fre
     \nonumber
 \end{equation}
 
-\paragraph{State and Control Vertex Bounds}
+\subsubsection{Exterior Control Vertex Calculation}
+
+For the robotic manipulator model, each joint trajectory is represented by a cubic B-spline:
+
+\begin{equation}
+    \mathbf{q}(t)
+    =
+    \mathbf{P}\boldsymbol{\varphi}(t),
+    \qquad
+    \mathbf{P}
+    =
+    \begin{bmatrix}
+        \mathbf{c}_0 &
+        \mathbf{c}_1 &
+        \cdots &
+        \mathbf{c}_{n_{\mathrm{ctrl}}-1}
+    \end{bmatrix}
+    \in
+    \mathbb{R}^{7\times n_{\mathrm{ctrl}}},
+\end{equation}
+where $\mathbf{q}(t)\in\mathbb{R}^7$ is the joint-position vector and each $\mathbf{c}_i\in\mathbb{R}^7$ contains one control vertex for each joint.
+
+For a clamped cubic B-spline, the number of knot spans is
+\begin{equation}
+    n_{\mathrm{seg}}
+    =
+    n_{\mathrm{ctrl}}-p,
+    \qquad
+    p=3.
+\end{equation}
+For a uniform knot vector, the knot-span duration is therefore
+\begin{equation}
+    h
+    =
+    \frac{t_f}{n_{\mathrm{seg}}},
+\end{equation}
+where $t_f$ is the duration of the joint trajectory.
+
+The initial boundary conditions are
+\begin{equation}
+    \mathbf{q}(0)=\mathbf{q}_0,
+    \qquad
+    \dot{\mathbf{q}}(0)=\dot{\mathbf{q}}_0,
+    \qquad
+    \ddot{\mathbf{q}}(0)=\ddot{\mathbf{q}}_0.
+\end{equation}
+
+For a clamped cubic B-spline, these conditions determine the first
+three control vertices:
+\begin{equation}
+    \mathbf{c}_0
+    =
+    \mathbf{q}_0,
+\end{equation}
+\begin{equation}
+    \mathbf{c}_1
+    =
+    \mathbf{c}_0
+    +
+    \frac{h}{3}\dot{\mathbf{q}}_0,
+\end{equation}
+\begin{equation}
+    \mathbf{c}_2
+    =
+    3\mathbf{c}_1
+    -
+    2\mathbf{c}_0
+    +
+    \frac{h^2}{3}\ddot{\mathbf{q}}_0.
+\end{equation}
+
+At the terminal boundary, the final velocity and acceleration are:
+\begin{equation}
+    \dot{\mathbf{q}}(t_f)=\dot{\mathbf{q}}_f,
+    \qquad
+    \ddot{\mathbf{q}}(t_f)=\ddot{\mathbf{q}}_f.
+\end{equation}
+
+The final control vertex is the final joint position when the ball is caught. 
+The remaining final exterior vertices are determined from this vertex and the terminal derivative conditions:
+\begin{equation}
+    \mathbf{c}_{n_{\mathrm{ctrl}}-2}
+    =
+    \mathbf{c}_{n_{\mathrm{ctrl}}-1}
+    -
+    \frac{h}{3}\dot{\mathbf{q}}_f,
+\end{equation}
+\begin{equation}
+    \mathbf{c}_{n_{\mathrm{ctrl}}-3}
+    =
+    \mathbf{c}_{n_{\mathrm{ctrl}}-1}
+    -
+    h\dot{\mathbf{q}}_f
+    +
+    \frac{h^2}{3}\ddot{\mathbf{q}}_f.
+\end{equation}
+
+Thus, the control vertices matrix is
+\begin{equation}
+    \mathbf{P}
+    =
+    \begin{bmatrix}
+        \mathbf{c}_0 &
+        \mathbf{c}_1 &
+        \mathbf{c}_2 &
+        \mathbf{c}_3 &
+        \cdots &
+        \mathbf{c}_{n_{\mathrm{ctrl}}-4} &
+        \mathbf{c}_{n_{\mathrm{ctrl}}-3} &
+        \mathbf{c}_{n_{\mathrm{ctrl}}-2} &
+        \mathbf{c}_{n_{\mathrm{ctrl}}-1}
+    \end{bmatrix}.
+\end{equation}
+
+For the ball-catching problem, the interior control vertices $$\mathbf{c}_3,\ldots,\mathbf{c}_{n_{\mathrm{ctrl}}-4}$$
+and the terminal-position vertex $$\mathbf{c}_{n_{\mathrm{ctrl}}-1}$$ are the optimization variables. 
+The remaining exterior vertices are reconstructed analytically from the boundary conditions.
+
+Because the terminal joint position is not set directly in the ball-catching problem, $\mathbf{c}_{n_{\mathrm{ctrl}}-1}$ is determined indirectly by the terminal end-effector and approach-axis constraints.
+
+For a fixed-endpoint problem, the terminal joint position is prescribed:
+\begin{equation}
+    \mathbf{c}_{n_{\mathrm{ctrl}}-1}
+    =
+    \mathbf{q}_f.
+\end{equation}
+In that case, all six exterior control vertices would be determined by the boundary conditions, as shown for the spacecraft model, where only the interior control vertices would remain as optimization variables.
+
+\subsubsection{State and Control Vertex Bounds}
 The state space for the robotic manipulator is simply bounded by the joint position limits $[q_{i,\min}, q_{i,\max}], i \in \{1,\ldots,7\}$. 
 However, unlike the spacecraft model, the robotic manipulator does not have an easily defined space for the control vertex bounds.  
 This is because, while the B-spline convex hull property applies, there is no guaranteed lower bound on the ratio of trajectory position to control vertex value;
@@ -894,6 +1254,7 @@ The joint velocity, $\dot{q}(t)$, is a quadratic B-spline defined by velocity co
 |v_i| \le \dot{q}_{\max}.
 \end{equation}
 
+\todoX{Edit this to not have set number of CVs and time}
 \emph{Velocity Control Vertex Formula:}
 For a B-spline with degree $p$ and knot vector $T = \{t_1, t_2, \dots, t_{N+p+1}\}$, the velocity control vertices are given by:
 \begin{equation}
@@ -927,7 +1288,8 @@ As a simplified and conservative approach, the same looser bounds may be applied
 
 Additionally, the search space could be further constrained by enforcing independent lower and upper bounds for each joint position, rather than the joint-specific symmetric bounds used here.\end{proof}
 
-\paragraph{Kinodynamic Constraints}
+\subsubsection{Kinodynamic Constraints}
+\label{sec:arm7_kinodyn_constraints}
 As in the spacecraft model, constraints imposed on the robot model consist of boundary and path constraint. 
 
 The collection of boundary condition constraints is:
@@ -982,17 +1344,109 @@ Kinematic and dynamic path constraints consist of:
 There is a conspicuous absence of obstacle avoidance constraints in the current formulation, particularly concerning self-collisions. 
 However, previous work by \cite{Lampariello11} showed self-collisions never occurred in practice; given this model is a replication of that work, it is reasonable to assume self-collisions will similarly not occur here.
 
-\subsection{Optimal Control Problem (OCP) \& Nonlinear Programming Formulation}
-\label{sec:methodology-ocp}
+\section{Optimal Control Problem (OCP) \& Nonlinear Programming (NLP) Formulation}
+The objective of the algorithms posed in this work is to generate optimal trajectories for the spacecraft and robotic manipulator models. 
+In order to obtain an optimal result, the objective must first be formalized into an \ac{OCP} followed by a transcription to an \ac{NLPn}.
+The transcription involves discretizing the continuous-time problem into a finite set of state, control, and time nodes through the use of B-splines.
+A myriad of transcription methods exist including direct collocation, indirect and direct shooting, and pseudospectral methods. 
+For a robust review of the commonly used transcription methods, refer to \cite{Rao09, Betts10}.
+The method employed in this work is direct collocation via B-spline parameterization which provides a very sparse structure for the resulting nonlinear program, facilitating efficient optimization.
+Following discretization, a solver must be employed, over which several types exist; here we use \ac{IPOPT} as the underlying \emph{interior-point} NLP solver.
+
+\section{Optimal Control Problem}
+\label{sec:ocp}
+
+To evaluate the B-spline trajectory optimization framework across different dynamical systems, two physical models are studied as benchmarks: 
+a 3-\ac{DOF} rigid-body spacecraft attitude slew and a 7-\ac{DOF} robotic manipulator ball-catching maneuver.
+
+\subsection{Problem 1: Spacecraft Attitude Slew Maneuver}
+\label{sec:ocp_spacecraft}
+
+The first problem considers a two-point \ac{BVP} for a spacecraft attitude slew maneuver over a fixed time horizon.
+The specifications on the state vector, constraints, and \ac{EOM} are detailed in \cref{sec:methodology_dynamics_spacecraft_model}.
+
+\subsubsection{Continuous-Time OCP Statement}
+The continuous-time spacecraft OCP minimizes control effort:
+\begin{equation}
+    \min_{\mathbf{q}(t)} \quad J_{\text{spacecraft}} = \frac{1}{w_{\text{scale}}} \int_{t_0}^{t_f} \Vert{}\boldsymbol{\tau}(t)\Vert{}_2^2 \, \mathrm{d}t,
+    \label{eq:spacecraft_objective}
+\end{equation}
+subject to:
+\begin{align}
+    \text{Inverse Kinodynamics:} \quad & \boldsymbol{\omega}(t) = 2 \mathbf{C}(\mathbf{q}(t)) \dot{\mathbf{q}}(t), \\
+                                       & \boldsymbol{\tau}(t) = \mathbf{I} \dot{\boldsymbol{\omega}}(t) + \boldsymbol{\omega}(t) \times \left( \mathbf{I} \boldsymbol{\omega}(t) \right), \\
+    \text{Quaternion Unit Norm:} \quad & \|\mathbf{q}(t)\|_2 - 1 = 0,  \label{eq:sc_norm_constr} \\
+    \text{Actuator Torque Limits:} \quad & \boldsymbol{\tau}_{\min} \le \boldsymbol{\tau}(t) \le \boldsymbol{\tau}_{\max}, \label{eq:sc_tau_bounds} \\
+    \text{Angular Velocity Limits:} \quad & \boldsymbol{\omega}_{\min} \le \boldsymbol{\omega}(t) \le \boldsymbol{\omega}_{\max}, \label{eq:sc_omega_bounds} \\
+    \text{Initial Rest Boundary:} \quad & \mathbf{q}(t_0) = \mathbf{q}_0, \quad \boldsymbol{\omega}(t_0) = \mathbf{0}, \quad \dot{\boldsymbol{\omega}}(t_0) = \mathbf{0}, \quad \ddot{\boldsymbol{\omega}}(t_0) = \mathbf{0}^\dagger, \label{eq:sc_bc_start} \\
+    \text{Final Rest Boundary:} \quad & \mathbf{q}(t_f) = \mathbf{q}_f, \quad \boldsymbol{\omega}(t_f) = \mathbf{0}, \quad \dot{\boldsymbol{\omega}}(t_f) = \mathbf{0}, \quad \ddot{\boldsymbol{\omega}}(t_f) = \mathbf{0}^\dagger. \label{eq:sc_bc_end}
+\end{align}
+
+${}^\dagger$ enforced for select test cases.
+
+\subsection{Problem 2: 7-DOF Manipulator Ball-Catching Maneuver}
+\label{sec:ocp_arm7}
+
+The second problem considers an 7-\ac{DOF} robotic manipulator catching a ball over a free time horizon $t \in [0.06, t_f] \text{s}$, with the terminal catch time $t_f$ and end-effector pose are free decision variables.
+The specifications on the state vector, constraints, and \ac{EOM} are detailed in \cref{sec:methodology_dynamics_arm7_model}.
+
+\subsubsection{Continuous-Time OCP Statement}
+The continuous-time optimal control problem for the 7-\ac{DOF} manipulator ball catch minimizes joint control effort and jerk over the free catch time $t_f \in [0.06, 1.8]\,\text{s}$:   
+\begin{equation}
+\min_{\mathbf{q}(t), t_f} \quad J_{\text{robot}} = \int_{t_0}^{t_f} \left( \sum_{i=1}^{7} \left( \tau_i(t) \dot{q}_i(t) \right)^2 + \Vert{}\mathbf{J}\dddot{\mathbf{q}}(t)\Vert{}_2^2 \right) \mathrm{d}t,
+\label{eq:arm7_ocp_objective}
+\end{equation}
+where $\mathbf{J}$ is the diagonal matrix of joint motor inertias, \\
+subject to:
+\begin{align}
+\text{Inverse Kinodynamics:} \quad & \mathbf{M}(\mathbf{q})\ddot{\mathbf{q}} + \mathbf{C}(\mathbf{q}, \dot{\mathbf{q}})\dot{\mathbf{q}} - \mathbf{g}(\mathbf{q}) = \boldsymbol{\tau}(t), \label{eq:arm_dyn_constr} \\
+                             \quad & \mathbf{p}_{ee}(\mathbf{q}) = \mathbf{T}_{i,ee}(\mathbf{q})(1\!:\!3,4), \\
+                             \quad & \mathbf{R}_{i,ee}(\mathbf{q}) = \mathbf{T}_{i,ee}(\mathbf{q})(1\!:\!3,1\!:\!3), \\
+\text{Joint Position Bounds:} \quad & \mathbf{q}_{\min} \le \mathbf{q}(t) \le \mathbf{q}_{\max}, \label{eq:arm_q_bounds} \\
+\text{Joint Velocity Bounds:} \quad & \dot{\mathbf{q}}_{\min} \le \dot{\mathbf{q}}(t) \le \dot{\mathbf{q}}_{\max}, \label{eq:arm_dq_bounds} \\
+\text{Actuator Torque Bounds:} \quad & \boldsymbol{\tau}_{\min} \le \boldsymbol{\tau}(t) \le \boldsymbol{\tau}_{\max}, \label{eq:arm_tau_bounds} \\
+\text{Initial Rest Boundary:} \quad & \mathbf{q}(t_0) = \mathbf{q}_0, \quad \dot{\mathbf{q}}(t_0) = \mathbf{0}, \quad \ddot{\mathbf{q}}(t_0) = \mathbf{0}, \label{eq:arm_bc_start} \\
+\text{Final Rest Boundary:} \quad & \dot{\mathbf{q}}(t_f) = \mathbf{0}, \quad \ddot{\mathbf{q}}(t_f) = \mathbf{0}, \label{eq:arm_bc_terminal_kin} \\
+\text{Final Catch Position:} \quad & \mathbf{p}_{\text{ee}}(\mathbf{q}(t_f)) = \mathbf{p}_{ball}(t_f), \label{eq:arm_bc_catch_pos} \\
+\text{Final Approach Alignment:} \quad & \text{approach-axis}(\mathbf{q}(t_f)) - \text{ball-axis}(t_f) = 0, \label{eq:arm_bc_catch_axis} \\
+\text{Catch Time Horizon Bounds:} \quad & 0.06 \le t_f \le 1.8 \text{s}, \label{eq:arm_tf_bounds}
+\end{align} 
+with \cref{eq:arm_bc_catch_axis} defined in \cref{sec:arm7_kinodyn_constraints} and all points and vectors expressed in the inertial frame unless otherwise noted.
+
+\subsection{NLP Decision Variable Structure}
+\label{sec:nlp_decision_variables}
+
+When transcribed using B-splines, both continuous problems map the boundary state constraints that are known a priori directly onto the corresponding exterior control vertices ($\mathbf{P}_{\text{ext}}$)--which are evaluated \\ 
+analytically. For the spacecraft, only the interior control vertices $\mathbf{P}_{\text{int}}$ remain as free decision variables. For the robotic manipulator, the interior control vertices, the final control vertex $\mathbf{P}_f$, and the final time $t_f$ are free decision variables in the optimization vector $\mathbf{w}$:
+
 \begin{itemize}
-	\item[$\square$] \textbf{OCP formulation:} Formalize the continuous-time optimal control problem, including the objective function, path constraints, and endpoint constraints.
-	\item[$\square$] \textbf{NLP formulation:} Describe the transcription of the continuous-time OCP into a discrete nonlinear program (NLP).
-	\item[$\square$] \textbf{Trajectory parameterization:} Detail the B-spline parameterization of the control and state trajectories.
-	\item[$\square$] \textbf{Optimization framework:} Briefly describe IPOPT's role as the underlying interior-point NLP solver.
-	\item[$\square$] Focus the IPOPT discussion on the interface, discretization of the continuous representation, and constraint handling rather than re-explaining IPOPT's internal algorithm.
+    \item \textbf{Spacecraft Slew Decision Vector:} Parameterized by $4$ quaternion elements ($n_{\text{ctrl}}$ control vertices per element). 
+    With boundary conditions embedded, the number of free variables is reduced by the number of boundary constraints, $n_{\text{free}} = n_{\text{ctrl}} - n_{\text{bc}}$:
+    \begin{equation}
+        \mathbf{w}_{\text{spacecraft}} = \mathbf{P}_{\text{int,sc}} \in \mathbb{R}^{4 n_{\text{free}}}.
+    \end{equation}
+    $n_{\text{bc}}$ may equal either six or eight, depending on whether angular jerk is included in the boundary conditions.
+    \item \textbf{7-DOF Robotic Arm Decision Vector:} Parameterized by 7 B-spline joint curves ($n_{\text{ctrl}}$ control vertices per curve) with $n_{\text{free}} = n_{\text{ctrl}} - n_{\text{bc}}$ free interior control vertices per joint:
+    \begin{equation}
+        \mathbf{w}_{\text{robot}} = 
+        \begin{bmatrix} 
+            \mathbf{P}_{\text{int}} \quad \mathbf{P}_f \quad t_f 
+        \end{bmatrix} \in \mathbb{R}^{7 n_{\text{free}} + 1}.
+    \end{equation}
+    $n_{\text{bc}}$ equals five; the boundary conditions on catch position, approach angle, and time do not reduce the number of decision variables because the final control vertex is not constrained to a single configuration.
 \end{itemize}
 
-\subsection{Algorithm Frameworks}
+\subsection{NLP Optimization Framework}
+\label{sec:nlp_solver_framework}
+
+The transcribed finite-dimensional \acp{NLPn} are solved using the primal-dual interior-point solver \ac{IPOPT} developed by Wächter and Biegler at Carnegie Mellon University for the solving of nonlinear, nonconvex optimization problems \cite{Waechter06}. 
+\ac{IPOPT} is released as open-source software \cite{Waechter06}.
+More can be found in the original publication by Wächter and Biegler \cite{Waechter06}.
+The solver minimizes the objective function subject to path and boundary constraints by solving a sequence of barrier subproblems using a filter line-search method, with local optima satisfying the \ac{KKT} conditions. 
+Exact first- and second-order derivatives—specifically the constraint Jacobian $\nabla \mathbf{g}(\mathbf{w})$ and the Hessian of the Lagrangian $\nabla^2 \mathcal{L}(\mathbf{w}, \boldsymbol{\lambda})$—are evaluated analytically via automatic differentiation using CasADi \cite{Andersson19}. 
+Because B-splines possess local support, each decision variable influences only a small portion of the trajectory, i.e., a limited subset of collocation nodes, resulting in highly sparse, banded matrices that \ac{IPOPT} exploits for computationally efficient linear solves.
+
+\section{Algorithm Frameworks}
 \label{sec:methodology-algorithms}
 Present the four comparative trajectory-generation approaches with a consistent structure:
 \begin{itemize}
@@ -1005,7 +1459,7 @@ Present the four comparative trajectory-generation approaches with a consistent 
 	\item[$\square$] Include the sampling bounds used for the Arm7 manipulator.
 \end{itemize}
 
-\subsection{Adaptive Constraint Refinement}
+\section{Adaptive Constraint Refinement}
 \label{sec:methodology-refinement}
 \begin{itemize}
 	\item[$\square$] Detail the iterative refinement pipeline for B-spline trajectories.
@@ -1014,7 +1468,7 @@ Present the four comparative trajectory-generation approaches with a consistent 
 	\item[$\square$] Explain how local refinement enforces feasibility without global over-discretization.
 \end{itemize}
 
-\subsection{Analytical Verification}
+\section{Analytical Verification}
 \label{sec:methodology-verification}
 \begin{itemize}
 	\item[$\square$] \textbf{Analytical proof / baseline verification:} Present the unconstrained $\SO{3}$ maneuver proof.
