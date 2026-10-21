@@ -12,9 +12,9 @@
 \todoZ{3.4: Present MC-GBO, RRT*-GBO, P-HO, and IPSO consistently}
 \todoZ{3.4: Describe naive versus uniform SO(3) sampling}
 \todoZ{3.4: Define Arm7 sampling bounds}
-\todoX{3.5: Detect kinodynamic and boundary violations along B-spline trajectories}
-\todoX{3.5: Locally densify time-grid nodes to enforce feasibility}
-\todoX{3.6: Prove and analytically verify the unconstrained SO(3) maneuver baseline}
+\todoZ{3.5: Detect kinodynamic and boundary violations along B-spline trajectories}
+\todoZ{3.5: Locally densify time-grid nodes to enforce feasibility}
+\todoZ{3.6: Prove and analytically verify the unconstrained SO(3) maneuver baseline}
 
 \chapter{Methodology}
 \label{sec:methodology}
@@ -27,12 +27,12 @@
 \subsection{Attitude Representations}
 \label{sec:attitude-representations}
 The attitude of a rigid body in \ac{3-D} space can be represented using a myriad of parameterizations, each with its own advantages and limitations. 
-Common representations include rotation matrices, quaternions, \ac{MRPs}, Euler angles, and axis---angle representations.
+Common representations include rotation matrices, quaternions, \ac{MRP}s, Euler angles, and axis---angle representations.
 Rotation matrices are a classic choice for representing attitudes offering a singularity-free, intuitive geometric interpretation, with a linear mapping of vectors. 
 However, they are over-parameterized with nine elements versus the minimal three required to describe rotations. 
 This increases the computational load. 
 Quaternions offer a more compact, four-element singularity-free representation of rotations compared to rotation matrices, but suffer from double cover and an unintuitive physical meaning of the parameters.
-\ac{MRPs} are a three-element representation---making them a minimal and efficient description of rotations---that avoid the double-cover issue of quaternions but contain singularities at 360 degrees.
+\ac{MRP}s are a three-element representation---making them a minimal and efficient description of rotations---that avoid the double-cover issue of quaternions but contain singularities at 360 degrees.
 Euler angles are also a minimal representation with very intuitive geometric interpretation, but they suffer from gimbal lock.
 Finally, axis---angle representations describe rotations using a rotation axis and an angle about that axis. 
 They provide a clear geometric interpretation and are minimal, but they become singular at zero rotation whereby the axis-of-rotation becomes ill-defined.
@@ -192,13 +192,23 @@ A homogeneous transformation matrix \(\mathbf{T}_{\text{ib}}\) can be expressed 
     \mathbf{T}_{\text{ib}} = 
     \begin{bmatrix}
         \mathbf{R}_{\text{ib}} & {}^{\text{i}}\mathbf{x}_{\text{b}} \\
-        \mathbf{0}^\mathsf{T}_{1 \times 3} & 1
+        \mathbf{0}^\mathsf{T}_{3 \times 1} & 1
     \end{bmatrix} \in \SE{3},
     \label{eq:homogeneous-transformation-matrix}
 \end{equation}
 where \(\mathbf{R}_{\text{ib}} \in \SO{3}\) and \({}^{\text{i}}\mathbf{x}_{\text{b}} \in \mathbb{R}^3\) is the position of the body frame origin relative to the inertial frame's origin, expressed in the inertial frame.
 The homogeneous transformation matrix \(\mathbf{T}_{\text{ib}}\) thus defines the \emph{special Euclidean group} \(\SE{3}\), which encompasses all possible rigid body transformations in three-dimensional space.
 Like rotation matrices, homogeneous transformation matrices may be multiplied from right to left to compose multiple transformations, allowing the transformation from one frame to another through intermediate frames.
+
+The inverse of a homogeneous transformation matrix can be computed as:
+\begin{equation}
+    \mathbf{T}_{\text{ib}}^{-1} =
+    \mathbf{T}_{\text{bi}} =
+    \begin{bmatrix}
+        \mathbf{R}_{\text{ib}}^\mathsf{T} & -\mathbf{R}_{\text{ib}}^\mathsf{T} {}^{\text{i}}\mathbf{x}_{\text{b}} \\
+        \mathbf{0}^\mathsf{T}_{3 \times 1} & 1
+    \end{bmatrix}.
+\end{equation}
 
 The homogeneous transformation, along with the \ac{DH} parameters, provides a systematic way to describe the kinematics of robotic manipulators and the various transformations between different coordinate frames.
 
@@ -282,7 +292,7 @@ For unit quaternions the inverse equals the conjugate, i.e., $\mathbf{q}^{-1} = 
 \end{equation}
 
 
-A relative quaternion, $\mathbf{q}_{\text{relative}}$, represents the quaternion that rotates from the initial orientation to the final orientation and is useful for the mapping of \ac{MRPs} to \ac{SO3}.
+A relative quaternion, $\mathbf{q}_{\text{relative}}$, represents the quaternion that rotates from the initial orientation to the final orientation and is useful for the mapping of \ac{MRP}s to \ac{SO3}.
 
 Quaternions have a property known as the \emph{double-cover}:
 \begin{equation}
@@ -331,16 +341,16 @@ Like rotation matrices, quaternions have their own set of pros and cons:
     \item Geometrically Confusing: Being four-dimensional hyperspheres, quaternions are not easily conceptualized in comparison to other attitude representations.
 \end{itemize}
 
-\subsubsection{\ac{MRPs}}
+\subsubsection{\ac{MRP}s}
 \label{par:mrps}
 
-\ac{MRPs} represent the final attitude representation discussed in this work, offering a three-parameter minimal parameterization of rotations derived as stereographic projections of the unit quaternion hypersphere onto a \ac{3-D} hyperplane \cite{Schuster93}.
+\ac{MRP}s represent the final attitude representation discussed in this work, offering a three-parameter minimal parameterization of rotations derived as stereographic projections of the unit quaternion hypersphere onto a \ac{3-D} hyperplane \cite{Schuster93}.
 
-\ac{MRPs} were introduced in this work to implement the \ac{IPSO} algorithm---which due to characteristics of how \ac{PSO} algorithms explore search spaces, made quaternions, which require the unit norm constraint, impractical for this algorithm class.
+\ac{MRP}s were introduced in this work to implement the \ac{IPSO} algorithm---which due to characteristics of how \ac{PSO} algorithms explore search spaces, made quaternions, which require the unit norm constraint, impractical for this algorithm class.
 
 This representation is defined in terms of the rotation axis $\hat{\mathbf{u}}$ and the rotation angle $\theta$ \cite{Schuster93} as shown in \cref{fig:quaternion-rotation}:
 \begin{equation}
-\mathbf{p}(\theta, \hat{\mathbf{u}}) 
+\boldsymbol{\sigma}(\theta, \hat{\mathbf{u}})
 = 
 \tan\left(\frac{\theta}{4}\right) \hat{\mathbf{u}}
 =
@@ -348,39 +358,39 @@ This representation is defined in terms of the rotation axis $\hat{\mathbf{u}}$ 
 \label{eq:MRP-defintion}
 \end{equation}
 
-As a minimal representation, \ac{MRPs} avoid redundancy inherent to quaternions and rotation matrices, but succumb unavoidably to either singularities or discontinuities.
-From \cref{eq:MRP-defintion}, it is evident that \ac{MRPs} become singular when the rotation angle $\theta$ approaches $2\pi$, as $\tan\left(\frac{\theta}{4}\right)$ approaches infinity.
-If the angle of rotation is bounded less than $2\pi$, \ac{MRPs} provide a continuous, singularity-free representation of rotations; however, spacecraft maneuvers are not constrained as such and singularities may appear \cite{Schuster93}.
-One common approach to mitigate this issue is to switch to the shadow set of \ac{MRPs} when the norm of the current set exceeds unity---occurring for rotations greater than $\pi$---effectively avoiding the singularity at $2\pi$, but this introduces instead a discontinuity that optimizers struggle to handle.
+As a minimal representation, \ac{MRP}s avoid redundancy inherent to quaternions and rotation matrices, but succumb unavoidably to either singularities or discontinuities.
+From \cref{eq:MRP-defintion}, it is evident that \ac{MRP}s become singular when the rotation angle $\theta$ approaches $2\pi$, as $\tan\left(\frac{\theta}{4}\right)$ approaches infinity.
+If the angle of rotation is bounded less than $2\pi$, \ac{MRP}s provide a continuous, singularity-free representation of rotations; however, spacecraft maneuvers are not constrained as such and singularities may appear \cite{Schuster93}.
+One common approach to mitigate this issue is to switch to the shadow set of \ac{MRP}s when the norm of the current set exceeds unity---occurring for rotations greater than $\pi$---effectively avoiding the singularity at $2\pi$, but this introduces instead a discontinuity that optimizers struggle to handle.
 
-Conversion between \ac{MRPs} and quaternions or rotation matrices occur via:
+Conversion between \ac{MRP}s and quaternions or rotation matrices occur via:
 \begin{equation}
-    \mathbf{q}(\mathbf{p}) = \frac{1}{1 + p^2} 
+    \mathbf{q}(\boldsymbol{\sigma}) = \frac{1}{1 + \sigma^2}
     \begin{bmatrix} 
-        2\mathbf{p} \\
+        2\boldsymbol{\sigma} \\
         1 - p^2 
     \end{bmatrix}
 \label{eq:MRP2quat}
 \end{equation}
 \begin{equation}
-    \mathbf{R}_{bi}(\mathbf{p}) = 
-    I_{3 \times 3} - \frac{4(1 - p^2)}{(1 + p^2)^2}[\mathbf{p}]_\times + \frac{8}{(1 + p^2)^2}[\mathbf{p}]_\times^2
+    \mathbf{R}_{bi}(\boldsymbol{\sigma}) =
+    I_{3 \times 3} - \frac{4(1 - \sigma^2)}{(1 + \sigma^2)^2}[\boldsymbol{\sigma}]_\times + \frac{8}{(1 + \sigma^2)^2}[\boldsymbol{\sigma}]_\times^2
 \label{eq:MRP2rot}
 \end{equation}
 
-Naturally, \ac{MRPs} come with their own set of tradeoffs:
+Naturally, \ac{MRP}s come with their own set of tradeoffs:
 
 \paragraph{Pros}
 \begin{itemize}
     \item Minimal Representation: Uses exactly three parameters to describe three \ac{DOF} rotations, eliminating the unit-norm constraint required by quaternions.
-    \item Extended Singularity: As opposed to classic Rodrigues parameters, \ac{MRPs} exhibit singularities only at rotations of $2\pi$ rather than $\pi$, providing a larger singularity-free region for practical rotations.
-    \item Transcendental-free Kinematics: Unlike Euler angles, the kinematic differential equations for \ac{MRPs} do not involve trigonometric functions.
+    \item Extended Singularity: As opposed to classic Rodrigues parameters, \ac{MRP}s exhibit singularities only at rotations of $2\pi$ rather than $\pi$, providing a larger singularity-free region for practical rotations.
+    \item Transcendental-free Kinematics: Unlike Euler angles, the kinematic differential equations for \ac{MRP}s do not involve trigonometric functions.
 \end{itemize}
 
 \paragraph{Cons}
 \begin{itemize}
     \item Singular or Discontinuous: Avoiding singularities involves switching to the shadow set for rotations greater than $\pi$, which can introduce discontinuities; without the shadow set, the representation is smooth but contains singularities.
-    \item Spatial Warping: Due to \ac{MRPs} being a \emph{stereographic projection} of a \ac{4-D} hypersphere onto a \ac{3-D} hyperplane, straight paths in the MRP space  \emph{generally} do not correspond geodesics (great circles) on \ac{SO3}; a straight line trajectory only yields a true geodesic if the trajectory passes through the origin ($\mathbf{p}=\mathbf{0}$) and typically requires the use of relative rotations between coordinate frames to help align maneuvers with the origin. The distortion induces a change in the loss landscape, which affects optimization and control strategies.
+    \item Spatial Warping: Due to \ac{MRP}s being a \emph{stereographic projection} of a \ac{4-D} hypersphere onto a \ac{3-D} hyperplane, straight paths in the MRP space  \emph{generally} do not correspond geodesics (great circles) on \ac{SO3}; a straight line trajectory only yields a true geodesic if the trajectory passes through the origin ($\boldsymbol{\sigma}=\mathbf{0}$) and typically requires the use of relative rotations between coordinate frames to help align maneuvers with the origin. The distortion induces a change in the loss landscape, which affects optimization and control strategies.
 \end{itemize}
 
 \subsection{Manipulator Kinematics}
@@ -422,6 +432,7 @@ Multiplying these sequential transformations yields the homogeneous transformati
 \label{eq:modified-dh-matrix}
 \end{equation}
 
+
 By defining these four parameters for each of the seven joints of the manipulator, the forward kinematics may be computed. 
 As described in \cref{par:homogeneous-transformation}, homogeneous transformation matrices can be multiplied to represent successive coordinate changes. 
 In this manner, the pose of the end-effector (frame 7) relative to the manipulator base (frame 0) is obtained by chaining successive transformations:
@@ -446,7 +457,7 @@ A B-spline curve $\mathbf{x}(s)$ of degree $p$ is constructed from $n$ control v
 \label{eq:bspline_curve}
 \end{equation}
 where $s \in [0, 1]$ is the normalized time parameter along the trajectory. 
-The basis functions $N_{i,p}(s)$ are computed recursively over a knot vector $\mathbf{T} = \{t_0, t_1, \dots, t_{n+p+1}\}$ via the Cox--de Boor algorithm \cite{Boor78}:
+The basis functions $N_{i,p}(s)$ are computed recursively over a knot vector $\boldsymbol{\kappa} = \{t_0, t_1, \dots, t_{n+p+1}\}$ via the Cox--de Boor algorithm \cite{Boor78}:
 
 \begin{equation}
     N_{i,0}(s) =
@@ -597,18 +608,18 @@ $n_{ctrl}$ is the number of control vertices---equivalently the number of elemen
 \label{eq_quatddd_mat_bspline}
 \end{equation}
 
-\todoX{maybe include the EOMs for the MRP formulation???}
 
 \subsubsection{Equations of Motion (EOM)}
+\label{sec:SC_EOM}
 The state vector of the spacecraft is defined as $\mathbf{x} = [\mathbf{q}^\top, \boldsymbol{\omega}^\top]^\top$, 
 where $\mathbf{q} \in S^3 \subset \mathbb{H}$ represents the attitude quaternion and $\boldsymbol{\omega} \in \mathbb{R}^3$ is the angular velocity vector.
 The rotational dynamics of the spacecraft are governed by Euler's equation:
 \begin{equation}
     \boldsymbol{\tau} =
-    \mathbf{J}\dot{\boldsymbol{\omega}} + \boldsymbol{\omega} \times (\mathbf{J}\boldsymbol{\omega}),
+    \mathbf{J}_{\mathrm{sc}}\dot{\boldsymbol{\omega}} + \boldsymbol{\omega} \times (\mathbf{J}_{\mathrm{sc}}\boldsymbol{\omega}),
 \label{eq:eulers_eq_of_rigid_rot_dyn}
 \end{equation}
-where $\mathbf{J}$ is the spacecraft's inertia matrix, $\boldsymbol{\omega}$ is the angular velocity vector, and $\mathbf{\tau}$ represents the control torque \emph{input} applied by the actuators.
+where $\mathbf{J}_{\mathrm{sc}}$ is the spacecraft's inertia matrix, $\boldsymbol{\omega}$ is the angular velocity vector, and $\mathbf{\tau}$ represents the control torque \emph{input} applied by the actuators.
 
 The relation between the quaternion rate and the angular velocity is:
 \begin{equation}
@@ -616,17 +627,17 @@ The relation between the quaternion rate and the angular velocity is:
 = 
 \frac{1}{2} \mathbf{q} \otimes \boldsymbol{\omega}
 = 
-\frac{1}{2} \mathbf{C}(\mathbf{q})^\top \boldsymbol{\omega},
+    \frac{1}{2} \mathbf{C}_q(\mathbf{q})^\top \boldsymbol{\omega},
 \label{eq:quat_rate_from_omega}
 \end{equation}
 \begin{equation}
-2 \mathbf{C}(\mathbf{q}) \dot{\mathbf{q}} 
+2 \mathbf{C}_q(\mathbf{q}) \dot{\mathbf{q}} 
 = 
  \boldsymbol{\omega},
 \label{eq:omega_from_quat_rate}
 \end{equation}
 \begin{equation}
-\mathbf{C}(\mathbf{q}) = 
+\mathbf{C}_q(\mathbf{q}) = 
 \begin{bmatrix} 
     q_w \mathbf{I}_{3\times3} + [\mathbf{q_v}]_\times & -\mathbf{q_v} 
 \end{bmatrix}
@@ -640,36 +651,36 @@ q_y & -q_x & q_w & -q_z
 \end{equation}
 
 \begin{equation}
-\mathbf{C}(\mathbf{q}) \mathbf{C}(\mathbf{q})^\top = 
+\mathbf{C}_q(\mathbf{q}) \mathbf{C}_q(\mathbf{q})^\top = 
 \mathbf{I}_{3\times3},
 \label{eq:quat_mult_map_transpose_inv_identity}
 \end{equation}
-where $\mathbf{C}(\mathbf{q})$ is the quaternion differential matrix.
+where $\mathbf{C}_q(\mathbf{q})$ is the quaternion differential matrix.
 
 Applying the chain rule, the time derivative of the angular velocity $\boldsymbol{\dot{\omega}}$---i.e. angular acceleration---and the second time derivative $\boldsymbol{\ddot{\omega}}$---i.e. jerk---can be expressed in terms of the quaternion and its derivatives: 
 \begin{equation}
 \dot{\boldsymbol{\omega}} = 
-    2 \left[ \mathbf{C}(\dot{\mathbf{q}})\dot{\mathbf{q}} + \mathbf{C}(\mathbf{q})\ddot{\mathbf{q}} \right].
+    2 \left[ \mathbf{C}_q(\dot{\mathbf{q}})\dot{\mathbf{q}} + \mathbf{C}_q(\mathbf{q})\ddot{\mathbf{q}} \right].
 \label{eq:omega_dot_from_quat}
 \end{equation}
 \begin{equation}
-    \ddot{\boldsymbol{\omega}} = 2 \left[ \mathbf{C}(\ddot{\mathbf{q}})\dot{\mathbf{q}} + 2\mathbf{C}(\dot{\mathbf{q}})\ddot{\mathbf{q}} + \mathbf{C}(\mathbf{q})\dddot{\mathbf{q}} \right].
+    \ddot{\boldsymbol{\omega}} = 2 \left[ \mathbf{C}_q(\ddot{\mathbf{q}})\dot{\mathbf{q}} + 2\mathbf{C}_q(\dot{\mathbf{q}})\ddot{\mathbf{q}} + \mathbf{C}_q(\mathbf{q})\dddot{\mathbf{q}} \right].
     \label{eq:omega_ddot_from_quat}
 \end{equation}
 
 Alternatively, if the angular velocity, angular acceleration, or jerk are known---as is the case for enforcing boundary constraints on the \ac{OCP}---one can solve for the derivatives of the quaternion as:
 \begin{equation}
-    \dot{\mathbf{q}} = \frac{1}{2} \mathbf{C}(\mathbf{q})^\top \boldsymbol{\omega},
+    \dot{\mathbf{q}} = \frac{1}{2} \mathbf{C}_q(\mathbf{q})^\top \boldsymbol{\omega},
     \label{eq:q_dot_from_omega}
 \end{equation}
 
 \begin{equation}
-    \ddot{\mathbf{q}} = \frac{1}{2} \left[ \mathbf{C}(\mathbf{q})^\top \dot{\boldsymbol{\omega}} + \mathbf{C}(\dot{\mathbf{q}})^\top \boldsymbol{\omega} \right],
+    \ddot{\mathbf{q}} = \frac{1}{2} \left[ \mathbf{C}_q(\mathbf{q})^\top \dot{\boldsymbol{\omega}} + \mathbf{C}_q(\dot{\mathbf{q}})^\top \boldsymbol{\omega} \right],
     \label{eq:q_ddot_from_omega}
 \end{equation}
 
 \begin{equation}
-    \dddot{\mathbf{q}} = \frac{1}{2} \left[ \mathbf{C}(\mathbf{q})^\top \ddot{\boldsymbol{\omega}} + 2 \mathbf{C}(\dot{\mathbf{q}})^\top \dot{\boldsymbol{\omega}} + \mathbf{C}(\ddot{\mathbf{q}})^\top \boldsymbol{\omega} \right].
+    \dddot{\mathbf{q}} = \frac{1}{2} \left[ \mathbf{C}_q(\mathbf{q})^\top \ddot{\boldsymbol{\omega}} + 2 \mathbf{C}_q(\dot{\mathbf{q}})^\top \dot{\boldsymbol{\omega}} + \mathbf{C}_q(\ddot{\mathbf{q}})^\top \boldsymbol{\omega} \right].
     \label{eq:q_dddot_from_omega}
 \end{equation}
 
@@ -900,6 +911,7 @@ the boundary conditions, while the optimizer searches only over
 $\mathbf{P}_{\mathrm{int}}$.
 
 \subsubsection{State and Control Vertex Bounds}
+\label{sec:SC_state_CV_bounds}
 A helpful property of parameterizing \ac{SO3} via unit quaternions $\mathbf{q} \in S^3 \subset \mathbb{R}^4$ is that $S^3$ is a compact manifold, meaning its search space in the Euclidean $\mathbb{R}^4$ is both bounded and closed.
 \begin{dfn}[Bounded]
     A set $\mathcal{S} \subset \mathbb{R}^n$ of a Euclidean space is said to be \emph{bounded} if there exists a finite upper bound $M > 0$ on the magnitude of all its vectors: $\vert \mathbf{x} \vert_2 \leq M, \forall \mathbf{x} \in \mathcal{S}$.
@@ -916,7 +928,43 @@ A helpful property of parameterizing \ac{SO3} via unit quaternions $\mathbf{q} \
     In Euclidean space $\mathbb{R}^n$, a subset $\mathcal{S}$ is \emph{compact} if and only if it is both \emph{bounded} and \emph{closed} (Heine-Borel theorem).
 \end{dfn}
 On $S^3$, all quaternion elements $q_i$ belong to the compact set $[-1,1] / \lVert \mathbf{q} \rVert_2 = 1$, preventing the state space from extending to infinity.
-While individual B-spline control vertices $\mathbf{P}$ parameterizing $\mathbf{q}$ may extend beyond $[-1,1]^4$, the unit norm enforcement at each via point keeps the control vertex polygon tightly constrained near the unit quaternion bounds.
+While all points on the B-spline trajectory obey the convex hull of the control vertex polygon, the individual control vertices themselves may lie outside the unit hypercube $[-1,1]^4$.
+To rigorously bound the optimizer's search space, we must derive the control vertex maximum bounds.
+
+\begin{proof}[Control Vertex Bounds for $S^3$]
+    Let the quaternion trajectory $\mathbf{q}(t)$ be parameterized by a clamped, uniform cubic B-spline ($p=3$). 
+    The greatest weight a basis function can have at any point along the interior---i.e. away from the clamped ends---of the B-spline curve occurs at the knots. 
+    At any interior knot $t_i$, the active, non-zero basis functions evaluate to $\frac{1}{6}$, $\frac{2}{3}$, and $\frac{1}{6}$. 
+    The curve's value for a single quaternion element $k \in \{x, y, z, w\}$ at knot $t_i$ is exactly:
+    \begin{equation}
+        q_k(t_i) = \frac{1}{6}c_{i-3, k} + \frac{2}{3}c_{i-2, k} + \frac{1}{6}c_{i-1, k}.
+    \end{equation}
+    The trajectory is bounded by the unit quaternion definition such that $q_k(t) \in [-1, 1]$. 
+    To find the maximum possible theoretical value for the central control vertex $B_{\max} = c_{i-2,k}$ while satisfying $q_k(t_i) \le 1$, the adjacent vertices $c_{i-3, k}$ and $c_{i-1, k}$ must take their minimum possible values.
+    
+    However, the adjacent vertices must not cause the trajectory to violate the lower bound ($-1$) at their respective knots $t_{i-1}$ and $t_{i+1}$. 
+    Pushing this to the extreme yields an alternating control sequence $[ \dots, -B_{\max}, B_{\max}, -B_{\max}, B_{\max}, \dots ]$. 
+    Substituting this alternating sequence into the knot evaluation yields:
+    \begin{equation}
+        q_k(t_i) = \frac{1}{6}(-B_{\max}) + \frac{2}{3}(B_{\max}) + \frac{1}{6}(-B_{\max}) = \frac{2}{6}B_{\max} = \frac{1}{3}B_{\max}.
+    \end{equation}
+    Constraining the peak elementwise trajectory value to its upper bound ($q_k(t_i) = 1$) allows us to solve for $B_{\max}$:
+    \begin{equation}
+        1 = \frac{1}{3}B_{\max} \implies B_{\max} = 3.
+    \end{equation}
+
+    By symmetry, applying the same argument to $-q_k(t)$ gives the minimum
+    possible central control-vertex value:
+    \begin{equation}
+        B_{\min} = -B_{\max} = -3.
+    \end{equation}
+
+    For the clamped ends of the B-spline, the maximum weight a basis function can have is 1, which occurs at the very first and last knots. 
+    Therefore, the control vertices at the clamped ends are directly bounded by the unit quaternion constraints, i.e., $c_{0,k}, c_{n-1,k} \in [-1, 1]$.
+    Near-exterior control vertices, ${c_{1,k}, \dots, c_{p-2,k}, \dots, c_{n-p+1,k}, \dots, c_{n-2,k}}$, are influenced by both the clamped ends and the interior vertices, forcing their maximum possible values less than the extreme interior bound of 3.
+    
+    Therefore, the absolute theoretical bounds for any control vertex parameterizing a unit quaternion trajectory via a clamped, uniform cubic B-spline are strictly $[-3, 3]$.
+\end{proof}
 
 The only remaining concern involves the initialization of the problem, as we have not defined a concrete bound for the control vertices.
 Two clear strategies were considered:
@@ -929,8 +977,9 @@ The performance gain is likely due to the elimination of the preliminary matrix 
 The properties of $S^3$ alongside either initialization strategy allow us to easily condition the search space of the optimizer. 
 
 \subsubsection{Sampling on \ac{SO3}}
+\label{sec:SampleSO3}
 When searching the Special Orthogonal group $SO(3)$, sampling orientations requires careful consideration to ensure that the sample distribution corresponds to the Haar measure—the unique bi-invariant volume measure on the rotation group \cite{LaValle06, Kuffner04}. 
-A naïve approach to quaternion sampling consists of independently drawing four scalar components $w, x, y, z \sim \mathcal{U}[-1, 1]$ in $\mathbb{R}^4$ and normalizing the resulting vector to unit length. 
+A naïve approach to quaternion sampling consists of independently drawing four scalar components $w, x, y, z \sim \mathcal{U}[-1, 1] \in \mathbb{R}^4$ and normalizing the resulting vector to unit length. 
 This approach fails to produce a uniform distribution on $S^3$; 
 the geometry of the bounding 4D hypercube $[-1, 1]^4$ concentrates volume along its diagonals, causing normalized samples to heavily cluster toward the 4D hypercube corners---corresponding to 16 clusters when projected onto SO(3) \cite{LaValle06}. 
 
@@ -944,6 +993,7 @@ Given three independent uniform random variables $u_1, u_2, u_3 \sim \mathcal{U}
         \sqrt{u_1} \sin(2\pi u_3) \\ 
         \sqrt{u_1} \cos(2\pi u_3) 
     \end{bmatrix} 
+    \label{eq:uniform-sample-so3}
 \end{equation}
 
 The resulting spatial and angular distributions are shown in \cref{fig:quat-sampling,fig:quat-sampling-naive}.
@@ -1043,14 +1093,14 @@ where $\mathbf{q} \in \mathbb{R}^7$ is the vector of joint positions and $\dot{\
 
 The joint-space dynamics of the manipulator are governed by the \ac{EOM}:
 \begin{equation}
-    \boldsymbol{\tau} = \mathbf{M}(\mathbf{q})\ddot{\mathbf{q}} + \mathbf{c}(\mathbf{q},\dot{\mathbf{q}}) - \mathbf{g}(\mathbf{q}),
+    \boldsymbol{\tau} = \mathbf{M}(\mathbf{q})\ddot{\mathbf{q}} + \mathbf{h}(\mathbf{q},\dot{\mathbf{q}}) - \mathbf{g}(\mathbf{q}),
     \label{eq:robot_inverse_dynamics}
 \end{equation}
-where $\mathbf{M}(\mathbf{q}) \in \mathbb{R}^{7\times7}$ is the mass matrix, $\mathbf{c}(\mathbf{q},\dot{\mathbf{q}}) \in \mathbb{R}^7$ is the centripetal-Coriolis vector, $\mathbf{g}(\mathbf{q}) \in \mathbb{R}^7$ is the gravity vector, and $\boldsymbol{\tau} \in \mathbb{R}^7$ represents the control torque \emph{input} applied by the actuators.
+where $\mathbf{M}(\mathbf{q}) \in \mathbb{R}^{7\times7}$ is the mass matrix, $\mathbf{h}(\mathbf{q},\dot{\mathbf{q}}) \in \mathbb{R}^7$ is the centripetal-Coriolis vector, $\mathbf{g}(\mathbf{q}) \in \mathbb{R}^7$ is the gravity vector, and $\boldsymbol{\tau} \in \mathbb{R}^7$ represents the control torque \emph{input} applied by the actuators.
 
 Rearranging \eqref{eq:robot_inverse_dynamics} for the joint acceleration yields:
 \begin{equation}
-    \ddot{\mathbf{q}} = \mathbf{M}(\mathbf{q})^{-1} \left[ \boldsymbol{\tau} - \mathbf{c}(\mathbf{q},\dot{\mathbf{q}}) + \mathbf{g}(\mathbf{q}) \right].
+    \ddot{\mathbf{q}} = \mathbf{M}(\mathbf{q})^{-1} \left[ \boldsymbol{\tau} - \mathbf{h}(\mathbf{q},\dot{\mathbf{q}}) + \mathbf{g}(\mathbf{q}) \right].
     \label{eq:robot_acceleration_from_torque}
 \end{equation}
 
@@ -1075,15 +1125,15 @@ The end-effector position and orientation are extracted as:
     \label{eq:robot_ee_extraction}
 \end{equation}
 
-The corresponding end-effector twist, ${}^i\mathbf{v}_{e}(\mathbf{q},\dot{\mathbf{q}})$ is related to the joint velocity by the geometric Jacobian $\mathbf{J}_{e}(\mathbf{q})$:
+The corresponding end-effector twist, ${}^i\mathbf{v}_{e}(\mathbf{q},\dot{\mathbf{q}})$ is related to the joint velocity by the geometric Jacobian $\mathbf{J}_{g}(\mathbf{q})$:
 \begin{equation}
     {}^i\mathbf{v}_{e}(\mathbf{q},\dot{\mathbf{q}}) = 
-    {}^i\mathbf{J}_{e}(\mathbf{q})\dot{\mathbf{q}},
+    {}^i\mathbf{J}_{g,e}(\mathbf{q})\dot{\mathbf{q}},
     \label{eq:robot_end_effector_velocity}
 \end{equation}
 and its acceleration, ${}^i{\mathbf{a}}_{e}(\mathbf{q},\dot{\mathbf{q}},\ddot{\mathbf{q}})$, is:
 \begin{equation}
-    {}^i{\mathbf{a}}_{e}(\mathbf{q},\dot{\mathbf{q}},\ddot{\mathbf{q}}) = {}^i\mathbf{J}_{e}(\mathbf{q})\ddot{\mathbf{q}} + \dot{{}^i\mathbf{J}}_{e}(\mathbf{q},\dot{\mathbf{q}}) \dot{\mathbf{q}}.
+    {}^i{\mathbf{a}}_{e}(\mathbf{q},\dot{\mathbf{q}},\ddot{\mathbf{q}}) = {}^i\mathbf{J}_{g,e}(\mathbf{q})\ddot{\mathbf{q}} + \dot{{}^i\mathbf{J}}_{g,e}(\mathbf{q},\dot{\mathbf{q}}) \dot{\mathbf{q}}.
     \label{eq:robot_end_effector_acceleration}
 \end{equation}
 
@@ -1092,7 +1142,7 @@ At each interior via point, the order of operations follows:
 \begin{equation}
     \boxed{ \mathbf{c}_{int} \longrightarrow 
     \mathbf{q}, \dot{\mathbf{q}}, \ddot{\mathbf{q}} \longrightarrow 
-    \mathbf{M}(\mathbf{q}), \mathbf{c}(\mathbf{q},\dot{\mathbf{q}}), \mathbf{g}(\mathbf{q}) \longrightarrow \boldsymbol{\tau}}.
+    \mathbf{M}(\mathbf{q}), \mathbf{h}(\mathbf{q},\dot{\mathbf{q}}), \mathbf{g}(\mathbf{q}) \longrightarrow \boldsymbol{\tau}}.
     \nonumber
 \end{equation}
 At the trajectory boundaries, the B-spline parameterization deterministically enforces the kinematic boundary conditions via assignment of the B-spline control vertices. 
@@ -1109,7 +1159,7 @@ This analytical reduction leaves the remaining $n-5$ control vertices as the fre
         \mathbf{c}_0, \mathbf{c}_1, \mathbf{c}_2, \mathbf{c}_{n-3}, \mathbf{c}_{n-2} \longrightarrow 
         \mathbf{q}, \dot{\mathbf{q}}, \ddot{\mathbf{q}} } \\
         \text{Dynamics:} \quad & \boxed{ \mathbf{q}, \dot{\mathbf{q}}, \ddot{\mathbf{q}} \longrightarrow 
-        \mathbf{M}(\mathbf{q}), \mathbf{c}(\mathbf{q},\dot{\mathbf{q}}), \mathbf{g}(\mathbf{q}) \longrightarrow 
+        \mathbf{M}(\mathbf{q}), \mathbf{h}(\mathbf{q},\dot{\mathbf{q}}), \mathbf{g}(\mathbf{q}) \longrightarrow 
         \boldsymbol{\tau} }
     \end{aligned}
     \nonumber
@@ -1244,6 +1294,7 @@ For a fixed-endpoint problem, the terminal joint position is prescribed:
 In that case, all six exterior control vertices would be determined by the boundary conditions, as shown for the spacecraft model, where only the interior control vertices would remain as optimization variables.
 
 \subsubsection{State and Control Vertex Bounds}
+\label{sec:robot_state_cv_bounds}
 The state space for the robotic manipulator is simply bounded by the joint position limits $[q_{i,\min}, q_{i,\max}], i \in \{1,\ldots,7\}$. 
 However, unlike the spacecraft model, the robotic manipulator does not have an easily defined space for the control vertex bounds.  
 This is because, while the B-spline convex hull property applies, there is no guaranteed lower bound on the ratio of trajectory position to control vertex value;
@@ -1252,11 +1303,11 @@ As the aim of this work is to perform \emph{global} trajectory optimization, it 
 Therefore, it is necessary to derive the bounds using B-spline principles and model specific details.
 
 \begin{proof}[Control Vertex Bounds]
-Let the joint position trajectory, $q(t)$, be a clamped, uniform, cubic ($p = 3$) B-spline with $N = 11$ control vertices. 
-There are $N_T = N + p + 1 = 15$ knots and $N - p = 8$ internal knot spans. 
-To ensure the \ac{NLPn}'s search space covers all dynamically valid trajectories up to the maximum solve time, $t_{f,\max} = 1.8\,\text{s}$, the bounds must be calculated using the maximum possible knot span:
+Let the joint position trajectory, $q(t)$, be a clamped, uniform B-spline of degree $p$ and $N$ control vertices. 
+There are $N_T = N + p + 1$ knots and $N - p$ internal knot spans. 
+To ensure the \ac{NLPn}'s search space covers all dynamically valid trajectories up to the maximum solve time, $t_{f,\max}$, the bounds must be calculated using the maximum possible knot span:
 \begin{equation}
-\Delta t_{\max} = \frac{t_{f,\max}}{N - p} = \frac{1.8}{8} = 0.225\,\text{s}.
+\Delta t_{\max} = \frac{t_{f,\max}}{N - p}.
 \end{equation}
 
 The joint velocity, $\dot{q}(t)$, is a quadratic B-spline defined by velocity control vertices, $v_i$. From the convex hull property of B-splines, $|\dot{q}(t)|$ is bounded by the maximum velocity vertex $|v_i|$. Therefore, the following relation must be satisfied:
@@ -1264,24 +1315,23 @@ The joint velocity, $\dot{q}(t)$, is a quadratic B-spline defined by velocity co
 |v_i| \le \dot{q}_{\max}.
 \end{equation}
 
-\todoX{Edit this to not have set number of CVs and time}
 \emph{Velocity Control Vertex Formula:}
-For a B-spline with degree $p$ and knot vector $T = \{t_1, t_2, \dots, t_{N+p+1}\}$, the velocity control vertices are given by:
+For a B-spline with degree $p$ and knot vector $\boldsymbol{\kappa} = \{t_1, t_2, \dots, t_{N+p+1}\}$, the velocity control vertices are given by:
 \begin{equation}
 v_i = \frac{p}{t_{i+p+1} - t_{i+1}} (c_{i+1} - c_i),
 \end{equation}
 where $c_i$ are the joint position control vertices of the B-spline.
 
-\emph{Endpoint Vertices ($c_1, c_{11}$):}
-For clamped B-splines, $c_1 = q_0$ and $c_{11} = q_f$. The bounds on endpoint vertices are simply the position bounds:
+\emph{Endpoint Vertices ($c_0, c_{N-1}$):}
+For clamped B-splines, $c_0 = q_0$ and $c_{N-1} = q_f$. The bounds on endpoint vertices are simply the position bounds:
 \begin{equation}
-B_{\max,i} = q_{\max}, \quad B_{\min,i} = q_{\min}, \quad i \in \{1, 11\}.
+B_{\max,i} = q_{\max}, \quad B_{\min,i} = q_{\min}, \quad i \in \{0, N-1\}.
 \end{equation}
 
-\emph{Interior Vertices ($c_3, \dots, c_9$ and conservatively $c_2, c_{10}$):}
-Evaluating the velocity control vertex formula for degree $p = 3$:
+\emph{Interior Vertices ($c_1, \dots, c_{N-2}$):}
+Evaluating the velocity control vertex formula for degree $p$:
 \begin{equation}
-v_i = \frac{3}{t_{i+4} - t_{i+1}} (c_{i+1} - c_i) = \frac{3}{4\Delta t_{\max} - \Delta t_{\max}} (c_{i+1} - c_i) = \frac{1}{\Delta t_{\max}} (c_{i+1} - c_i).
+v_i = \frac{p}{t_{i+p+1} - t_{i+1}} (c_{i+1} - c_i) = \frac{p}{(p+1)\Delta t_{\max} - \Delta t_{\max}} (c_{i+1} - c_i) = \frac{1}{\Delta t_{\max}} (c_{i+1} - c_i).
 \end{equation}
 Constraining via $|v_i| \le \dot{q}_{\max}$ yields:
 \begin{equation}
@@ -1289,14 +1339,22 @@ Constraining via $|v_i| \le \dot{q}_{\max}$ yields:
 \end{equation}
 which provides the control vertex bounds:
 \begin{equation}
-B_{\max,i} = q_{\max} + \dot{q}_{\max} \Delta t_{\max}, \qquad B_{\min,i} = q_{\min} - \dot{q}_{\max} \Delta t_{\max},
+B_{\max,i} = q_{\max} + \dot{q}_{\max} \Delta t_{\max}, \qquad B_{\min,i} = q_{\min} - \dot{q}_{\max} \Delta t_{\max} \quad i \in \{1, \dots, N-2\}.
 \end{equation}
-for $i \in \{3,\ldots,9\}$
-While $i \in \{2, 10\}$ can be given tighter bounds due to knot multiplicity at the clamped endpoints, 
+While $i \in \{1, \dots, p-2, N-p+1, \dots, N-2\}$ can be given tighter bounds due to knot multiplicity at the clamped endpoints, 
 the optimizer does not optimize the control vertices corresponding to these indices.
-As a simplified and conservative approach, the same looser bounds may be applied to this control vertices as well.
+As a simplified and conservative approach, the same looser bounds of the interior vertices are applied to these exterior control vertices as well.
 
-Additionally, the search space could be further constrained by enforcing independent lower and upper bounds for each joint position, rather than the joint-specific symmetric bounds used here.\end{proof}
+Additionally, the search space could be further constrained by enforcing independent lower and upper bounds for each joint position, rather than the joint-specific symmetric bounds used here.
+\end{proof}
+
+\subsubsection{Sampling on $\mathbb{R}^7$}
+\label{sec:SampleR7}
+Unlike for the sampling of quaternions, where special care must be taken to ensure uniform coverage of the unit sphere, the sampling of joint positions can be performed independently for each joint within its respective bounds via 
+\begin{equation}
+q_i \sim \mathcal{U}(B_{\min,i}, B_{\max,i}), \quad i \in \{1, \dots, 7\},
+\end{equation}
+where $\mathcal{U}(B_{\min,i}, B_{\max,i})$ denotes the uniform distribution over the interval $[B_{\min,i}, B_{\max,i}]$ for joint $i$.
 
 \subsubsection{Kinodynamic Constraints}
 \label{sec:arm7_kinodyn_constraints}
@@ -1331,6 +1389,7 @@ where $i$ denotes the inertial frame,
 $B$ denotes the robot base frame, 
 $F$ denotes the joint dependent \ac{MDH} frame, 
 and $ee$ denotes the end-effector frame.
+\todoX{Double check the frame conventions here.}
 
 Unlike the directly specified terminal orientations in the spacecraft model, the robot's terminal joint position $\mathbf{q}(t_f)$ is not fixed. 
 Instead, it is implicitly determined by the end-effector pose constraints required to intercept the target ball. 
@@ -1344,6 +1403,9 @@ This alignment is enforced via the two orientation constraints defined in the li
 Together, the terminal end-effector pose contributes a total of five scalar equality constraints (3 position, 2 orientation) to the boundary conditions.
 For the 7-\ac{DOF} robot, the five terminal end-effector pose constraints leave two additional degrees of freedom in the joint space.
 The redundancy results in infinite possible joint configurations satisfying the terminal end-effector pose constraints and allows for the global search of optimal trajectories.
+No additional control architecture for the remaining two-dimensional null-space is explicitly considered in this formulation, including avoidance of kinematic singularities resulting from certain joint configurations.
+Instead, the \ac{NLPn} formulation naturally avoids this risk because near-singular poses require near-infinite joint velocities and torques, which would yield high objective function costs and violate the path constraints.
+The optimizer inherently steers the solution away from singular and near-singular configurations.
 
 Kinematic and dynamic path constraints consist of:
 \begin{itemize}
@@ -1383,7 +1445,7 @@ The continuous-time spacecraft OCP minimizes control effort:
 \end{equation}
 subject to:
 \begin{align}
-    \text{Inverse Kinodynamics:} \quad & \boldsymbol{\omega}(t) = 2 \mathbf{C}(\mathbf{q}(t)) \dot{\mathbf{q}}(t), \\
+    \text{Inverse Kinodynamics:} \quad & \boldsymbol{\omega}(t) = 2 \mathbf{C}_q(\mathbf{q}(t)) \dot{\mathbf{q}}(t), \\
                                        & \boldsymbol{\tau}(t) = \mathbf{I} \dot{\boldsymbol{\omega}}(t) + \boldsymbol{\omega}(t) \times \left( \mathbf{I} \boldsymbol{\omega}(t) \right), \\
     \text{Quaternion Unit Norm:} \quad & \|\mathbf{q}(t)\|_2 - 1 = 0,  \label{eq:sc_norm_constr} \\
     \text{Actuator Torque Limits:} \quad & \boldsymbol{\tau}_{\min} \le \boldsymbol{\tau}(t) \le \boldsymbol{\tau}_{\max}, \label{eq:sc_tau_bounds} \\
@@ -1401,15 +1463,15 @@ The second problem considers an 7-\ac{DOF} robotic manipulator catching a ball o
 The specifications on the state vector, constraints, and \ac{EOM} are detailed in \cref{sec:methodology_dynamics_arm7_model}.
 
 \subsubsection{Continuous-Time OCP Statement}
-The continuous-time optimal control problem for the 7-\ac{DOF} manipulator ball catch minimizes joint control effort and jerk over the free catch time $t_f \in [0.06, 1.8]\,\text{s}$:   
+The continuous-time optimal control problem for the 7-\ac{DOF} manipulator ball catch minimizes joint control effort and acceleration over the free catch time $t_f \in [0.06, 1.8]\,\text{s}$:   
 \begin{equation}
-\min_{\mathbf{q}(t), t_f} \quad J_{\text{robot}} = \int_{t_0}^{t_f} \left( \sum_{i=1}^{7} \left( \tau_i(t) \dot{q}_i(t) \right)^2 + \Vert{}\mathbf{J}\dddot{\mathbf{q}}(t)\Vert{}_2^2 \right) \mathrm{d}t,
+\min_{\mathbf{q}(t), t_f} \quad J_{\text{robot}} = \int_{t_0}^{t_f} \left( \sum_{i=1}^{7} \left( \tau_i(t) \dot{q}_i(t) \right)^2 + \Vert{}\mathbf{J}_{\mathrm{m}}\ddot{\mathbf{q}}(t)\Vert{}_2^2 \right) \mathrm{d}t,
 \label{eq:arm7_ocp_objective}
 \end{equation}
-where $\mathbf{J}$ is the diagonal matrix of joint motor inertias, \\
+where $\mathbf{J}_{\mathrm{m}}$ is the diagonal matrix of joint motor inertias, \\
 subject to:
 \begin{align}
-\text{Inverse Kinodynamics:} \quad & \mathbf{M}(\mathbf{q})\ddot{\mathbf{q}} + \mathbf{C}(\mathbf{q}, \dot{\mathbf{q}})\dot{\mathbf{q}} - \mathbf{g}(\mathbf{q}) = \boldsymbol{\tau}(t), \label{eq:arm_dyn_constr} \\
+\text{Inverse Kinodynamics:} \quad & \mathbf{M}(\mathbf{q})\ddot{\mathbf{q}} + \mathbf{h}(\mathbf{q}, \dot{\mathbf{q}}) - \mathbf{g}(\mathbf{q}) = \boldsymbol{\tau}(t), \label{eq:arm_dyn_constr} \\
                              \quad & \mathbf{p}_{ee}(\mathbf{q}) = \mathbf{T}_{i,ee}(\mathbf{q})(1\!:\!3,4), \\
                              \quad & \mathbf{R}_{i,ee}(\mathbf{q}) = \mathbf{T}_{i,ee}(\mathbf{q})(1\!:\!3,1\!:\!3), \\
 \text{Joint Position Bounds:} \quad & \mathbf{q}_{\min} \le \mathbf{q}(t) \le \mathbf{q}_{\max}, \label{eq:arm_q_bounds} \\
@@ -1446,6 +1508,13 @@ analytically. For the spacecraft, only the interior control vertices $\mathbf{P}
     $n_{\text{bc}}$ equals five; the boundary conditions on catch position, approach angle, and time do not reduce the number of decision variables because the final control vertex is not constrained to a single configuration.
 \end{itemize}
 
+To prevent inter-sample constraint violation between discretization nodes, the continuous B-spline trajectories should be over-sampled---i.e. they should contain more via points than control points $n_{\mathrm{via}} > n_{\mathrm{ctrl}}$. 
+The control points represent the degree of freedom of the B-spline trajectory; 
+if the number of via points is less than or equal to the number of control points, the problem is under-constrained and the optimizer can perfectly match the constraints at the via points while likely violating them between the via points.
+For the spacecraft model, an oversampling ratio of approximately $4:1$ ($n_{\mathrm{via}} \approx 4 n_{\mathrm{ctrl}}$) is used to enforce adherence to the constraints, specifically the exclusion zones. 
+For the robotic manipulator, a ratio of approximately $2:1$ ($n_{\mathrm{via}} \approx 2 n_{\mathrm{ctrl}}$) is applied to balance path constraint fidelity with computational efficiency for this more difficult optimization problem.
+
+
 \subsection{NLP Optimization Framework}
 \label{sec:nlp_solver_framework}
 
@@ -1453,23 +1522,11 @@ The transcribed finite-dimensional \acp{NLPn} are solved using the primal-dual i
 \ac{IPOPT} is released as open-source software \cite{Waechter06}.
 More can be found in the original publication by Wächter and Biegler \cite{Waechter06}.
 The solver minimizes the objective function subject to path and boundary constraints by solving a sequence of barrier subproblems using a filter line-search method, with local optima satisfying the \ac{KKT} conditions. 
-Exact first- and second-order derivatives—specifically the constraint Jacobian $\nabla \mathbf{g}(\mathbf{w})$ and the Hessian of the Lagrangian $\nabla^2 \mathcal{L}(\mathbf{w}, \boldsymbol{\lambda})$—are evaluated analytically via automatic differentiation using CasADi \cite{Andersson19}. 
+Exact first- and second-order derivatives—specifically the constraint Jacobian $\nabla \mathbf{g}(\mathbf{w})$ and the Hessian of the Lagrangian $\nabla^2 \mathcal{L}(\mathbf{w}, \boldsymbol{\lambda})$—are evaluated analytically via automatic differentiation using \ac{CasADi} \cite{Andersson19}. 
 Because B-splines possess local support, each decision variable influences only a small portion of the trajectory, i.e., a limited subset of collocation nodes, resulting in highly sparse, banded matrices that \ac{IPOPT} exploits for computationally efficient linear solves.
 
 \section{Algorithm Frameworks}
-\label{sec:methodology-algorithms}
-Present the four comparative trajectory-generation approaches with a consistent structure:
-\begin{itemize}
-	\item[$\square$] \textbf{MC-GBO:} Monte Carlo Gradient-Based Optimization.
-	\item[$\square$] \textbf{RRT*-GBO:} Rapidly-exploring Random Tree Star combined with Gradient-Based Optimization.
-	\item[$\square$] \textbf{P-HO:} Probabilistic Homotopy Optimization.
-	\item[$\square$] \textbf{IPSO:} Inverse Dynamics Particle Swarm Optimization.
-	\item[$\square$] For each approach, describe the initialization, sampling or warm-start mechanism, optimization phase, constraint treatment, and resulting trajectory representation.
-	\item[$\square$] Include the $\SO{3}$ sampling mechanisms, distinguishing naive sampling from uniform sampling on $\SO{3}$.
-	\item[$\square$] Include the sampling bounds used for the Arm7 manipulator.
-\end{itemize}
-
-\section{Algorithm Frameworks}
+\label{sec:algorithm_frameworks}
 The core of this work is the implementation, evaluation, and comparison of global trajectory optimization approaches for realistic physical models and scenarios in aerospace and robotic applications.
 The spacecraft and robotic manipulator models and tasks prove highly nonlinear and are constrained by complex kinodynamic and environmental limitations.
 After a review of the \ac{SOTA} of \emph{kinodynamically-consistent} trajectory optimization methods, four algorithms are selected and introduced: 
@@ -1485,12 +1542,26 @@ Primary evaluation criteria include solution quality, convergence speed, and rob
 Each algorithm is further detailed in the following subsections.
 
 \subsection{Monte Carlo Gradient-Based Optimization (MC-GBO)}
-\todoX{Write MC-GBO details}
+
+\ac{MC-GBO} serves as the naive-baseline multistart approach to  global trajectory optimization, where multiple wholly independent initial trajectory guesses are generated and optimized to explore the search space.
+The advantages of \ac{MC-GBO} include its simplicity and ease of parallelization.
+However, its main drawbacks are its lack of guidance between each independent optimization run---which results in numerous redundant solves---its direct, single-stage approach to solving the fully constrained, tight tolerance, highly nonlinear problem, and its difficulty in handling increasingly complex and constrained scenarios.
+\cref{alg:mc-gbo} details the procedure for this straightforward multistart approach:
+Define the base random seed $s_0$, the maximum number of Monte Carlo iterations $N_{MC}$, the desired number of solutions $N_{sol,des}$, and the maximum allowed time $T_{max}$ before executing the optimization loop.
+For each Monte Carlo iteration, a new random initial trajectory guess $\mathbf{x}_0^{(i)}$ is generated using the current seed $s_i$ via $\text{random\_initial\_guess()}$--sampling of the B-spline control points is detailed in \cref{sec:SampleSO3,sec:SampleR7}---and the optimization is performed to potentially update the best solution found so far $\mathbf{x}_{best}$.
+$\text{gbo\_solve()}(\mathbf{x}_0^{(i)})$ is called to perform the optimization of the \ac{NLPn} with the current initial trajectory guess using the chosen gradient-based optimizer--in this work, IPOPT.
+If the optimization is successful and yields a better solution than the current best, update $\mathbf{x}_{best}$ and $c_{best}$.
+Once any of the stopping criteria are met (maximum iterations $N_{MC}$, desired number of solutions $N_{sol,des}$, or maximum time $T_{max}$), the optimization loop terminates, and the best solution found is returned.
+
+Critically, \ac{MC-GBO} can parallelize the entire optimization process, as each Monte Carlo iteration is independent. 
+Modern libraries and frameworks for parallel computing can be leveraged to significantly reduce the overall computation time by distributing the optimization tasks across multiple processors.
+This parallelizability is the saving grace of \ac{MC-GBO}, allowing it to efficiently explore a large number of initial guesses without being bottlenecked by sequential optimization runs, thus keeping it relatively competitive to more sophisticated global optimization approaches.
 
 \begin{algorithm}[H]
 \caption{\texttt{MC\_GBO}}
+\label{alg:mc-gbo}
 \KwData{A base random seed $s_0$ used to generate independent initial trajectory guesses.}
-\KwResult{Parallel optimization of trajectories to find the minimum cost path until some iteration limit, $N_{MC}$, desired number of solutions, $N_{sol,des}$, or maximum time $T_{max}$.}
+\KwResult{Parallel optimization of trajectories to find the minimum cost path until some iteration limit, $N_{MC}$, (optional) desired number of solutions, $N_{sol,des}$, or (optional) maximum time $T_{max}$.}
 
 $c_{best} \leftarrow \infty$; \\[0.5ex]
 $\mathbf{x}_{best} \leftarrow \emptyset$; \\[0.5ex]
@@ -1520,12 +1591,120 @@ $N_{sol} \leftarrow 0$; \\[0.5ex]
 \end{algorithm}
 
 \subsection{Rapidly-exploring Random Tree Star with Gradient-Based Optimization (RRT*-GBO)}
-\todoX{Write RRT*-GBO details}
+
+\ac{RRT*-GBO} is the central focus of this work regarding its performance relative to other modern trajectory optimization methods \cite{Stoneman14}. 
+Stoneman and Lampariello \cite{Stoneman14} build upon standard \ac{RRT*}---first introduced by Karaman and Frazzoli \cite{Karaman11} as an extension of the original \ac{RRT} algorithm by La Valle \cite{LaValle06}---by incorporating gradient-based optimization for the edge connections between tree nodes. 
+Descriptions of each \ac{RRT} variant are best reviewed in the original publications \cite{LaValle06,Karaman11,Stoneman14}, the following discussion provides a high-level overview as it pertains to this work.
+The core strength of \ac{RRT*-GBO} lies in combining the global exploration of sampling-based planners with local \ac{GBO}, replacing traditional straight-line or \ac{SLERP} connections. 
+A primary limitation of standard \ac{RRT} and \ac{RRT*} in kinodynamic planning is that straight-line connections fail to respect system dynamics, resulting in kinodynamically infeasible trajectories that implicitly demand instantaneous control adjustments \cite{Stoneman14}. 
+Additionally, straight-line connections are suboptimal across many cost landscapes \cite{Stoneman14}. 
+The \ac{GBO} edge connection addresses these fundamental shortcomings by directly solving a local \ac{BVP} for each candidate edge, thereby strictly obeying the dynamics, boundary conditions, and path constraints \cite{Stoneman14}. 
+While solving numerous local \ac{BVP}s increases computational complexity \cite{Stoneman14}, this drawback is significantly mitigated by generating sparser trees via node pruning, substantially reducing the required number of optimization solves \cite{Stoneman14}.
+In fact, \ac{RRT*-GBO} often converges to high-quality solutions rapidly.
+As an extension of \ac{RRT*}, \ac{RRT*-GBO} inherits the asymptotic optimality with probability one over an infinite time horizon property \cite{Karaman11};
+this property guarantees that, given sufficient time and samples, the algorithm will converge to the optimal solution.
+
+\ac{RRT*-GBO} may be additionally extended with informed sampling strategies such as ellipsoidal heuristic bounding, which can accelerate convergence once an initial solution is found, this work employs standard uniformed formulation.
+Although an informed variant was fully implemented within the software framework developed for this thesis, it was deliberately excluded from the final results configuration in order to analyze and benchmark the foundational \ac{RRT*-GBO} algorithm exactly as documented in the original publication \cite{Stoneman14}.
+
+Algorithms \cref{alg:rrt-star-gbo,alg:connect-to-goal,alg:neighborhood-query,alg:rewire-query} summarize the main components of the \ac{RRT*-GBO} approach \cite{Stoneman14}.
+\cref{fig:rrt-star-gbo} illustrates the tree construction and trajectory refinement process of the RRT*-GBO algorithm, highlighting particularly its ability to escape local minima and explore between homotopy classes.
+Certain parameters of \ac{RRT*-GBO} require problem and model specific implementations; as we introduced two models in this work, the following subsections details their respective configurations and adaptations.
+
+\begin{figure}[htbp]
+    \centering
+    \subfloat[Initial tree and goal connection attempt; the goal lies outside the connection radius.]{%
+        \includegraphics[width=0.48\textwidth]{tikz/RRT_Demo1.pdf}%
+    }%
+    \hfill
+    \subfloat[Neighborhood query for a new sample.]{%
+        \includegraphics[width=0.48\textwidth]{tikz/RRT_Demo2.pdf}%
+    }%
+    \\
+    \subfloat[Rewiring to a lower cost path and removal of the previous edge.]{%
+        \includegraphics[width=0.48\textwidth]{tikz/RRT_Demo3.pdf}%
+    }%
+    \hfill
+    \subfloat[Goal connection success and trajectory smoothing.]{%
+        \includegraphics[width=0.48\textwidth]{tikz/RRT_Demo4.pdf}%
+    }%
+    \caption{Illustration of the main stages of the RRT*-GBO tree construction and trajectory refinement.}
+    \label{fig:rrt-star-gbo}
+\end{figure}
+
+\subsubsection{Spacecraft Model Implementation}
+Two main functions of the \ac{RRT*-GBO} algorithm require specific implementations for the spacecraft model: sampling via \texttt{random\_generator()} and metrics for $r_{prune}$, $r_{ball}$, and $r_{connect}$.
+\texttt{random\_generator()} generates random new quaternion nodes via uniform sampling on \ac{SO3} using \cref{eq:uniform-sample-so3} and the method described in that section, with the consideration that $q \sim -q$.
+
+Secondly, the metrics for $r_{prune}$, $r_{ball}$, and $r_{connect}$ are defined for the spacecraft model as a function of the principal eigenaxis angle between two unit quaternions, $\theta(q_{near}, q_{rand}) = 2 \cos^{-1}(|q_{near}^T q_{rand}|)$. 
+However, evaluating the inverse cosine for every nearest-neighbor query and proximity check incurs a high computational burden. 
+To optimize performance, the algorithm evaluates distances using a more computationally efficient proxy metric:
+\begin{equation}
+    d_{\text{proxy}}(q_{near}, q_{rand}) = 1 - |q_{near}^\top q_{rand}|^2 = \sin^2\left(\frac{\theta}{2}\right)
+\end{equation}
+This proxy avoids the expensive transcendental calculation while remaining strictly monotonic over the interval $\theta \in [0, \pi]$. 
+Since it exactly preserves the ordering of nearest-neighbor and radius tests, it guarantees the exact same algorithmic decisions as the raw angular metric. 
+Furthermore, squaring the dot product natively resolves the dual-covering ambiguity of quaternions, ensuring invariance to $q$ and $-q$. 
+To maintain geometric intuition during tuning, the user-defined angular configuration radii ($r_{prune}$, $r_{ball}$, and $r_{connect}$) are simply converted into their equivalent proxy radii prior to execution.
+
+Finally, a strategy is required when a sampled node $q_{\text{rand}}$ falls outside the neighborhood of its nearest tree node $q_{\text{near}}$. 
+If the distance exceeds the maximum radius $r_{\text{ball}}$, the sample is truncated to the edge of the ball along the shortest geodesic on \ac{SO3}. To execute this, the true angular separation $\theta$ is recovered from the proxy metric:
+\begin{equation}
+    \theta = 2 \cos^{-1} \left( \sqrt{1 - d_{\text{proxy}}(q_{\text{near}}, q_{\text{rand}})} \right)
+\end{equation}
+If $\theta > r_{\text{ball}}$, an interpolation fraction $\alpha = \frac{r_{\text{ball}}}{\theta}$ is computed, and the sample is replaced using Spherical Linear Interpolation (SLERP):
+\begin{equation}
+    q_{\text{new}} = \text{SLERP}(q_{\text{near}}, q_{\text{rand}}, \alpha)
+\end{equation}
+This guarantees that $q_{\text{new}}$ lies exactly $r_{\text{ball}}$ radians from $q_{\text{near}}$ along the shortest rotational path. 
+All samples are checked to ensure they lie within the valid configuration space---i.e. outside of \ac{EZ}s---before being accepted as valid nodes in the tree.
+If the truncation feature is disabled, samples generated outside the ball are simply rejected, whereby a new sample is drawn.
+
+Local, as well as goal, rewiring occurs based on path cost from root to node/goal alone, without consideration for the number of edges, duration, or other factors.
+
+A final note not well captured in the pseudocode algorithms is the need to deal with the duration of the edges in the tree.
+In this work, a fixed duration was assigned for all edges in the tree; this commonly results in a raw edge trajectory far longer than fixed-duration specified in the \ac{BVP}.
+The algorithm relies on the ability to scale the dynamics of the trajectory to fulfill the fixed-duration requirement only during the smoothing phase.
+The edge duration question remains an excellent open consideration for future research.
+
+\subsubsection{Robotic Manipulator Model Implementation}
+Likewise, the robotic manipulator model requires specific implementations for sampling and distance metrics, as well as a third more fundamental consideration.\\
+\texttt{random\_generator()} generates random new joint configuration nodes via uniform sampling within the joint limits of the manipulator, $\mathbf{q}_{\text{rand}} \sim \mathcal{U}\left(\mathbf{q}_{\min}, \mathbf{q}_{\max}\right) \in \mathbb{R}^7$.
+The metric used for $r_{prune}$ and $r_{ball}$ is the joint-space two-norm, defined as:
+\begin{equation}
+    d(\mathbf{q}_{near}, \mathbf{q}_{rand}) = \|\mathbf{q}_{near} - \mathbf{q}_{rand}\|_2,
+\end{equation}
+whereas the metric used for $r_{connect}$ is the task-space Euclidean distance and orientation difference, defined as:
+\begin{equation}
+    d(\mathbf{x}_{ee}, \mathbf{x}_{ball}) = \|\mathbf{p}_{ee} - \mathbf{p}_{ball}\|_2, \\
+    d(\mathbf{x}_{ee}, \mathbf{x}_{ball}) = \cos^{-1}(|a_{ee}^T a_{ball}|),
+\end{equation}
+where $\mathbf{p}_i$ and $\mathbf{a}_i$---defined in \cref{sec:methodology_dynamics_arm7_model}---represent the position and approach axis of the end-effector and ball corresponding to the 6-DoF state $\mathbf{x}_i$. 
+A proxy equivalent can also be used for the approach axis comparison. 
+A \texttt{connect\_to\_goal} attempt must pass both $r_connect$ metrics independently.
+$r_{connect}$ uses task-space metrics for both position and orientation, rather than joint-space distances, because the inverse dynamics solution to a specified end-effector pose generally has multiple valid joint configurations.
+In order to not bias the planner toward any particular inverse kinematics solution, task-space metrics are used.
+
+Truncation behavior is handled similarly to the spacecraft model, but executes via linear interpolation in the 7-dimensional joint space rather than SLERP. 
+If the joint-space distance $d_q$ exceeds $r_{\text{ball,joint}}$, the sample is either rejected or truncated along the straight line segment toward $\mathbf{q}_{\text{near}}$. 
+The truncated sample is calculated using the fraction $\alpha = \frac{r_{\text{ball,joint}}}{d_q}$:
+\begin{equation}
+    \mathbf{q}_{\text{new}} = 
+    \text{clip}\Big(\mathbf{q}_{\text{near}} + \alpha (\mathbf{q}_{\text{rand}} - \mathbf{q}_{\text{near}}), \, \mathbf{q}_{\min}, \, \mathbf{q}_{\max}\Big)
+\end{equation}
+The clipping function ensures the newly interpolated configuration strictly adheres to the manipulator's physical joint bounds. 
+
+The more significant consideration for the robotic manipulator model is coming to terms with the goal being an arc corresponding to the ballistic path of the ball, rather than a fixed final pose.
+As such, the distance metrics for $r_{connect}$ evaluate the proximity of the end-effector to the entire arc of the ball's trajectory, and calculate the shortest distance to the arc and the corresponding ball time along its trajectory at that point.
+This final position and time is used as the initial guess for the free-time \ac{BVP}, though they may update during the solution process.
+For non-goal edges, the \ac{BVP} is modified slightly: rather than a free-time, free-position problem, the final position is fixed to the configuration of the newly added node and each edge time is a fixed span--as described for the spacecraft model.
+Thus, when goal rewiring occurs, often an entirely new path to a new point along the ball's trajectory is found, rather than a traditional rewiring of the existing successful path.
 
 \begin{algorithm}[H]
 \caption{\texttt{RRT*\_GBO}}
+\label{alg:rrt-star-gbo}
 \KwData{A tree $\mathcal{T}$ which stores states as nodes, $x$, and trajectories as edges, $e$, containing a start state.}
-\KwResult{Incremental building of the tree until some iteration limit, $N$, desired number of solutions, $N_{sol,des}$, or maximum time $T_{max}$.}
+\KwResult{Incremental building of the tree until some iteration limit, $N$, (optional) desired number of solutions, $N_{sol,des}$, or (optional) maximum time $T_{max}$.}
 
 \For{$i \leftarrow 0$ \KwTo $N$}{
     \If{$T \ge T_{max}$}{
@@ -1545,6 +1724,7 @@ $N_{sol} \leftarrow 0$; \\[0.5ex]
 
 \begin{algorithm}[H]
 \caption{\texttt{connect\_to\_goal}($x_{last}, x_{goal}$)}
+\label{alg:connect-to-goal}
 
 $e_{goal} \leftarrow \texttt{gbo\_extend}(x_{last} \rightarrow x_{goal})$; \\[0.5ex]
 \If{$e_{goal} \text{ converged}$}{
@@ -1560,6 +1740,7 @@ $e_{goal} \leftarrow \texttt{gbo\_extend}(x_{last} \rightarrow x_{goal})$; \\[0.
 
 \begin{algorithm}[H]
 \caption{\texttt{neighborhood\_query}($x_{new}, r_{prune}, tree$)}
+\label{alg:neighborhood-query}
 
 \For{$j \leftarrow 0$ \KwTo $\texttt{length\_of}(tree)$}{
     $e_j \leftarrow \texttt{gbo\_extend}(tree.\vec{x}[j] \rightarrow x_{new})$; \\[0.5ex]
@@ -1577,6 +1758,7 @@ $\texttt{add\_to\_tree}(e_{new})$;
 
 \begin{algorithm}[H]
 \caption{\texttt{rewire\_query}($x_{new}, \vec{x}_{near}$)}
+\label{alg:rewire-query}
 
 \For{$j \leftarrow 0$ \KwTo $\texttt{length\_of}(\vec{x}_{near})$}{
     $e_j \leftarrow \texttt{gbo\_extend}(x_{new} \rightarrow \vec{x}_{near}[j])$; \\[0.5ex]
@@ -1587,59 +1769,159 @@ $\texttt{add\_to\_tree}(e_{new})$;
 }
 \end{algorithm}
 
-\todoX{informed pseudocode in progress}
-\begin{algorithm}[H]
-\caption{\texttt{informed\_acceptance\_filter} (Optional Variant)}
-\KwData{Candidate sample $x_{rand}$, nearest node $x_{near}$, goal $x_f$, best raw cost $c_{\mathrm{best}}^{\mathrm{raw}}$.}
-\KwResult{\textbf{true} if sample is accepted, \textbf{false} if rejected.}
-
-\If{\textbf{not} \texttt{use\_informed\_sampling} \textbf{or} $c_{\mathrm{best}}^{\mathrm{raw}} = \infty$}{
-\Return \textbf{true}\tcp*[r]{Standard RRT*-GBO (uninformed) pass}
-}
-
-$\theta_{0f} \leftarrow \mathbf{angle}(\mathcal{T}.x[\mathbf{root}], x_f)$;
-\If{$\theta_{0f} \le 0$}{
-\Return \textbf{true};
-}
-
-$u \sim \mathcal{U}(0,1)$;
-\If{$u < \varepsilon_{\mathrm{greedy}}$}{
-\Return \textbf{true}\tcp*[r]{Greedy exploration override}
-}
-
-$g_{\mathrm{estimate}} \leftarrow \mathbf{cost}(x_{near})$;
-$h_{\mathrm{estimate}} \leftarrow \left( \frac{\mathbf{angle}(x_{near},x_{rand})+\mathbf{angle}(x_{rand},x_f)}{\theta_{0f}} \right)^2$;
-$f_{\mathrm{estimate}} \leftarrow g_{\mathrm{estimate}} + h_{\mathrm{estimate}}$;
-
-$c_{\mathrm{threshold}} \leftarrow c_{\mathrm{best}}^{\mathrm{raw}} s_{\mathrm{margin}}$;
-
-\eIf{$f_{\mathrm{estimate}} < c_{\mathrm{threshold}}$}{
-\Return \textbf{true}\tcp*[r]{Cost-based acceptance}
-}{
-\Return \textbf{false}\tcp*[r]{Informed rejection}
-}
-\end{algorithm}
-
 \subsection{Probabilistic Homotopy Optimization (P-HO)}
-\todoX{Write PHO details}
+
+\ac{P-HO} is a stochastic continuation-based algorithm developed for trajectory optimization problems introduced by Pardis, Chignoli, and Kim \cite{Pardis24}.
+The algorithm operates by exploring the the joint state-homotopy parameter search space defined by $\mathcal{X} \times \mathcal{H}_d$ where $\mathcal{X}$ represents the set of possible decision variables and $\mathcal{H}_d \in [0,1]^d$ represents the set of $d$-dimensional homotopy parameters.
+While classical homotopy methods typically follow a deterministic path from the initial to the goal problem, \ac{P-HO} introduces stochastic sampling in the selection of homotopy parameters with $\mathcal{H}_d = \mathbf{0}$ being the baseline unconstrained or minimally constrained problem and $\mathcal{H}_d = \mathbf{1}$ representing the fully constrained goal problem.
+\ac{P-HO} grows an optimization tree $\mathcal{T}$ in the joint state-homotopy parameter space, with each tree node representing a converged candidate solution $\mathbf{x} \in \mathcal{X}$ and its associated homotopy parameter $\boldsymbol{\lambda} \in \mathcal{H}_d$.
+A thorough description of the \ac{P-HO} algorithm can be found in \cite{Pardis24}.
+
+Initialization of the algorithm is discussed in \cite{Pardis24}, but no universal method for generating initial trajectories at $\boldsymbol{\lambda} = \mathbf{0}$ is described.
+Instead, the initial guess $\mathbf{x}_0$ is a user defined prerogative.
+However, the core requirement is that the homotopy parameter mapping $\Gamma(\boldsymbol{\lambda})$ must be designed such that at $\boldsymbol{\lambda} = \mathbf{0}$, the problem $\mathcal{P}_{\Gamma(\mathbf{0})}$ possesses a \emph{sufficiently large} basin of attraction---i.e. even a trivial initial guess should converge to a feasible solution \cite{Pardis24}.
+Neither is the number of initial guesses specified, again leaving it to implementation discretion \cite{Pardis24}.
+In this work, we adopted a variable number of initial guesses, which becomes a hyperparameter that can be tuned based on the specific problem instance and computational resources available.
+Each initial guess solve compares the resulting trajectory against the existing solutions in the optimization tree to determine if it represents a novel solution; 
+repeated solution are discarded and attempted again up to five times.
+Likewise, the state vector is initialized either randomly or randomly with a single informed guess based on a heuristic--such as a geodesic interpolation between the start and goal states.
+
+\paragraph{Model Specific Implementation}
+
+The algorithm defines $\boldsymbol{\lambda}$ as potentially being d-dimensional, but in this work it was treated as a scalar for simplicity $d=1$, with it scaling all homotopy constraints simultaneously.
+Although other approaches are possible, our implementation applies homotopy continuation to path constraints while boundary conditions remain strictly enforced for all values of the homotopy parameter $\lambda$.
+
+\begin{itemize}
+    \item \textbf{Spacecraft Model:} 
+    $\lambda$ smoothly introduces task constraints along $[0,1]$:
+    \begin{enumerate}
+        \item Exclusion zones: the exclusion zone radius from relaxed to constrained one of two ways, either removing \ac{EZ}s entirely or merely minimizing them greatly, as shown respectively as:
+        \begin{equation}
+            r_{\text{EZ}}(\lambda) = \lambda r_{\text{EZ}} 
+        \end{equation}
+        \begin{equation}
+            r_{\text{EZ}}(\lambda) = [(1-s)+s\lambda]r_{\text{EZ}},
+        \end{equation}
+        with $s$ representing the shrink factor, for this work's analysis set as $s = 0.9$, resulting in an initial \ac{EZ} radius 10\% of the final.           
+        \item Angular velocity limits: the angular velocity limits are set at ten-times the nominal value initially and gradually reduced to the actual limits as $\lambda$ increases:
+            \begin{equation}
+                \omega_{\max}(\lambda) = [1+9(1-\lambda)]\omega_{\max}.
+            \end{equation}
+        \item Control torque limits: the torque limits are set at ten-times the nominal value initially and gradually reduced to the actual limits as $\lambda$ increases:
+            \begin{equation}
+                \tau_{\max}(\lambda) = [1+9(1-\lambda)]\tau_{\max}.
+            \end{equation} 
+    \end{enumerate}
+
+    \item \textbf{Robotic Manipulator:} 
+    The parameter vector $\boldsymbol{\lambda} = [\lambda_{\mathbf{g}}, \lambda_{\boldsymbol{\tau}}, \lambda_{\text{ee}}]^\top$ regulates dynamic difficulty:
+    \begin{enumerate}
+        \item Joint position limits: the position limits are set at $\pm 2\pi$ initial and gradually reduced to the actual limits of each individual joint as $\lambda$ increases:
+            \begin{equation}
+                q_{\min}(\lambda) = (1 - \lambda)(-2\pi) + \lambda q_{\min},
+            \end{equation}
+            \begin{equation}
+                q_{\max}(\lambda) = (1 - \lambda)(2\pi) + \lambda q_{\max}.
+            \end{equation}
+        \item Joint velocity limits: the velocity limits are set at ten-times the nominal value initially and gradually reduced to the actual limits of each individual joint as $\lambda$ increases:
+            \begin{equation}
+                \omega_{\max}(\lambda) = [1+9(1-\lambda)]\omega_{\max}.
+            \end{equation}
+        \item Control torque limits: the torque limits are set at ten-times the nominal value initially and gradually reduced to the actual limits as $\lambda$ increases:
+            \begin{equation}
+                \tau_{\max}(\lambda) = [1+9(1-\lambda)]\tau_{\max}.
+            \end{equation}
+        \item End-effector orientation and position constraints: these constraints are not relaxed in our formulation, instead remaining strictly enforced throughout the planning process.
+    \end{enumerate}
+\end{itemize}
+
+Initial guess generation for the of the relaxed problem is done via:
+\begin{itemize}
+    \item \textbf{Spacecraft Model:} 
+    The initial guess for the spacecraft model uses a single informed trajectory with all remaining initial guesses generated randomly.
+    \begin{enumerate}
+        \item Random initialization: the control vertices parameterizing the B-spline trajectory are randomly initialized as described in \cref{sec:SC_state_CV_bounds}.
+        \item Informed initialization: one initial guess is generated using a trajectory \ac{SLERP}-interpolation between the initial and goal orientations.
+    \end{enumerate}
+
+    \item \textbf{Robotic Manipulator:} 
+    The initial guess for the robotic manipulator uses pure random initialization without an informed trajectory due to the inverse dynamics generating multiple solutions for a given end-effector trajectory.
+    \begin{enumerate}
+        \item Random initialization: the control vertices parameterizing the B-spline trajectory are randomly initialized within the control vertex bounds as described in \cref{sec:robot_state_cv_bounds}.
+    \end{enumerate}
+\end{itemize}
+
+\paragraph{P-HO Workflow}
+The \ac{P-HO} framework alternates between a \emph{sampling phase} and a \emph{solving phase} based on the solve-to-sample ratio $\rho = \frac{|\mathcal{S}_{\mathcal{A}}|}{|\mathcal{T}| \times |\mathcal{S}_{\lambda}|}$, where $\mathcal{S}_{\lambda}$ is the set of sampled homotopy parameters, $\mathcal{T}$ is the set of nodes in the optimization tree, and $\mathcal{S}_{\mathcal{A}}$ tracks previously attempted solver pairs $(N_{i,j}, \boldsymbol{\lambda}_l)$:
+\begin{enumerate}
+    \item \textbf{Initialization:} The optimization tree is initialized at the root node $N_{0,0} = (\mathbf{x}_0^*, \mathbf{0}_d)$. The initial guess $\mathbf{x}_0$ easily converges under $\mathcal{P}_{\Gamma(\mathbf{0}_d)}$ because constraints are fully relaxed. The parameter candidate set is seeded as $\mathcal{S}_{\lambda} = \{\mathbf{0}_d, \mathbf{1}_d\}$.
+    \item \textbf{Solve Phase ($\rho \le \rho_{\mathcal{A}}$):} A candidate node $N_{i,j} = (\mathbf{x}_i^*, \boldsymbol{\lambda}_j)$ and a target parameter vector $\boldsymbol{\lambda}_l \in \mathcal{S}_{\lambda}$ are selected via \texttt{sampleAttempt} (\cref{alg:sample-attempt}). With probability $P_g$, the target parameter is directly chosen as the goal vector $\mathbf{1}_d$. The local gradient solver (\ac{IPOPT}) attempts to solve $\mathcal{P}_{\Gamma(\boldsymbol{\lambda}_l)}$ using $\mathbf{x}_i^*$ as a warm start:
+    \begin{equation}
+        \mathbf{x}_{\text{new}}^* = \texttt{solve}\left(\mathcal{P}_{\Gamma(\boldsymbol{\lambda}_l)}, \mathbf{x}_i^*\right).
+    \end{equation}
+    If \ac{IPOPT} successfully converges to a feasible local minimum $\mathbf{x}_{\text{new}}^* \in \mathcal{C}$ that represents a novel trajectory, $N_{\text{new}} = (\mathbf{x}_{\text{new}}^*, \boldsymbol{\lambda}_l)$ is added to $\mathcal{T}$.
+    \item \textbf{Sample Phase ($\rho > \rho_{\mathcal{A}}$):} A new parameter vector $\boldsymbol{\lambda}_{\text{new}} \sim \mathcal{U}([0,1]^d)$ is uniformly sampled and appended to $\mathcal{S}_{\lambda}$, opening new directional pathways through the parameter space.
+\end{enumerate}
+
+The advantage of the \ac{P-HO} framework lies in its ability to explore the solution space and jump between different homotopy paths, thereby increasing the likelihood of finding a globally optimal trajectory.
+Specifically, \ac{P-HO} demonstrates a robustness to common topological pitfalls of homotopy methods \cite{Pardis24}:
+\begin{itemize}
+    \item \textbf{Bifurcations and Folds:} When the solution manifold splits into multiple distinct homotopy branches or folds back on itself in parameter space, \ac{P-HO} maintains distinct tree branches rooted at identical parameter values $\boldsymbol{\lambda}$. 
+    This enables tracking of disconnected local minima without getting trapped \cite{Pardis24}.
+    \item \textbf{Disconnected and Abbreviated Paths:} Due to the sampling strategy, \ac{P-HO} can effectively navigate between disconnected and abbreviated homotopy paths, using solutions from previously explored branches as warm starts to bridge gaps in the solution manifold \cite{Pardis24}.
+\end{itemize}
+
+\begin{figure}[H]
+    \centering
+    \subfloat[Initialization of the relaxed \ac{NLPn}, $\lambda = 0$. A single seed is generated.]{%
+        \includegraphics[width=0.48\textwidth]{PHO/PHO_01.png}%
+    }%
+    \hfill
+    \subfloat[First homotopy sample, $\lambda = 0.8$. The single seed is used as a warm start and uncovers solutions of two homotopy classes.]{%
+        \includegraphics[width=0.48\textwidth]{PHO/PHO_80.png}%
+    }%
+    \\
+    \subfloat[Second homotopy sample, $\lambda = 0.35$. The algorithm continues to explore the solution space using previous solutions as warm starts.]{%
+        \includegraphics[width=0.48\textwidth]{PHO/PHO_35.png}%
+    }%
+    \hfill
+    \subfloat[Goal homotopy sample, $\lambda = 1$. The algorithm attempts a fully constrained solve, resulting in 3 distinct homotopy classes.]{%
+        \includegraphics[width=0.48\textwidth]{PHO/PHO_100.png}%
+    }%
+    \caption{\ac{P-HO} demonstrates stochastic sampling and the resulting ability to navigate between different homotopy classes in the solution space.}
+    \label{fig:pho_navigation}
+\end{figure}
+
 
 \begin{algorithm}[H]
 \caption{\texttt{P\_HO}}
+\label{alg:p-ho}
 \KwData{Initial guess $\mathbf{x}_0$, iteration limit $N$, solve/sample threshold $\rho_{\mathcal{A}}$, and an optimization tree $\mathcal{T}$.}
-\KwResult{A set of optimal trajectories corresponding to the goal problem parameterization $\mathbf{1}_d$.}
+\KwResult{A set of optimal trajectories corresponding to the goal problem parameterization $\mathbf{1}_d$, until an iteration, (optional) solution-count, $N_{sol,des}$, or (optional) time limit, $T_{max}$, is reached.}
 
 $\mathcal{T} \leftarrow \left\{ \left( \texttt{solve}(\mathcal{P}_{\Gamma(\mathbf{0}_d)}, \mathbf{x}_0), \mathbf{0}_d \right) \right\}$; \\[0.5ex]
 $\mathcal{S}_{\lambda} \leftarrow \{\mathbf{1}_d, \mathbf{0}_d\}$; \\[0.5ex]
 $\mathcal{S}_{\mathcal{A}} \leftarrow \emptyset$; \\[0.5ex]
+$N_{sol} \leftarrow 0$; \\[0.5ex]
 
 \For{$k \leftarrow 1$ \KwTo $N$}{
+    \If{$T \ge T_{max}$}{
+        \text{exit loop};
+    }
     \eIf{$\frac{|\mathcal{S}_{\mathcal{A}}|}{|\mathcal{T}| \times |\mathcal{S}_{\lambda}|} \le \rho_{\mathcal{A}}$}{
         $(\mathbf{N}_{i,j}, \boldsymbol{\lambda}_l) \leftarrow \texttt{sampleAttempt}(\mathcal{T}, \mathcal{S}_{\lambda}, \mathcal{S}_{\mathcal{A}})$; \\[0.5ex]
         $\mathcal{S}_{\mathcal{A}} \leftarrow \mathcal{S}_{\mathcal{A}} \cup (\mathbf{N}_{i,j}, \boldsymbol{\lambda}_l)$; \\[0.5ex]
         $\mathbf{x}_{new}^* \leftarrow \texttt{solve}(\mathcal{P}_{\Gamma(\boldsymbol{\lambda}_l)}, \mathbf{x}_i^*)$; \\[0.5ex]
         
-        \If{$\mathbf{x}_{new}^* \in \mathcal{C} \text{ \textbf{and} } \mathbf{x}_{new}^* \neq \mathbf{x}_j^* \; \forall \mathbf{N}_{j,\cdot} \in \mathcal{T}$}{
-            $\mathcal{T} \leftarrow \mathcal{T} \cup (\mathbf{x}_{new}^*, \boldsymbol{\lambda}_l)$;
+        \If{
+            $\mathbf{x}_{new}^* \in \mathcal{C} \text{ \textbf{and} } \mathbf{x}_{new}^* \neq \mathbf{x}_j^* \; \forall \mathbf{N}_{j,\cdot} \in \mathcal{T}$}{
+            $\mathcal{T} \leftarrow \mathcal{T} \cup (\mathbf{x}_{new}^*, \boldsymbol{\lambda}_l)$; \\[0.5ex]
+            \If{$\boldsymbol{\lambda}_l = \mathbf{1}_d$}{
+                $N_{sol}\text{++}$; \\
+                \If{$N_{sol} = N_{sol,des}$}{
+                    \text{exit loop};
+                }
+            }
         }
     }{
         $\mathcal{S}_{\lambda} \leftarrow \mathcal{S}_{\lambda} \cup \texttt{sample}(\mathcal{H}_d)$;
@@ -1650,6 +1932,7 @@ $\mathcal{S}_{\mathcal{A}} \leftarrow \emptyset$; \\[0.5ex]
 
 \begin{algorithm}[H]
 \caption{\texttt{sampleAttempt}}
+\label{alg:sample-attempt}
 
 \eIf{\text{with probability } $P_g$}{
     $\mathbf{N} \leftarrow \texttt{sample}(\{ \mathbf{N}_{i,j} \in \mathcal{T} : (\mathbf{N}_{i,j}, \mathbf{1}_d) \notin \mathcal{S}_{\mathcal{A}} \})$; \\[0.5ex]
@@ -1660,17 +1943,97 @@ $\mathcal{S}_{\mathcal{A}} \leftarrow \emptyset$; \\[0.5ex]
 \end{algorithm}
 
 \subsection{Inverse Dynamics Particle Swarm Optimization (IPSO)}
-\todoX{Write IPSO details}
 
-\begin{algorithm}[H]
+\ac{IPSO} is a metaheuristic, derivative-free global trajectory optimization framework based on swarm intelligence and differential flatness, originally introduced by Spiller et al. \cite{Spiller16,Spiller18} specifically for spacecraft slew trajectory optimization.
+In this work, \ac{IPSO} synthesizes and adapts the algorithms presented in \cite{Spiller16,Spiller18} into a hybrid multistart framework specifically for the spacecraft model alone.
+Unlike gradient-based methods that rely on derivates to perform updates, \ac{IPSO} leverages a population of candidate solutions (particles) that explore the search space collectively, guided by both individual and neighborhood experiences.
+The implementation combines Spiller's original near-optimal \ac{IPSO} strategies with follow-on \ac{GBO} refinement to settle results into local optima.
+
+The inverse-dynamics formulation is central to the \ac{IPSO} approach. 
+Following Spiller, the particles parameterize flat-output trajectories and their derivatives, while the required control torques are obtained from the equations of motion \cite{Spiller16,Spiller18}. 
+Consequently, each particle represents a complete candidate maneuver, and its fitness can be evaluated from the resulting state, control, and constraint quantities without treating the control history as a separate set of particle variables or repeatedly forward-integrating the dynamics \cite{Spiller16,Spiller18}. 
+This reduces the computational cost and numerical accumulation of errors during the large number of fitness evaluations required by a swarm-based method. 
+Additionally, boundary constraints are inherently satisfied via the analytical evaluation of the initial and final control vertices, without \ac{NLPn} solver evaluation of the equality constraints.
+
+\subsubsection{Attitude Parameterization and Search Space}
+Unlike all other methods presented herein, \ac{IPSO} does not directly operate on quaternion-based representations of attitude.
+To circumvent the unit-norm equality constraint $\|\mathbf{q}\|_2 = 1$ required by quaternion-based B-splines---which poses severe challenges for unconstrained particle velocity updates---\ac{IPSO} parameterizes attitude trajectories using \ac{MRP} $\boldsymbol{\sigma} \in \mathbb{R}^3$ as flat outputs \cite{Spiller16,Spiller18}.
+As detailed in \cref{par:mrps}, \ac{MRP} provide a minimal, 3-parameter description of $\SO{3}$ derived via stereographic projection.
+
+The search hyper-cube $[\mathbf{x}_{\min}, \mathbf{x}_{\max}]$ for particle positions is defined either explicitly via a specified angular limit $\theta_{\text{search}}$ or derived dynamically from the endpoint geodesic rotation angle $\theta_{\text{geodesic}} = 2 \cos^{-1}(|\mathbf{q}_0^\top \mathbf{q}_f|)$ scaled by a factor $s_{\text{bound}}$:
+\begin{equation}
+    p_{\max} = \tan\left( \frac{\min(2\pi - \varepsilon, \, s_{\text{bound}} \cdot \theta_{\text{geodesic}})}{4} \right),
+\end{equation}
+yielding upper and lower bounds $\mathbf{x}_{\max} = p_{\max}$ and $\mathbf{x}_{\min} = -p_{\max}$. 
+A maximum search box is set strictly less than $2\pi$ to ensure that the particles do not encounter singularities associated with the \ac{MRP} parameterization.
+The swarm population is initialized by seeding the first particle with a straight-line geodesic path in \ac{MRP} space, while the remaining $N_{\text{particles}} - 1$ particles are uniformly sampled across the search box $\mathcal{U}(\mathbf{x}_{\min}, \mathbf{x}_{\max})$.
+
+Several specifics of algorithm functions are enumerated as:
+\begin{itemize}
+    \item \texttt{evaluate\_fitness()}: Evaluates the fitness of a particle based on the objective function and constraint violations.
+    \begin{equation}
+        f_j =
+        \frac{J_{\mathrm{objective}}(P_j) + J_{\mathrm{torque}}(P_j) + J_{\mathrm{angular\ velocity}}(P_j) + J_{\mathrm{exclusion}}(P_j)
+        }{
+        C_{\mathrm{scale}}
+        } 
+        + w_{\mathrm{violation}}N_{\mathrm{viol}}(P_j,\delta),
+    \end{equation}
+    with $J_{\mathrm{torque}}$, $J_{\mathrm{angular\ velocity}}$, and $J_{\mathrm{exclusion}}$ representing the respective penalty terms for torque, angular velocity, and exclusion constraint violations, while $w_{\mathrm{violation}}$ is the weight assigned to the violation count $N_{\mathrm{viol}}(P_j,\delta)$.
+    The penalty terms scale with the respective magnitudes of the constraint violations, whereas the violation count term assigns a fixed penalty for each violation simply discouraging any violation at all. 
+    Violations are penalized on a per-element basis. 
+    Additionally, torque and angular-rate limits are always evaluated strictly; 
+    $\delta$ relaxes only the exclusion-zone constraint during the adaptive tightening phase, adding a degree of homotopy to the optimization process.
+    \item \texttt{update\_velocity()}: Updates the individual particle velocities based on personal best, local best, and global best particle positions.
+    \begin{equation}
+        v_{j,d}^{k+1} =
+        r\Big[w^{k}v_{j,d}^{k} + u_{p,j,d}^{k}c_p \left(p_{j,d}^{k}-x_{j,d}^{k}\right) + u_{l,j,d}^{k}c_l^{k} \left(l_{j,d}^{k}-x_{j,d}^{k}\right) + u_{g,j,d}^{k}c_g^{k} \left(g_{d}^{k}-x_{j,d}^{k}\right) \Big],
+    \end{equation}
+    where sub/superscripts $j$, $d$ and $k$ denote the particle, dimension, and iteration indices, respectively---i.e. $p_{j,d}^k$ is the personal best position of particle $j$ in dimension $d$ at iteration $k$---and $u_{p,j,d}^{k},\, u_{l,j,d}^{k},\, u_{g,j,d}^{k} \sim \mathcal{U}(0,1)$.
+    Weights $w$, $c_p$, $c_l$, and $c_g$ are the inertia, personal, local, and global weight coefficients, respectively; $v$, $p$, $l$, and $g$ represent the velocity, personal best, local best, and global best position terms; $x$ denotes the current position of the particle; and $r$ is an additional multiplicative scale factor depending on the problem \cite{Spiller16}.
+    
+    \item \texttt{clamp()}: Clamping limits the particle velocities to predefined bounds to prevent excessively large and unstable updates:
+    \begin{equation}
+        v_{j,d}^{k+1} = \operatorname{clip} \left(v_{j,d}^{k+1}, -v_{\max,d}, v_{\max,d} \right),
+    \end{equation}
+\item \texttt{compute\_scheduled\_weights()}: To dynamically shift the swarm from global exploration to localized exploitation, the inertia $w$, local $c_l$, and global $c_g$ weights are varied via linear interpolation:
+    \begin{equation}
+        \psi(\rho) = \psi_{\mathrm{initial}} + \left(\psi_{\mathrm{final}} - \psi_{\mathrm{initial}}\right) \rho, \quad \text{with} \quad \rho = \min\left( \frac{\mathrm{progress}}{N_{\mathrm{schedule}}}, \, 1 \right),
+    \end{equation}
+    where $N_{\mathrm{schedule}}$ sets the schedule horizon. 
+    The scheduling for each coefficient are structured as follows:
+    \begin{itemize}
+        \item Inertia Weight ($w$): Evaluated at every inner iteration using the progress metric $\rho_w = \frac{o + i / N_{\mathrm{inner}}}{N_{\mathrm{schedule}}}$, where $o$ and $i$ denote the outer and inner iteration counters, respectively. The inertia linearly decays from $w: w_{\mathrm{initial}} \longrightarrow w_{\mathrm{final}}$, gradually dampening the influence of past particle momentum.
+        \item Local-Neighborhood Weight ($c_l$): Scheduled solely over outer iterations via $\rho_l = \frac{o}{N_{\mathrm{schedule}}}$, decaying from $c_l: c_{l,\mathrm{initial}} \longrightarrow c_{l,\mathrm{final}}$. This provides strong early exploration within local particle neighborhoods before fading entirely after $N_{\mathrm{schedule}}$ outer iterations.
+        \item Global-Best Weight ($c_g$): Follows the same outer-iteration progress metric as $\rho_l$, increasing from $c_g: c_{g,\mathrm{initial}} \longrightarrow c_{g,\mathrm{final}}$. This shifts the particle search dynamics from neighborhood interaction to attraction toward the global best position.
+        \item Cognitive Weight ($c_p$): The personal-best coefficient remains static throughout optimization at $c_p = c_{p,\mathrm{initial}}$.
+    \end{itemize}    
+    \item \texttt{check\_convergence()}: Evaluates whether the optimization process has met the predefined convergence criteria defined as:
+    Following each outer cycle $o$, the solver records the current global-best fitness score $J_g^{(o)}$. 
+    Once $N_C$ outer-cycle evaluations are available, the mean relative improvement $\Delta \bar{J}$ over the sliding history window $N_C$ is calculated as:
+    \begin{equation}
+        \Delta \bar{J} = \frac{1}{N_C} \sum_{k=o - N_C}^{o - 1} \frac{J_g^{(k)} - J_g^{(k+1)}}{\max\left(|J_g^{(k)}|, \, \varepsilon_{\text{div}}\right)},
+        \label{eq:ipso-convergence}
+    \end{equation}
+    where $\varepsilon_{\text{div}} > 0$ prevents zero division. Convergence is declared when $\Delta \bar{J} < \varepsilon_{\text{tol}}$ (with $\varepsilon_{\text{tol}} = 10^{-6}$), subject to the strict requirement that the global-best trajectory is fully feasible ($N_{\mathrm{viol}} = 0$ at zero relaxation tolerance $\delta = 0$). 
+    This formulation aligns the convergence criteria defined in Spiller's 2018 paper \cite{Spiller18}, replacing the earlier metric from Spiller's 2016 work \cite{Spiller16}. 
+\end{itemize} 
+
+The resulting solutions generated by the IPSO algorithm are reported as \emph{near-optimal} solutions; in order to directly compare them with our other algorithms, we implement the \ac{IPSO} solutions as warm starts for a standard \ac{GBO} run using our standard \ac{CasADi} paired with \ac{IPOPT} framework.
+
+\begin{algorithm}[htbp]
 \caption{\texttt{IPSO\_solve}}
+\label{alg:ipso-solve}
 \KwData{Initialization of constants, swarm and tolerances.}
-\KwResult{Optimized global best trajectory $P^{global}$ and its final fitness $f^{global}$.}
+\KwResult{Optimized global best trajectory $P^{global}$ and its final fitness $f^{global}$, until a maximum outer iteration $N_{outer}$ or time $T_{max}$ limit is reached.}
 
 $\texttt{initialize\_swarm}(P_0, s_r)$; \\[0.5ex]
 $\delta \leftarrow \delta_0$; \\[0.5ex]
 
 \For{$o \leftarrow 0$ \KwTo $N_{outer} - 1$}{
+    \If{$T \ge T_{max}$}{
+        \text{exit loop};
+    }
     \For{$i \leftarrow 0$ \KwTo $N_{inner} - 1$}{
         \For{$j \leftarrow 1$ \KwTo $N_{particles}$}{
             $f_j \leftarrow \texttt{evaluate\_fitness}(P_j, \delta)$; \\[0.5ex]
@@ -1705,6 +2068,7 @@ $\delta \leftarrow \delta_0$; \\[0.5ex]
 
 \begin{algorithm}[H]
 \caption{\texttt{IPSO\_GBO}}
+\label{alg:ipso-gbo}
 \KwData{Warmstart trajectories from the IPSO runs for GBO refinement.}
 \KwResult{Best optimized trajectory $\mathbf{x}_{best}$ and its corresponding minimum cost $c_{best}$.}
 
@@ -1732,18 +2096,80 @@ $(\mathbf{x}_{best}, c_{best}) \leftarrow \texttt{select\_minimum\_cost}(\mathca
 \Return $(\mathbf{x}_{best}, c_{best})$;
 \end{algorithm}
 
-\section{Adaptive Constraint Refinement}
-\label{sec:methodology-refinement}
-\begin{itemize}
-	\item[$\square$] Detail the iterative refinement pipeline for B-spline trajectories.
-	\item[$\square$] Describe how kinodynamic and boundary-constraint violations are detected along the continuous B-spline trajectories.
-	\item[$\square$] Describe how time-grid nodes are locally densified around detected violations.
-	\item[$\square$] Explain how local refinement enforces feasibility without global over-discretization.
-\end{itemize}
+\subsection{Adaptive Constraint Refinement}
+\label{sec:adaptive_refinement}
+A known limitation of discrete collocation is the potential for path constraint violations between evaluation points. 
+While the optimization enforces constraints at discrete, uniform via points, we formulated an adaptive local refinement process to guarantee continuous-time feasibility. 
+To preclude inter-sample constraint violations, the solver analytically audits the continuous trajectory post-optimization.
+This method was implemented for the spacecraft model, but could equally be applied to other dynamical systems where continuous-time constraint satisfaction is critical.
+
+After an initial B-spline optimization sequence, the continuous-time angular velocity and control torque profiles, $\boldsymbol{\omega}(t)$ and $\boldsymbol{\tau}(t)$, are reconstructed as piecewise polynomials. 
+Let the B-spline knot times be defined as $\boldsymbol{\kappa} = \{t_0, t_1, \dots, t_{n+p+1}\}$ with $t_0 = 0$ and $t_{n+p+1} = t_f$, where $t_f$ is the final time of the maneuver.
+Each knot span is evaluated over a local time variable $s = t - t_i$, where $t_i$ is the starting time of the current knot span and $s$ has a range of $[0, \Delta T = t_{i+1} - t_i]$.
+On each knot span, the quaternion-based trajectory is represented by polynomials defined in \cref{sec:SC_EOM}.
+Likewise, the \ac{EOM}s for angular velocity and torque are defined in the same section.
+Because the quaternions are polynomial on each knot span, so too are the angular velocity and angular acceleration, which then provides the torque. 
+
+To identify constraint violations that escaped the initial via point grid, the exact timestamps of interior extrema are identified by extracting the roots of their time derivatives, $\frac{d\boldsymbol{\omega}(s)}{ds} = 0$ and $\frac{d{\boldsymbol{\tau}}(s)}{ds} = 0$. 
+In addition to the span-wise extrema, the segment endpoints are also considered. Only valid roots within the current knot span are retained for evaluation and must satisfy the conditions:
+\begin{equation}
+	|\text{Im}(s)| = 10^{-2} \quad \text{and} \quad 0 \leq \text{Re}(s) \leq \Delta T.
+\end{equation}
+The local roots are the converted back to the global time frame by adding the starting time of the current knot span, $t_i$, to each valid root $s$.
+
+The method evaluates the these analytical extrema against the trajectory bounds, detecting any path constraint violations.
+Upon identifying a violation, the exact timestamp as well as a dense cluster of neighboring times, scaled to a proportion 20\% of the local grid span are inserted as new via points in the via point grid---
+i.e. the time grid is locally densified. 
+
+The optimizer then re-solves the problem utilizing the previously solved B-spline coefficients as a warm start. 
+This cycle repeats until continuous-time dynamic constraints are fully satisfied or a refinement iteration limit (typically five iterations) is reached. 
+Even if the refinement limit is reached, violating points may still be analytically identified, allowing for informed decision-making regarding trajectory acceptance.
+Consequently, strict feasibility may be enforced for the continuous-time trajectory without necessitating an excessively dense global discretization, ensuring analytical rigor while maintaining computational efficiency.
 
 \section{Analytical Verification}
-\label{sec:methodology-verification}
-\begin{itemize}
-	\item[$\square$] \textbf{Analytical proof / baseline verification:} Present the unconstrained $\SO{3}$ maneuver proof.
-	\item[$\square$] Use this proof as a mathematical validation that the baseline formulation and solver setup yield exact optimal solutions before evaluating complex constrained scenarios in Chapter~5.
-\end{itemize}
+\label{sec:analytical_verification}
+
+To verify the numerical optimal control solver's implementation, we establish first an analytical solution using Pontryagin's Minimum Principle (PMP). 
+Specifically, we derive the optimal angular velocity profile for a single-axis slew minimizing control effort (squared torque), which is known to yield a strictly quadratic velocity trajectory. 
+
+The cost functional is defined as the integral of the control effort:
+\begin{equation}
+    J = \int_{0}^{t_f} \tau^2(t) \, dt,
+\end{equation}
+subject to the simplified rotational dynamics and kinematics of a rigid body with a spherical inertia matrix--i.e. the gyroscopic cross coupling terms typical of rotation \ac{EOM}s cancel:
+\begin{equation}
+    \dot{\omega} = \frac{\tau}{I}, \quad \dot{\theta} = \omega,
+\end{equation}
+and the final boundary constraint for the total slew rotation:
+\begin{equation}
+    \int_{0}^{t_f} \omega(t) \, dt = \theta_f - \theta_i = \Delta \theta.
+\end{equation}
+
+Defining the state vector as $\mathbf{x} = \begin{bmatrix} \theta & \omega \end{bmatrix}^\top$, the state equations become $\dot{\mathbf{x}} = \begin{bmatrix} \omega & \tau/I \end{bmatrix}^\top$. Utilizing the running cost $L = \tau^2(t)$, the Hamiltonian $H$ is constructed as:
+\begin{equation}
+    H = L + \boldsymbol{\lambda}^\top \dot{\mathbf{x}} = \tau^2 + \lambda_1 \omega + \lambda_2 \frac{\tau}{I}.
+\end{equation}
+
+Applying PMP yields the costate differential equations ($\dot{\boldsymbol{\lambda}} = -\frac{\partial H}{\partial \mathbf{x}}$) and the optimality condition ($0 = \frac{\partial H}{\partial \tau}$). Solving the costate equations gives:
+\begin{align}
+    \dot{\lambda}_1 &= -\frac{\partial H}{\partial \theta} = 0 \implies \lambda_1 = c_1, \\
+    \dot{\lambda}_2 &= -\frac{\partial H}{\partial \omega} = -\lambda_1 = -c_1 \implies \lambda_2 = \int -c_1 \, dt = -c_1 t + c_2.
+\end{align}
+
+Evaluating the optimality condition allows us to isolate the optimal control torque $\tau(t)$:
+\begin{equation}
+    \frac{\partial H}{\partial \tau} = 2\tau + \frac{\lambda_2}{I} = 0 \implies \tau(t) = -\frac{1}{2I} \lambda_2 = -\frac{1}{2I}(-c_1 t + c_2).
+\end{equation}
+Rewritten in terms of the new constants $c_3$ and $c_4$, this reveals that the optimal control torque takes the form of a linear polynomial, $\tau(t) = c_3 t + c_4$.
+
+Substituting this torque profile back into the system dynamics ($\dot{\omega} = \tau/I$) and integrating yields the optimal angular velocity trajectory:
+\begin{equation}
+    \omega(t) = \int \frac{c_3 t + c_4}{I} \, dt \implies \omega(t) = \frac{c_3}{2I}t^2 + \frac{c_4}{I}t + c_5.
+\end{equation}
+Again rewriting the constants $c_3, c_4,$ and $c_5$ as $a, b,$ and $c$, the analytical optimal angular velocity profile for a control-effort minimization slew is quadratic:
+\begin{equation}
+    \omega(t) = at^2 + bt + c,
+\end{equation}
+where the constants $a, b,$ and $c$ are determined by the boundary conditions $\omega_i$, $\omega_f$, and the required slew angle $\Delta q$. 
+
+This closed-form quadratic result serves as a ground truth baseline to validate the solutions generated by the numerical B-spline \ac{NLPv} solver.

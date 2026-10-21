@@ -49,52 +49,122 @@
 % 
 % $\blacktriangle$ end of a definition
 
-\subsubsection*{Mathematical symbols}
-
-$j$ imaginary unit
-
-$\T{I}$ identity matrix
-
-$\T{0}$ zero matrix
-
-$\T{P}$ permutation matrix
-
-$\T{Q}$, $\T{U}$ unitary (orthogonal) matrix
-
-$\T{T}$ transformation matrix
-
-$\T{\mathit{R}}(\phi)$ rotation matrix
+\subsubsection*{Mathematical spaces and sets}
 
 $\mathbb{R}^n$ n-dimensional real space
 
 $\SO{3}$ special orthogonal group of three-dimensional rotations
 
-$\so{3}$ Lie algebra of $\SO{3}$
-
 $\SE{3}$ special Euclidean group of three-dimensional rigid-body motions
 
-$\se{3}$ Lie algebra of $\SE{3}$
+$\mathbb{H}$ Hamilton's quaternion algebra
 
-${}^{A}\T{R}_{B}$ rotation matrix that maps coordinates from frame $B$ to frame $A$
+$S^3$ unit three-sphere representing unit quaternions
 
-${}^{A}\T{p}_{B}$ position of the origin of frame $B$ expressed in frame $A$
+$\mathcal{Q}$ manipulator joint configuration space
 
-${}^{A}\T{T}_{B}$ homogeneous transformation from frame $B$ to frame $A$
+$\mathcal{H}_d$ $d$-dimensional homotopy-parameter space
 
-\begin{equation}
-  {}^{A}\T{T}_{B} =
-  \begin{bmatrix}
-    {}^{A}\T{R}_{B} & {}^{A}\T{p}_{B} \\
-    \T{0}_{1\times 3} & 1
-  \end{bmatrix}.
-\end{equation}
+$\mathcal{U}$ uniform probability distribution
 
-$\T{q} = [q_w, q_x, q_y, q_z]^{\mathsf{T}}$ unit quaternion, with
-$q_w^2 + q_x^2 + q_y^2 + q_z^2 = 1$
+\subsubsection*{Operators and common matrices}
+
+$\T{I}$ identity matrix
+
+$\T{0}$ zero vector or zero matrix
+
+$[\T{v}]_\times$ skew-symmetric matrix associated with vector $\T{v}$
+
+\subsubsection*{Frames, rotations, and transformations}
+
+$\T{R}$ rotation matrix
+
+$\T{R}_{AB}$ rotation matrix that maps coordinates from frame $B$ to frame $A$
+
+$\T{p}_{AB}$ position of the origin of frame $B$ expressed in frame $A$
+
+$\T{T}$ homogeneous transformation matrix
+
+$\T{T}_{AB}$ homogeneous transformation from frame $B$ to frame $A$
+
+\subsubsection*{Quaternions and attitude representations}
+
+$\T{q}$ configuration/state vector; in the spacecraft model, a unit quaternion, and in the manipulator model, a joint-position vector
+
+In the spacecraft model, $\T{q} = [q_x, q_y, q_z, q_w]^{\mathsf{T}}$ satisfies
+$q_x^2 + q_y^2 + q_z^2 + q_w^2 = 1$
+
+$q_s$ scalar part of a quaternion
+
+$\T{q}_v$ vector part of a quaternion
 
 $\overline{\T{q}}$ quaternion conjugate
 
-$\hatmap{\T{v}}$ skew-symmetric matrix associated with vector $\T{v}$
+$\T{C}_q(\T{q})$ quaternion differential matrix
+
+$\boldsymbol{\sigma}$ modified Rodrigues parameter vector
+
+\subsubsection*{Trajectories and B-splines}
+
+$\T{q}(t)$ time-dependent configuration/state trajectory; in the spacecraft model, a unit quaternion trajectory, and in the manipulator model, a joint-position trajectory
+
+$\T{x}(t)$ generic state or trajectory vector; in IPSO, a particle-position vector
+
+$\T{c}_i$ B-spline control vertex
+
+$\T{v}_i$ derivative control vertex of a B-spline
+
+$\boldsymbol{\kappa}$ B-spline knot vector
+
+$\boldsymbol{\varphi}(s)$ B-spline basis vector
+
+$\boldsymbol{\Phi}$ B-spline basis matrix evaluated at all sampling or via points
+
+$\T{P}$ B-spline control-vertex matrix
+
+$\T{Q}$ matrix of trajectory values evaluated at all sampling or via points
+
+$\T{B}_0$, $\T{B}_f$ initial and final boundary basis matrices mapping exterior control vertices to boundary derivatives
+
+$\T{Y}_0$, $\T{Y}_f$ initial and final boundary-condition matrices
+
+$B_{\max}$, $B_{\min}$ upper and lower bounds for a control vertex
+
+\subsubsection*{Manipulator dynamics and kinematics}
+
+$\T{M}(\T{q})$ manipulator mass matrix
+
+$\T{J}_{\mathrm{m}}$ diagonal matrix of joint motor inertias
+
+$\T{J}_{\mathrm{load}}$ payload inertia matrix
+
+$\T{J}_{g,e}$ geometric end-effector Jacobian
+
+$\T{h}(\T{q},\dot{\T{q}})$ centripetal-Coriolis vector
+
+$\T{g}(\T{q})$ gravity vector
+
+$\boldsymbol{\tau}$ control torque vector
+
+\subsubsection*{IPSO and nonlinear optimization}
+
+$\T{w}$ nonlinear-programming decision vector
+
+$\T{x}_{\min}$, $\T{x}_{\max}$ lower and upper IPSO search-space bounds
+
+$p_{\max}$ maximum scalar MRP search bound
+
+$f_j$ fitness of particle $j$
+
+$v_{j,d}^{k}$ velocity of particle $j$ in dimension $d$ at iteration $k$
+
+$p_{j,d}^{k}$, $l_{j,d}^{k}$, $g_d^{k}$ personal-best, local-best, and global-best particle positions
+
+$w$, $c_p$, $c_l$, $c_g$ inertia, personal, local, and global weight coefficients
+
+$\boldsymbol{\omega}$ angular velocity vector
+
+$H$ Hamiltonian in the optimal-control formulation
 
 \subsubsection*{Craig modified Denavit--Hartenberg parameters}
 
@@ -102,9 +172,9 @@ $a_{i-1}$ link length
 
 $\alpha_{i-1}$ link twist
 
-$d_i$ link offset
+$d_{i-1}$ link offset
 
-$\theta_i$ joint angle
+$\theta_{i-1}$ joint angle
 
 In the Craig modified Denavit--Hartenberg convention, the transform from frame
 $i$ to frame $i-1$ is

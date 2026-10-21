@@ -1,0 +1,507 @@
+\chapter{Experimental Setup}
+\label{ch:experimental_setup}
+
+\todoX{Write a brief introduction summarizing the purpose of this chapter: to define the hardware, software, evaluation metrics, and exact physical and algorithmic parameters required to reproduce the global trajectory optimization benchmarks.}
+
+\section{Computational Environment \& Software Stack}
+\label{sec:setup_environment}
+\todoX{Detail hardware specifications (e.g., CPU, RAM) and operating system.}
+\todoX{Specify framework architecture (e.g., Python orchestration interacting with a C++ core).}
+\todoX{Explicitly list libraries used: CasADi for AD, IPOPT for the NLP, and specific linear solvers (e.g., MUMPS, HSL MA57).}
+\todoX{State universal solver stopping criteria (IPOPT convergence tolerance $\varepsilon_{tol} = 10^{-6}$, max iterations).}
+
+The experiments were conducted on two workstations running Ubuntu 24.04.5 LTS on an x86\textsubscript{64} architecture. 
+The first computer is equipped with an Intel\textsuperscript{\textregistered} Xeon\textsuperscript{\textregistered} CPU E5-1630 v4 @ 3.70\,GHz, providing 8 logical processors and 16\,GB of RAM. 
+The second computer is equipped with an Intel\textsuperscript{\textregistered} Core\textsuperscript{\texttrademark} Ultra 7 265 processor, providing 20 logical processors and 32\,GB of RAM.
+As these are materially different in terms of CPU and RAM, the performance results will be reported with with notes indicating which workstation was used for each experiment.
+
+The code framework is based on a Python orchestration layer that interacts with a C++ core for computational efficiency. 
+\ac{CasADi} constructs the symbolic B-spline dynamics, objective, constraints, and automatic differentiation, while \ac{IPOPT} solves the resulting nonlinear programs with HSL MA27 as the linear solver. 
+NumPy provides vectorized numerical operations, including trajectory sampling. 
+SciPy provides selected interpolation, B-spline, spatial, and rotation utilities used by parts of the framework. 
+
+\ac{IPOPT} convergence criteria are unique to each solver as shown in Table~\ref{tab:solver-stopping-criteria}. All other unspecified stopping criteria use the \ac{IPOPT} defaults:
+
+\begin{table}[H]
+	\centering
+	\scriptsize
+	\caption{Solver-specific stopping criteria used in the experiments.}
+	\label{tab:solver-stopping-criteria}
+		\begin{tabular}{@{}>{\raggedright\arraybackslash}p{0.13\textwidth}>{\raggedright\arraybackslash}p{0.13\textwidth}>{\raggedright\arraybackslash}p{0.10\textwidth}>{\raggedright\arraybackslash}p{0.15\textwidth}>{\raggedright\arraybackslash}p{0.34\textwidth}@{}}
+		\toprule
+			\makecell[l]{\textbf{Algorithm}} & \makecell[l]{\textbf{Solver stage}} & \makecell[l]{\textbf{IPOPT}\\\textbf{max\_iter}} & \makecell[l]{\textbf{IPOPT}\\\textbf{tol}} & \makecell[l]{\textbf{Other stopping}\\\textbf{criteria}} \\
+		\midrule
+		MC, both systems & Single-stage solve & 500 & $10^{-10}$ & \parbox[t]{\linewidth}{\raggedright\texttt{constr\_viol\_tol=1e-4}} \\
+		P-HO, both systems & Intermediate solve & 500 & $10^{-2}$ & \parbox[t]{\linewidth}{\raggedright\texttt{acceptable\_tol=5e-2}; \\ \texttt{acceptable\_iter=3}; \\ \texttt{constr\_viol\_tol=1e-2}} \\
+		P-HO, both systems & Final solve & 500 & $10^{-10}$ & \parbox[t]{\linewidth}{\raggedright\texttt{constr\_viol\_tol=1e-4}} \\
+		\parbox[t]{\linewidth}{\raggedright RRT$^{*}$-GBO, \\ both systems} & Intermediate edge solve & 500 & $10^{-2}$ & \parbox[t]{\linewidth}{\raggedright\texttt{acceptable\_tol=5e-2}; \\ \texttt{acceptable\_iter=3}; \\ \texttt{constr\_viol\_tol=1e-2}} \\
+		\parbox[t]{\linewidth}{\raggedright RRT$^{*}$-GBO, \\ both systems} & Final solve & 500 & $10^{-10}$ & \parbox[t]{\linewidth}{\raggedright\texttt{constr\_viol\_tol=1e-4}} \\
+		IPSO, spacecraft & IPSO stage & N/A & N/A & \parbox[t]{\linewidth}{\raggedright\texttt{convergence\_window=50}; \\ \texttt{convergence\_tolerance}=$1.0\times10^{-6}$; \\ Eq.~\eqref{eq:ipso-convergence}} \\
+		IPSO, spacecraft & Warmstarted GBO stage & 500 & $10^{-10}$ & \parbox[t]{\linewidth}{\raggedright\texttt{constr\_viol\_tol=1e-4}} \\
+		\bottomrule
+	\end{tabular}
+\end{table}
+
+\section{Evaluation Metrics}
+\label{sec:setup_metrics}
+\todoX{Define Success Rate: e.g., IPOPT returns "Solve Succeeded" and the adaptive refinement detects zero continuous-time violations.}
+\todoX{Define Computational Effort: Wall-clock CPU time, including notes on parallelization/multi-threading for MC-GBO and IPSO.}
+\todoX{Define Solution Quality: The final objective cost J achieved (effort for spacecraft, effort + acceleration for the manipulator).}
+
+The evaluation is organized into four metric groups. 
+Reliability and computation time are reported for all attempts, whereas solution quality is evaluated only for successful solutions. 
+Search-behavior metrics are reported for repeated runs and for the algorithms for which the corresponding internal statistics are available. 
+The individual results sections specify the applicable metrics and reporting subsets for each experiment.
+
+\paragraph{Reliability}
+Reliability is characterized by the success rate and failure rate over all attempted runs. 
+\ac{IPOPT} failures are classified as infeasible problem instances, maximum-iteration termination, timeouts, or other unexpected exceptions. 
+A run is successful only when the solver returns converges with the resulting trajectory passing the applicable kinodynamic constraint checks.
+
+\paragraph{Computation Time}
+Computation time includes per test case statistics on wall-clock time, sequential-equivalent time for parallelized algorithms, time to first solution, and time to best solution. 
+Solve-time distributions are summarized using the median, mean, standard deviation, and relevant quantiles. 
+Quantile solve durations are reported where the number of trials supports a meaningful distributional comparison.
+
+\paragraph{Solution Quality}
+For successful solutions, the final objective cost is reported using the mean, standard deviation, median, and relevant quantiles, together with the best, worst, and interquartile-range costs when appropriate. 
+Results also include the relative cost gap to the best solution found across all algorithms. 
+The objective definition is problem-specific: spacecraft results use the control effort objective, while manipulator results include the specified control effort plus acceleration terms.
+
+\paragraph{Search Behavior and Diversity}
+Search behavior is analyzed to characterize local-minimum discovery and solution diversity. 
+Metrics include the raw number of solutions, unique basin frequencies. 
+Algorithm-specific statistics are reported when available: for \ac{P-HO}, final $\lambda=1$ solutions, tree size; for \ac{RRT*-GBO}, sampled nodes, accepted edges; and for \ac{IPSO}, particle evaluations, completed outer and inner iterations, and the number of solutions sent to \ac{GBO} refinement.
+
+The complete metric inventory is defined here for consistency, but not every metric is relevant to every experiment. 
+The results section therefore reports the metrics applicable to the algorithm and test case under study, while retaining the common definitions above for cross-algorithm comparisons.
+
+\section{Problem 1: Spacecraft Attitude Slew}
+\label{sec:setup_spacecraft}
+
+\subsection{Physical Parameters}
+\todoX{Define the spacecraft inertia matrix $\mathbf{J}_{\mathrm{sc}}$.}
+\todoX{List actuator torque limits $\boldsymbol{\tau}_{\max}$ and angular velocity limits $\boldsymbol{\omega}_{\max}$.}
+The spacecraft inertia matrix denoted by $\mathbf{J}_{\mathrm{sc}}$ is set as a spherical inertia, $\mathbf{J}_{\mathrm{sc}} = 10000*\mathbf{I}$ kg·m².
+The baseline control torque limits are set to $\boldsymbol{\tau}_{\max} = 200$ N·m, and the angular velocity limits are set to $\boldsymbol{\omega}_{\max} = 0.2$ rad/s (11.46 °/s).
+If different torque or angular velocity limits are used for specific test cases, they are explicitly stated in the scenario description.
+Both limits are defined in the spacecraft body frame.
+
+\subsection{B-Spline Discretization}
+\todoX{Specify the fixed time horizon $t_f$.}
+\todoX{Specify B-spline degree (e.g., $p=3$ or $p=4$) and number of control vertices $n_{ctrl}$.}
+\todoX{State the oversampling ratio ($n_{via} \approx 4 n_{ctrl}$).}
+For all test scenarios, the B-splines were parameterized via:
+\begin{itemize}
+    \item Fixed time horizon: $t_f = 60$ s
+    \item B-spline degree: cubic $p = 3$
+    \item Number of free control vertices: $n_{FCV} = 10$
+    \item Number of boundary conditions: $n_{BC} = 3^\dagger$ equating to a set angular orientation, zero angular velocity, and zero angular acceleration, $^\dagger$ except for two test cases that include additionally zero angular jerk $n_{BC} = 4$.
+    \item Total number of control vertices: $n_{ctrl} = n_{FCV} + 2n_{BC}$
+    \item Number of via points: $n_{via} = 61$
+\end{itemize}
+
+\subsection{Test Scenarios}
+\todoX{Define specific boundary conditions ($\mathbf{q}_0$, $\mathbf{q}_f$, etc.).}
+\todoX{Case A: Unconstrained large-angle slew (baseline).}
+\todoX{Case B: Constrained slew with Exclusion Zones (EZs). Provide a table or list of inertial pointing vectors ${}^i\mathbf{\hat{e}}$ and radii $\theta_{exclusion}$.}
+
+Tables~\ref{tab:scso3_summary} and \ref{tab:scso3_exclusion_zones} summarize the spacecraft slew test case scenarios and the corresponding exclusion-zone definitions, respectively.
+The test case scenarios range from an unconstrained large-angle slew---as a baseline verification of the optimization framework---to increasingly constrained realistic maneuvers with exclusion zones and actuator limits, and finally complex configuration scenarios testing the limits of the global solver's ability to find feasible and optimal trajectories. 
+
+In addition to the listed orientation vectors of the \ac{EZ}s, the corresponding sensor vector is defined as ${}^b\mathbf{\hat{s}} = \left[0, 0, 1\right]^{T}$, which is transformed to the inertial frame via the current attitude of the spacecraft for comparison with the exclusion-zone directions.
+
+\newcommand{\quat}[4]{\begin{gathered}\text{[}#1,\ #2,\\[-1pt]#3,\ #4\text{]}^{T}\end{gathered}}
+\newcommand{\ezvec}[3]{\left[#1,\ #2,\ #3\right]^{T}}
+
+% ============================================================
+% Table: Scenario summary
+% ============================================================
+
+\begin{table}[H]
+\centering
+\scriptsize
+\setlength{\tabcolsep}{4pt}
+\renewcommand{\arraystretch}{1.2}
+\caption{Summary of the spacecraft slew test case scenarios.}
+\label{tab:scso3_summary}
+\begin{tabularx}{\textwidth}{
+    >{\raggedright\arraybackslash}p{3.2cm}
+	>{\centering\arraybackslash}p{3.8cm}
+	>{\centering\arraybackslash}p{3.8cm}
+    >{\centering\arraybackslash}p{0.8cm}
+    >{\raggedright\arraybackslash}X
+}
+\toprule
+\textbf{Test case}
+& $\mathbf q_0$
+& $\mathbf q_f$
+& \textbf{\# EZs}
+& \textbf{Constraints and boundary conditions} \\
+\midrule
+
+\texttt{geodesic slew} & $\quat{1}{0}{0}{0}$ & $\quat{0}{0.563122}{0.563122}{-0.604803}$ & 0 & EZ off; $\tau_{\max}$ off; $\omega_{\max}$ off. \\
+
+\texttt{sun} & $\quat{0}{0}{0}{1}$ & $\quat{0.7044}{-0.0616}{0.0616}{0.7044}$ & 1 & EZ on; $\tau_{\max}$ on; $\omega_{\max}$ on. \\
+
+\texttt{sun and moon} & $\quat{-0.2897}{0.5727}{0.3462}{0.6843}$ & $\quat{-0.2664}{0.0290}{-0.3852}{0.8831}$ & 2 & EZ on; $\tau_{\max}$ on; $\omega_{\max}$ on. \\
+
+\texttt{sun, moon, and earth 1} & $\quat{0.5577}{0.3861}{0.0545}{0.7328}$ & $\quat{-0.2520}{0.2684}{-0.9272}{-0.0689}$ & 3 & EZ on; $\tau_{\max}$ on; $\omega_{\max}$ on. \\
+
+\texttt{sun, moon, and earth 2} & $\quat{0.5577}{0.3861}{0.0545}{0.7328}$ & $\quat{-0.2520}{0.2684}{-0.9272}{-0.0689}$ & 3 & EZ on; $\tau_{\max}$ on; $\omega_{\max}$ on. \\
+
+\texttt{narrow corridor} & $\quat{0.4670}{0.5309}{0.5225}{0.4764}$ & $\quat{-0.2951}{0.2018}{-0.5403}{0.7618}$ & 3 & EZ on; $\tau_{\max}$ on; $\omega_{\max}$ on; jerk BC on. \\
+
+\texttt{narrow corridor} $+ \omega_{\max}$ & $\quat{0.4670}{0.5309}{0.5225}{0.4764}$ & $\quat{-0.2951}{0.2018}{-0.5403}{0.7618}$ & 3 & EZ on; $\tau_{\max}$ on; $\omega_{\max}=0.08~\mathrm{rad/s}$; jerk BC on. \\
+
+\texttt{bug trap} & $\quat{-0.2340}{0.4977}{0.3554}{0.7558}$ & $\quat{0.3318}{0.7358}{0.5824}{-0.0968}$ & 5 & EZ on; $\tau_{\max}$ on; $\omega_{\max}$ on. \\
+
+\texttt{reverse bug trap} & $\quat{0.3318}{0.7358}{0.5824}{-0.0968}$ & $\quat{-0.2340}{0.4977}{0.3554}{0.7558}$ & 5 & EZ on; $\tau_{\max}$ on; $\omega_{\max}$ on. \\
+
+\texttt{double bug trap} & $\quat{-0.7420}{0.4052}{0.4687}{0.2559}$ & $\quat{0.3823}{0.3889}{0.8366}{-0.0526}$ & 10 & EZ on; $\tau_{\max}$ on; $\omega_{\max}$ on. \\
+
+\texttt{maze} & $\quat{-0.2512}{0.5018}{0.3705}{0.7402}$ & $\quat{-0.5295}{0.6263}{0.5720}{0.0135}$ & 8 & EZ on; $\tau_{\max}$ on; $\omega_{\max}$ on. \\
+
+\bottomrule
+\end{tabularx}
+\end{table}
+
+% ============================================================
+% Table: Exclusion-zone definitions
+% ============================================================
+
+\begin{longtable}{
+    >{\raggedright\arraybackslash}p{3.4cm}
+    >{\centering\arraybackslash}p{0.45cm}
+    >{\centering\arraybackslash}p{7.0cm}
+    >{\centering\arraybackslash}p{1.4cm}
+}
+\caption{Exclusion-zone definitions for the spacecraft slew test case scenarios.}
+\label{tab:scso3_exclusion_zones}\\
+\toprule
+\textbf{Test case} & $k$ &
+\textbf{Inertial exclusion vector ${}^{i}\hat{\mathbf e}_k$} &
+\textbf{$\theta_k$} \\
+\midrule
+\endfirsthead
+
+\toprule
+\textbf{Test case} & $k$ &
+\textbf{Inertial exclusion vector ${}^{i}\hat{\mathbf e}_k$} &
+\textbf{$\theta_k$} \\
+\midrule
+\endhead
+
+\bottomrule
+\endfoot
+
+\texttt{geodesic slew}
+& 0 & - & - \\
+
+\texttt{sun}
+& 1 & $\ezvec{-0.1}{-0.5}{0.7}$ & $25^\circ$ \\
+
+\texttt{sun and moon}
+& 1 & $\ezvec{0.8605}{0.1795}{0.4767}$ & $30^\circ$ \\
+& 2 & $\ezvec{0.3743}{0.7954}{0.4767}$ & $15^\circ$ \\
+
+\texttt{sun, moon and earth 1}
+& 1 & $\ezvec{0.2796}{-0.8605}{0.4258}$ & $25^\circ$ \\
+& 2 & $\ezvec{0.7754}{-0.4615}{0.4310}$ & $15^\circ$ \\
+& 3 & $\ezvec{-0.5176}{0.7392}{-0.4310}$ & $135^\circ$ \\
+
+\texttt{sun, moon and earth 2}
+& 1 & $\ezvec{0.8074}{-0.4085}{0.4258}$ & $15^\circ$ \\
+& 2 & $\ezvec{0.2796}{-0.8605}{0.4258}$ & $25^\circ$ \\
+& 3 & $\ezvec{-0.5176}{0.7392}{-0.4310}$ & $135^\circ$ \\
+
+\texttt{narrow corridor}
+& 1 & $\ezvec{0.7954}{0.6061}{0.0000}$ & $25^\circ$ \\
+& 2 & $\ezvec{0.7530}{-0.4140}{0.5114}$ & $40^\circ$ \\
+& 3 & $\ezvec{0.6790}{0.3937}{0.6196}$ & $10^\circ$ \\
+
+\texttt{narrow corridor} $+ \omega_{\max}$
+& 1 & $\ezvec{0.7954}{0.6061}{0.0000}$ & $25^\circ$ \\
+& 2 & $\ezvec{0.7530}{-0.4140}{0.5114}$ & $40^\circ$ \\
+& 3 & $\ezvec{0.6790}{0.3937}{0.6196}$ & $10^\circ$ \\
+
+\texttt{bug trap}
+& 1 & $\ezvec{0.8577}{0.5141}{0.0000}$ & $25^\circ$ \\
+& 2 & $\ezvec{0.7370}{0.2236}{0.6378}$ & $25^\circ$ \\
+& 3 & $\ezvec{0.1737}{0.6806}{0.7118}$ & $25^\circ$ \\
+& 4 & $\ezvec{0.2243}{0.8786}{0.4215}$ & $15^\circ$ \\
+& 5 & $\ezvec{0.5775}{0.8162}{0.0201}$ & $15^\circ$ \\
+
+\texttt{reverse bug trap}
+& 1 & $\ezvec{0.8577}{0.5141}{0.0000}$ & $25^\circ$ \\
+& 2 & $\ezvec{0.7370}{0.2236}{0.6378}$ & $25^\circ$ \\
+& 3 & $\ezvec{0.1737}{0.6806}{0.7118}$ & $25^\circ$ \\
+& 4 & $\ezvec{0.2243}{0.8786}{0.4215}$ & $15^\circ$ \\
+& 5 & $\ezvec{0.5775}{0.8162}{0.0201}$ & $15^\circ$ \\
+
+\texttt{double bug trap}
+& 1 & $\ezvec{0.8577}{0.5141}{0.0000}$ & $25^\circ$ \\
+& 2 & $\ezvec{0.7370}{0.2236}{0.6378}$ & $25^\circ$ \\
+& 3 & $\ezvec{0.1737}{0.6806}{0.7118}$ & $25^\circ$ \\
+& 4 & $\ezvec{0.2243}{0.8786}{0.4215}$ & $15^\circ$ \\
+& 5 & $\ezvec{0.5775}{0.8162}{0.0201}$ & $15^\circ$ \\
+& 6 & $\ezvec{-0.5156}{0.8517}{0.0936}$ & $25^\circ$ \\
+& 7 & $\ezvec{-0.2944}{0.5012}{-0.8137}$ & $25^\circ$ \\
+& 8 & $\ezvec{-0.8422}{0.3938}{-0.3683}$ & $25^\circ$ \\
+& 9 & $\ezvec{-0.1110}{0.7969}{-0.5938}$ & $15^\circ$ \\
+& 10 & $\ezvec{-0.1682}{0.9819}{-0.0870}$ & $15^\circ$ \\
+
+\texttt{maze}
+& 1 & $\ezvec{0.8577}{0.5141}{0.0000}$ & $25^\circ$ \\
+& 2 & $\ezvec{0.7370}{0.2236}{0.6378}$ & $25^\circ$ \\
+& 3 & $\ezvec{0.1737}{0.6806}{0.7118}$ & $25^\circ$ \\
+& 4 & $\ezvec{0.2243}{0.8786}{0.4215}$ & $15^\circ$ \\
+& 5 & $\ezvec{0.5775}{0.8162}{0.0201}$ & $15^\circ$ \\
+& 6 & $\ezvec{-0.0827}{0.9722}{-0.2191}$ & $25^\circ$ \\
+& 7 & $\ezvec{0.4316}{0.4720}{-0.7687}$ & $25^\circ$ \\
+& 8 & $\ezvec{-0.6277}{0.6802}{0.3785}$ & $25^\circ$ \\
+
+\end{longtable}
+
+\subsection{Algorithm-Specific Hyperparameters}
+\todoX{introduce the tables}
+
+Tables~\cref{tab:params_mc_gbo,tab:params_pho,tab:params_rrt_gbo,tab:params_ipso} list the comprehensive set of algorithm-specific hyperparameters used in this work for the spacecraft \ac{NLPn}.
+Refer back to \cref{sec:algorithm_frameworks} and the papers by Stoneman and Lampariello \cite{Stoneman14}, Pardis et al. \cite{Pardis24}, and Spiller et al. \cite{Spiller16,Spiller18} for further details on the respective algorithms.
+
+% === MC-GBO TABLE ===
+\begin{table}[htbp]
+    \centering
+    \caption{Monte Carlo Gradient-Based Optimization (MC-GBO) hyperparameters.}
+    \label{tab:params_mc_gbo}
+    \begin{tabularx}{\textwidth}{l l X}
+        \toprule
+        \textbf{Parameter} & \textbf{Value} & \textbf{Description} \\
+        \midrule
+        $N_{MC}$ & $100$ & Total number of independent Monte Carlo random seeds evaluated. \\
+        $N_{\text{parallel}}$ & $8$ & Number of optimizations executed concurrently. \\
+        $T_{\max}$ & $180.0$\,s & Maximum allowable wall-clock computation time. \\
+        \bottomrule
+    \end{tabularx}
+\end{table}
+
+% === P-HO TABLE ===
+\begin{longtable}{@{}p{0.24\textwidth}p{0.16\textwidth}p{0.54\textwidth}@{}}
+    \caption{Probabilistic Homotopy Optimization (P-HO) hyperparameters.}
+    \label{tab:params_pho}\\
+        \toprule
+        \textbf{Parameter} & \textbf{Value} & \textbf{Description} \\
+        \midrule
+\endfirsthead
+
+        	oprule
+        	extbf{Parameter} & \textbf{Value} & \textbf{Description} \\
+        \midrule
+\endhead
+
+        \bottomrule
+\endfoot
+
+        $N_{\text{iters}}$ & $100$ & Maximum number of homotopy iterations. \\
+        $T_{\max}$ & $180.0$\,s & Maximum allowable wall-clock computation time. \\
+        $\rho_{\mathcal{A}}$ & $1.0$ & Solve-to-sample ratio threshold regulating phase transitions. \\
+        $P_g$ & $0.3$ & Probability of explicitly targeting the goal parameter $\boldsymbol{\lambda} = \mathbf{1}_d$. \\
+        $N_{\text{init}}$ & $20$ & Number of initial solutions generated at the relaxed state $\boldsymbol{\lambda} = \mathbf{0}_d$. \\
+        $s$ & $0.9$ & Shrink factor for dynamic limits and exclusion zone constraints. \\
+        Geodesic Seed & True & Initializes one baseline solve with the shortest-path geodesic slew. \\
+        \bottomrule
+\end{longtable}
+
+% === RRT*-GBO TABLE ===
+\begin{table}[htbp]
+    \centering
+    \caption{Algorithm-specific hyperparameters for Rapidly-exploring Random Tree Star with GBO (RRT*-GBO).}
+    \label{tab:params_rrt_gbo}
+    \begin{tabularx}{\textwidth}{l l X}
+        \toprule
+        \textbf{Parameter} & \textbf{Value} & \textbf{Description} \\
+        \midrule
+        $N_{\text{iters}}$ & $5000$ & Maximum number of tree expansion iterations. \\
+        $T_{\max}$ & $180.0$\,s & Maximum allowable wall-clock computation time. \\
+        $N_{\text{sol, max}}$ & $3$ & Maximum number of feasible solutions found before termination (only improved solutions increment). \\
+        $r_{\text{prune}}$ & $0.1$\,rad & Radius threshold for pruning redundant nodes. \\
+        $r_{\text{ball}}$ & $0.33$\,rad & Radius for neighborhood querying and rewiring consideration. \\
+        $r_{\text{connect}}$ & $0.5\pi$\,rad & Goal connection threshold radius. \\
+        $W_{\text{prune}}$ & $20$ & Pruning window size for tracking recent node addition attempts to dynamically adjust the pruning radius. \\
+        $\varepsilon_{\text{cost}}$ & $10^{-4}$ & Minimum relative cost improvement tolerance for rewiring acceptance. \\
+        Edge $n_{\text{via}}$ & $11$ & Number of via points used for discretizing local edge BVP solves. \\
+        Edge $n_{\text{fcv}}$ & $3$ & Number of free interior control vertices per edge BVP solve. \\
+        Truncation & True & Truncates out-of-bounds samples to the edge of $r_{\text{ball}}$ instead of rejecting. \\
+        \bottomrule
+    \end{tabularx}
+\end{table}
+
+% === IPSO TABLE ===
+\begin{longtable}{@{}p{0.24\textwidth}p{0.16\textwidth}p{0.54\textwidth}@{}}
+    \caption{Algorithm-specific hyperparameters for Inverse Dynamics Particle Swarm Optimization (IPSO).}
+    \label{tab:params_ipso}\\
+        \toprule
+        \textbf{Parameter} & \textbf{Value} & \textbf{Description} \\
+        \midrule
+\endfirsthead
+
+        \toprule
+        \textbf{Parameter} & \textbf{Value} & \textbf{Description} \\
+        \midrule
+\endhead
+
+        \bottomrule
+\endfoot
+
+        \multicolumn{3}{l}{\textit{Execution \& Swarm Dynamics}} \\
+        $N_{\text{particles}}$ & $30$ & Number of particles in the swarm population. \\
+        $N_{\text{runs}}$ & $20$ & Number of independent IPSO multistart runs. \\
+        $N_{\text{parallel,IPSO}}$ & $4$ & Number of concurrent IPSO processes executed. \\
+        $N_{\text{threads,IPSO}}$ & $2$ & threads allocated per IPSO process. \\
+        $N_{\text{outer}}$ & $1000$ & Maximum number of outer loop iterations. \\
+        $N_{\text{inner}}$ & $20$ & Number of internal optimization loops per outer cycle. \\
+        $r_{\text{neighborhood}}$ & $3$ & Number of adjacent particles defining the local neighborhood. \\
+        $v_{\text{fraction}}$ & $0.1$ & Search space fraction defining the maximum particle velocity clamping. \\
+        Geodesic Seed & True & Initializes one particle with the shortest-path geodesic trajectory. \\
+        \midrule
+        \multicolumn{3}{l}{\textit{MRP Search-Space Limits}} \\
+        $\theta_{\text{search}}$ & $5.0$\,rad & Fixed angular boundary applied component-wise to the MRP search space. \\
+        $s_{\text{bound}}$ & $1.5$ & Margin multiplier applied to the geodesic magnitude (used if $\theta_{\text{search}}$ is null). \\
+        \midrule
+        \multicolumn{3}{l}{\textit{GBO Refinement}} \\
+        GBO Refinement & True & Enables local gradient-based refinement on the final IPSO trajectories. \\
+        Feasible Only & True & Restricts GBO refinement exclusively to strictly feasible IPSO outputs. \\
+        $N_{\text{warmstarts}}$ & $20$ & Maximum number of top IPSO candidates passed to the GBO solver. \\
+        $N_{\text{parallel,GBO}}$ & $8$ & Number of concurrent GBO refinement processes executed. \\
+        \midrule
+        \multicolumn{3}{l}{\textit{Weight Scheduling ($N_{\text{schedule}} = 300$ outer cycles)}} \\
+        $r$ & $0.9$ & Static scalar multiplier for the combined inertia and cognitive velocity update. \\
+        $w_0 \to w_f$ & $1.2 \to 0.6$ & Inertia weight linear decay schedule. \\
+        $c_p$ & $1.5$ & Static cognitive weight for personal-best attraction. \\
+        $c_{l0} \to c_{lf}$ & $2.0 \to 0.0$ & Local neighborhood weight linear decay schedule. \\
+        $c_{g0} \to c_{gf}$ & $0.0 \to 2.0$ & Global swarm weight linear growth schedule. \\
+        \midrule
+        \multicolumn{3}{l}{\textit{Constraint Handling \& Convergence}} \\
+        $\delta_0$ & $0.05$ & Initial additive keep-out tolerance for exclusion zones. \\
+        $\gamma$ & $0.05$ & Adaptive decay factor for exclusion zone tolerance tightening. \\
+        $N_{\delta}$ & $150$ & Cycle threshold triggering adaptive keep-out tolerance decay. \\
+        $N_C$ & $50$ & Sliding history window size for evaluating cost convergence. \\
+        $\varepsilon_{\text{tol}}$ & $10^{-6}$ & Relative cost improvement threshold required for convergence. \\
+        \midrule
+        \multicolumn{3}{l}{\textit{Penalties (Static Multipliers)}} \\
+        $w_{\text{path}}, w_{\text{torque}}, w_{\omega}$ & $10.0$ & Respective penalty weights for EZ, torque, and velocity bounds. \\
+        $w_{\text{violation}}$ & $10.0$ & Fixed penalty applied per active constraint violation count. \\
+        \bottomrule
+\end{longtable}
+
+\section{Problem 2: 7-DOF Robotic Manipulator}
+\label{sec:setup_robot}
+
+\subsection{Physical Parameters}
+\todoX{Include a table defining the \ac{MDH} parameters ($\alpha$, $a$, $\theta$, $d$) for all 7 links.}
+\todoX{Include a table listing the mass, center of mass, and inertia tensor for each link.}
+\todoX{List the specific joint position bounds $\mathbf{q}_{\max/\min}$, velocity bounds $\dot{\mathbf{q}}_{\max/\min}$, and torque bounds $\boldsymbol{\tau}_{\max/\min}$.}
+
+A core component of the robotic manipulator model is its kinematic chain, which is defined using the Modified Denavit--Hartenberg (\ac{MDH}) parameters as described in Section~\ref{sec:manipulator-kinematics}. 
+By chaining frame multiplication using the \ac{MDH} parameters and the fixed transformations connecting the inertial frame to the robot base and the last link to the end-effector, the homogeneous transformation from the inertial frame to the end-effector frame can be obtained.
+Table~\ref{tab:MDH_parameters} lists the \ac{MDH} parameters for all links of the robotic manipulator, seven of which depend on the joint positions $q_1$ to $q_7$.
+
+\begin{table}[htbp]
+\centering
+\caption{Modified DH parameters for the robotic manipulator kinematic chain.}
+\begin{tabular}{c c c c c}
+\hline
+\label{tab:MDH_parameters}
+$i$ &
+$\alpha_{i-1}$ &
+$a_{i-1}$ [mm] &
+$\theta_{i-1}$ &
+$d_{i-1}$ [mm] \\
+\hline
+1 & $0^\circ$    & 0 & $q_1$              & 310 \\
+2 & $+90^\circ$  & 0 & $q_2$              & 0   \\
+3 & $-90^\circ$  & 0 & $q_3 + 90^\circ$   & 400 \\
+4 & $+90^\circ$  & 0 & $q_4$              & 0   \\
+5 & $-90^\circ$  & 0 & $q_5 - 90^\circ$   & 390 \\
+6 & $+90^\circ$  & 0 & $q_6 + 90^\circ$   & 0   \\
+7 & $+90^\circ$  & 0 & $q_7 - 90^\circ$   & 0   \\
+8 & $-90^\circ$ & 0 & $-180^\circ$       & 118 \\
+\hline
+\end{tabular}
+\end{table}
+
+The fixed transformations connecting the inertial frame to the robot base and frame 8 to the end-effector frame are
+\begin{equation}
+    \mathbf{T}_{i,0} = 
+    \begin{bmatrix}
+        -0.498791 & -0.866722 & 0 & 760.2 \\
+        0.866722 & -0.498791 & 0 & -921.7 \\
+        0 & 0 & 1 & 942.0 \\
+        0 & 0 & 0 & 1
+    \end{bmatrix},
+    \label{eq:robot-base-transform}
+\end{equation}
+\begin{equation}
+    \mathbf{T}_{\mathrm{8,ee}} = 
+    \begin{bmatrix}
+        -0.5411 & -0.2439 & 0.8048 & 35.0 \\
+        -0.1669 & -0.9065 & -0.3875 & -30.0 \\
+        0.8237 & -0.3440 & 0.4499 & 181.0 \\
+        0 & 0 & 0 & 1
+    \end{bmatrix},
+    \label{eq:robot-tool-transform}
+\end{equation}
+with the translation components are given in millimeters.
+The full conversion from the inertial frame to the end-effector frame is obtained by chaining the transformations as shown in \cref{eq:robot_forward_kinematics}.
+
+The model dynamics were evaluated using a Maple-generated inverse dynamics model written in C. 
+The model returns the mass matrix, centripetal-Coriolis vector, and gravity vector---used in  \cref{eq:robot_inverse_dynamics}---for the manipulator given the current joint positions and velocities.
+The link physical parameters such as masses, centers of mass, and inertia tensors are stored within this generated dynamics model, rather than supplied explicitly at runtime.
+The optimization uses this multi-rigid-body model directly and the link-specific physical parameters were not available in the project source.
+As such, these parameters are not explicitly listed in this work.
+However, the model does accept parameters for an added payload and joint motor inertias---which is used to calculate the cost function.
+The payload parameters were $m_{load} = 2.725 \text{ kg}$ for the mass, ${}^{ee}\mathbf{p}_{load,com} = [0, 0, 0.1]^\top \text{m}$ for the center of mass position in the end-effector frame, and $\mathbf{J}_{load} = \mathbf{0}$ for the inertia matrix.
+The joint motor inertias were specified as $\mathbf{J}_{\mathrm{m}} = \operatorname{diag}\left(4.121601, 4.121601, 1.384900, 1.384900, 0.541000, 0.600832, 0.600832\right)$ for joints 1 through 7.
+
+Table~\cref{tab:robot_kindyn_limits} lists the joint position, velocity, and torque limits for the robotic manipulator on a per joint basis.
+
+\begin{table}[htbp]
+\centering
+\caption{Robotic manipulator joint position, velocity, and torque limits.}
+\begin{tabular}{c c c c c c c}
+\hline
+\label{tab:robot_kindyn_limits}
+Joint &
+$q_{\min}$ [rad] &
+$q_{\max}$ [rad] &
+$\dot{q}_{\min}$ [rad/s] &
+$\dot{q}_{\max}$ [rad/s] &
+$\tau_{\min}$ [N\,m] &
+$\tau_{\max}$ [N\,m] \\
+\hline
+1 & -2.9671 & 2.9671 & -1.7453 & 1.7453 & -126 & 126 \\
+2 & -2.0944 & 2.0944 & -1.7453 & 1.7453 & -76  & 76  \\
+3 & -2.9671 & 2.9671 & -1.7453 & 1.7453 & -36  & 36  \\
+4 & -2.0944 & 2.0944 & -1.7453 & 1.7453 & -36  & 36  \\
+5 & -2.9671 & 2.9671 & -2.6180 & 2.6180 & -11  & 11  \\
+6 & -0.7854 & 1.3963 & -1.7453 & 1.7453 & -16  & 16  \\
+7 & -0.7854 & 2.3562 & -1.7453 & 1.7453 & -16  & 16  \\
+\hline
+\end{tabular}
+\end{table}
+
+\subsection{Target (Ball) Parameters}
+\todoX{Specify the ball's initial position ${}^i\mathbf{p}_{b,0}$, initial velocity ${}^i\mathbf{v}_{b,0}$, and gravity vector ${}^i\mathbf{g}$.}
+
+\subsection{B-Spline Discretization}
+\todoX{Specify B-spline degree $p=3$ and control vertex count $n_{ctrl}$.}
+\todoX{State the catch time horizon bounds $t_f \in [0.06, 1.8]$ s.}
+\todoX{State the oversampling ratio ($n_{via} \approx 2 n_{ctrl}$).}
+
+\subsection{Test Scenarios}
+\todoX{Define the initial robot configuration $\mathbf{q}_0$.}
+\todoX{Detail any variations in ball throwing arcs (e.g., to force different kinematic homotopy classes).}
+
+\subsection{Algorithm-Specific Hyperparameters}
+\todoX{RRT*-GBO: Joint-space distance metrics for $r_{ball,joint}$ and task-space metrics for $r_{connect}$.}
+\todoX{P-HO: Initial $\pm 2\pi$ joint position relaxations, 10x dynamic limit relaxations, and initial guess generation strategies.}
