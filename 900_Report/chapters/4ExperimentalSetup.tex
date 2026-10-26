@@ -5,17 +5,14 @@
 
 \section{Computational Environment \& Software Stack}
 \label{sec:setup_environment}
-\todoX{Detail hardware specifications (e.g., CPU, RAM) and operating system.}
-\todoX{Specify framework architecture (e.g., Python orchestration interacting with a C++ core).}
-\todoX{Explicitly list libraries used: CasADi for AD, IPOPT for the NLP, and specific linear solvers (e.g., MUMPS, HSL MA57).}
-\todoX{State universal solver stopping criteria (IPOPT convergence tolerance $\varepsilon_{tol} = 10^{-6}$, max iterations).}
 
-The experiments were conducted on three workstations running Ubuntu 24.04.5 LTS on an x86\textsubscript{64} architecture. 
+The experiments were conducted on four workstations running Ubuntu 24.04.5 LTS on an x86\textsubscript{64} architecture. 
 The first computer is equipped with an Intel\textsuperscript{\textregistered} Xeon\textsuperscript{\textregistered} CPU E5-1630 v4 @ 3.70\,GHz, providing 4 physical cores and 8 logical processors and 16\,GB of RAM. 
-The second computer is equipped with an Intel\textsuperscript{\textregistered} Core\textsuperscript{\texttrademark} Ultra 7 265 processor, providing 10 physical cores and 20 logical processors and 32\,GB of RAM.
+The second computer is equipped with an Intel\textsuperscript{\textregistered} Core\textsuperscript{\texttrademark} Ultra 7 265 CPU, providing 10 physical cores and 20 logical processors and 32\,GB of RAM.
 The third computer is equipped with an Intel\textsuperscript{\textregistered} Xeon\textsuperscript{\textregistered} CPU E5-2687W v3 @ 3.10\,GHz, providing 10 physical cores and 20 logical processors, and 16\,GB of RAM.
+The fourth computer is equipped with an Intel\textsuperscript{\textregistered} Core\textsuperscript{\texttrademark} i7-8700K CPU @ 3.70\,GHz, providing 6 physical cores and 12 logical processors and 32\,GB of RAM.
 As these workstations are materially different in terms of CPU and RAM, the performance results will include notes indicating which workstation was used for each experiment.
-Hereafter, the workstations will be referred to as Workstation 1, Workstation 2, and Workstation 3, corresponding to the order in which they were described above.
+Hereafter, the workstations will be referred to as Workstation 1, Workstation 2, Workstation 3, and Workstation 4, corresponding to the order in which they were described above.
 
 The code framework is based on a Python orchestration layer that interacts with a C++ core for computational efficiency. 
 \ac{CasADi} constructs the symbolic B-spline dynamics, objective, constraints, and automatic differentiation, while \ac{IPOPT} solves the resulting nonlinear programs with HSL MA27 as the linear solver. 
@@ -46,7 +43,6 @@ SciPy provides selected interpolation, B-spline, spatial, and rotation utilities
 
 \section{Evaluation Metrics}
 \label{sec:setup_metrics}
-\todoX{Define Success Rate: e.g., IPOPT returns "Solve Succeeded" and the adaptive refinement detects zero continuous-time violations.}
 \todoX{Define Computational Effort: Wall-clock CPU time, including notes on parallelization/multi-threading for MC-GBO and IPSO.}
 \todoX{Define Solution Quality: The final objective cost J achieved (effort for spacecraft, effort + acceleration for the manipulator).}
 
@@ -82,32 +78,25 @@ The results section therefore reports the metrics applicable to the algorithm an
 \label{sec:setup_spacecraft}
 
 \subsection{Physical Parameters}
-\todoX{Define the spacecraft inertia matrix $\mathbf{J}_{\mathrm{sc}}$.}
-\todoX{List actuator torque limits $\boldsymbol{\tau}_{\max}$ and angular velocity limits $\boldsymbol{\omega}_{\max}$.}
 The spacecraft inertia matrix denoted by $\mathbf{J}_{\mathrm{sc}}$ is set as a spherical inertia, $\mathbf{J}_{\mathrm{sc}} = 10000*\mathbf{I}$ kg·m².
 The baseline control torque limits are set to $\boldsymbol{\tau}_{\max} = 200$ N·m, and the angular velocity limits are set to $\boldsymbol{\omega}_{\max} = 0.2$ rad/s (11.46 °/s).
 If different torque or angular velocity limits are used for specific test cases, they are explicitly stated in the scenario description.
 Both limits are defined in the spacecraft body frame.
 
 \subsection{B-Spline Discretization}
-\todoX{Specify the fixed time horizon $t_f$.}
-\todoX{Specify B-spline degree (e.g., $p=3$ or $p=4$) and number of control vertices $n_{ctrl}$.}
-\todoX{State the oversampling ratio ($n_{via} \approx 4 n_{ctrl}$).}
 For all test scenarios, the B-splines were parameterized via:
 \begin{itemize}
     \item Fixed time horizon: $t_f = 60$ s
     \item B-spline degree: cubic $p = 3$
-    \item Number of free control vertices: $n_{FCV} = 10$
-    \item Number of boundary conditions: $n_{BC} = 6^\dagger$ equating to an initial and final angular orientation, zero angular velocity, and zero angular acceleration, $^\dagger$ except for two test cases that include additionally zero angular jerk $n_{BC} = 8$.
-    \item Total number of control vertices: $n_{ctrl} = n_{FCV} + n_{BC}$
+    \item Number of free control vertices: $n_{free} = 10$
+    \item Number of boundary conditions: $n_{bc} = 6^\dagger$ equating to an initial and final angular orientation, zero angular velocity, and zero angular acceleration, $^\dagger$ except for two test cases that include additionally zero angular jerk $n_{bc} = 8$.
+    \item Total number of control vertices: $n_{ctrl} = n_{free} + n_{bc}$
     \item Number of via points: $n_{via} = 61$
     \item Knot vector: $\operatorname{size}(\mathbf{t}) = n_{ctrl} + p + 1$
 \end{itemize}
 
 \subsection{Test Scenarios}
-\todoX{Define specific boundary conditions ($\mathbf{q}_0$, $\mathbf{q}_f$, etc.).}
-\todoX{Case A: Unconstrained large-angle slew (baseline).}
-\todoX{Case B: Constrained slew with Exclusion Zones (EZs). Provide a table or list of inertial pointing vectors ${}^i\mathbf{\hat{e}}$ and radii $\theta_{exclusion}$.}
+\todoX{show geodesic slew as proof of optimizer correctness.}
 
 Tables~\ref{tab:scso3_summary} and \ref{tab:scso3_exclusion_zones} summarize the spacecraft slew test case scenarios and the corresponding exclusion-zone definitions, respectively.
 The test case scenarios range from an unconstrained large-angle slew---as a baseline verification of the optimization framework---to increasingly constrained realistic maneuvers with exclusion zones and actuator limits, and finally complex configuration scenarios testing the limits of the global solver's ability to find feasible and optimal trajectories. 
@@ -267,8 +256,7 @@ In addition to the listed orientation vectors of the \ac{EZ}s, the corresponding
 \end{longtable}
 
 \subsection{Algorithm-Specific Hyperparameters}
-\todoX{introduce the tables}
-
+\todoX{List what workstations were used}
 Tables~\cref{tab:params_mc_gbo,tab:params_pho,tab:params_rrt_gbo,tab:params_ipso} list the comprehensive set of algorithm-specific hyperparameters used in this work for the spacecraft \ac{NLPn}.
 Refer back to \cref{sec:algorithm_frameworks} and the papers by Stoneman and Lampariello \cite{Stoneman14}, Pardis et al. \cite{Pardis24}, and Spiller et al. \cite{Spiller16,Spiller18} for further details on the respective algorithms.
 
@@ -282,7 +270,7 @@ Refer back to \cref{sec:algorithm_frameworks} and the papers by Stoneman and Lam
         \textbf{Parameter} & \textbf{Value} & \textbf{Description} \\
         \midrule
         $N_{MC}$ & $100$ & Total number of independent Monte Carlo random seeds evaluated. \\
-        $N_{\text{parallel}}$ & $8$ & Number of optimizations executed concurrently. \\
+        $N_{\text{parallel}}$ & $4$ & Number of optimizations executed concurrently. \\
         $T_{\max}$ & $180.0$\,s & Maximum allowable wall-clock computation time. \\
         \bottomrule
     \end{tabularx}
@@ -310,7 +298,7 @@ Refer back to \cref{sec:algorithm_frameworks} and the papers by Stoneman and Lam
         $\rho_{\mathcal{A}}$ & $1.0$ & Solve-to-sample ratio threshold regulating phase transitions. \\
         $P_g$ & $0.3$ & Probability of explicitly targeting the goal parameter $\boldsymbol{\lambda} = \mathbf{1}_d$. \\
         $N_{\text{init}}$ & $20$ & Number of initial solutions generated at the relaxed state $\boldsymbol{\lambda} = \mathbf{0}_d$. \\
-        $s$ & $0.9$ & Shrink factor for dynamic limits and exclusion zone constraints. \\
+        $s$ & $0.9$ & Shrink factor for the exclusion zone constraints. \\
         Geodesic Seed & True & Initializes one baseline solve with the shortest-path geodesic slew. \\
         \bottomrule
 \end{longtable}
@@ -332,6 +320,7 @@ Refer back to \cref{sec:algorithm_frameworks} and the papers by Stoneman and Lam
         $r_{\text{connect}}$ & $0.5\pi$\,rad & Goal connection threshold radius. \\
         $W_{\text{prune}}$ & $20$ & Pruning window size for tracking recent node addition attempts to dynamically adjust the pruning radius. \\
         $\varepsilon_{\text{cost}}$ & $10^{-4}$ & Minimum relative cost improvement tolerance for rewiring acceptance. \\
+        $t_f$ & $60.0$\,s & Final time for the edge BVP solve. \\
         Edge $n_{\text{via}}$ & $11$ & Number of via points used for discretizing local edge BVP solves. \\
         Edge $n_{\text{fcv}}$ & $3$ & Number of free interior control vertices per edge BVP solve. \\
         Truncation & True & Truncates out-of-bounds samples to the edge of $r_{\text{ball}}$ instead of rejecting. \\
@@ -375,7 +364,7 @@ Refer back to \cref{sec:algorithm_frameworks} and the papers by Stoneman and Lam
         GBO Refinement & True & Enables local gradient-based refinement on the final IPSO trajectories. \\
         Feasible Only & True & Restricts GBO refinement exclusively to strictly feasible IPSO outputs. \\
         $N_{\text{warmstarts}}$ & $20$ & Maximum number of top IPSO candidates passed to the GBO solver. \\
-        $N_{\text{parallel,GBO}}$ & $8$ & Number of concurrent GBO refinement processes executed. \\
+        $N_{\text{parallel,GBO}}$ & $4$ & Number of concurrent GBO refinement processes executed. \\
         \midrule
         \multicolumn{3}{l}{\textit{Weight Scheduling ($N_{\text{schedule}} = 300$ outer cycles)}} \\
         $r$ & $0.9$ & Static scalar multiplier for the combined inertia and cognitive velocity update. \\
@@ -401,9 +390,6 @@ Refer back to \cref{sec:algorithm_frameworks} and the papers by Stoneman and Lam
 \label{sec:setup_robot}
 
 \subsection{Physical Parameters}
-\todoX{Include a table defining the \ac{MDH} parameters ($\alpha$, $a$, $\theta$, $d$) for all 7 links.}
-\todoX{Include a table listing the mass, center of mass, and inertia tensor for each link.}
-\todoX{List the specific joint position bounds $\mathbf{q}_{\max/\min}$, velocity bounds $\dot{\mathbf{q}}_{\max/\min}$, and torque bounds $\boldsymbol{\tau}_{\max/\min}$.}
 
 A core component of the robotic manipulator model is its kinematic chain, which is defined using the Modified Denavit--Hartenberg (\ac{MDH}) parameters as described in Section~\ref{sec:manipulator-kinematics}. 
 By chaining frame multiplication using the \ac{MDH} parameters and the fixed transformations connecting the inertial frame to the robot base and the last link to the end-effector, the homogeneous transformation from the inertial frame to the end-effector frame can be obtained.
@@ -433,7 +419,7 @@ $d_{i-1}$ [mm] \\
 \end{tabular}
 \end{table}
 
-The fixed transformations connecting the inertial frame to the robot base, frame 0, and frame 8 to the end-effector frame are
+The fixed transformations connecting the inertial frame to the robot base, frame 0, and frame 8 to the end-effector frame are:
 \begin{equation}
     \mathbf{T}_{i,0} = 
     \begin{bmatrix}
@@ -463,7 +449,7 @@ The initial joint configuration, and end-effector pose are given by:
     \mathbf{q}_0 = 
     \begin{bmatrix}
         0.8098 & 0.3560 & 1.0873 & -1.7558 & 0.1728 & 0.1065 & 0.2409
-    \end{bmatrix}^\top rad,
+    \end{bmatrix}^\top \text{rad},
 \end{equation}
 
 \begin{equation}
@@ -478,7 +464,7 @@ The initial joint configuration, and end-effector pose are given by:
 
 The model dynamics were evaluated using a Maple-generated inverse dynamics model written in C. 
 The model returns the mass matrix, centripetal-Coriolis vector, and gravity vector---used in  \cref{eq:robot_inverse_dynamics}---for the manipulator given the current joint positions and velocities.
-The link physical parameters such as masses, centers of mass, and inertia tensors are stored within this generated dynamics model, rather than supplied explicitly at runtime.
+The link physical parameters such as mass, center of mass, and the inertia matrix are stored within this generated dynamics model, rather than supplied explicitly.
 The optimization uses this multi-rigid-body model directly and the link-specific physical parameters were not available in the project source.
 As such, these parameters are not explicitly listed in this work.
 However, the model does accept parameters for an added payload and joint motor inertias---which is used to calculate the cost function.
@@ -515,7 +501,6 @@ $\tau_{\max}$ [N\,m] \\
 Gravity acts respective to the inertial frame as ${}^i\mathbf{g} = [0, 0, -9.81]^\top \text{ m/s}^2$.
 
 \subsection{Target (Ball) Parameters}
-\todoX{Specify the ball's initial position ${}^i\mathbf{p}_{b,0}$, initial velocity ${}^i\mathbf{v}_{b,0}$, and gravity vector ${}^i\mathbf{g}$.}
 
 The ball's initial position, velocity, and trajectory start time are specified as follows:
 \begin{align}
@@ -526,31 +511,51 @@ The ball's initial position, velocity, and trajectory start time are specified a
 The velocity components $v_x$, $v_y$, and $v_z$ are the main parameters defining each ball catching test caseThe resulting trajectory of the ball is determined by the ballistic equation:
 \begin{equation}
     {}^i\mathbf{p}_b(t_b) = {}^i\mathbf{p}_{b,0} + {}^i\mathbf{v}_{b,0} t_b + \frac{1}{2} {}^i\mathbf{g} t_b^2, 
-    t_b = t-t_0
+    \quad t_b = t-t_0
 \end{equation}
 
 \subsection{B-Spline Discretization}
-\todoX{Specify B-spline degree $p=3$ and control vertex count $n_{ctrl}$.}
-\todoX{State the catch time horizon bounds $t_f \in [0.06, 1.8]$ s.}
-\todoX{State the oversampling ratio ($n_{via} \approx 2 n_{ctrl}$).}
 
 For all test scenarios, the clamped, uniform B-splines were parameterized via:
 \begin{itemize}
     \item Fixed time horizon: $t_f = [0.06,1.8]$ s
     \item B-spline degree: cubic $p = 3$
-    \item Number of free control vertices: $n_{FCV} = 6$
-    \item Number of boundary conditions: $n_{BC} = 5$
-    \item Total number of control vertices: $n_{ctrl} = n_{FCV} + n_{BC}$
+    \item Number of free control vertices: $n_{free} = 6$
+    \item Number of B-spline-embedded endpoint conditions: $n_{bc} = 5$. These are the initial joint position and the zero-velocity and zero-acceleration conditions at the initial and final boundaries that determine the corresponding endpoint control vertices. The terminal catching task is imposed separately through five scalar pose equalities (three position and two orientation); these constraints do not reduce the number of free B-spline control vertices, as described in \cref{sec:ocp}.
+    \item Total number of control vertices: $n_{ctrl} = n_{free} + n_{bc}$
     \item Number of via points: $n_{via} = 20$
     \item Knot vector: $\operatorname{size}(\mathbf{t}) = n_{ctrl} + p + 1$
 \end{itemize}
 
 \subsection{Test Scenarios}
-\todoX{Define the initial robot configuration $\mathbf{q}_0$.}
-\todoX{Detail any variations in ball throwing arcs (e.g., to force different kinematic homotopy classes).}
 The ball-velocity test cases replicate the experiments of Lampariello et al.~\cite{Lampariello11}. 
-The velocity combinations are taken from the lookup table containing 1,825 discrete velocity triplets and solutions. 
-The table does not contain all possible combinations of the velocity component ranges; instead, it contains 22 distinct $v_x$ values, 12 distinct $v_y$ values, and 24 distinct $v_z$ values combined into the 1,825 tested triplets.
+The velocity combinations are taken from a lookup table containing 1,825 discrete 
+velocity triplets and solutions. The table does not contain all possible combinations 
+of the velocity component ranges; instead, it contains 22 distinct $v_x$ values, 
+12 $v_y$ values, and 24 $v_z$ values combined into the 1,825 tested triplets.
+
+Four algorithms are evaluated in the experiments: \ac{MC-GBO}, \ac{RRT*-GBO}, \ac{P-HO}, 
+and a baseline comparison method: local optimization with a trivial initial guess. 
+The trivial guess consists of setting all free control vertices to the root---
+that is, setting every free control vertex to the initial joint
+configuration $\mathbf{q}_0$. The initial guess for the final time is selected
+as the time at which the ball passes closest, by measure of Euclidean distance, to the
+end-effector position corresponding to $\mathbf{q}_0$.
+This guess is naturally infeasible with respect to the \ac{NLPn} and is purely used
+as the initial point for the local optimization.
+
+Two evaluation sets are produced. The first evaluates the available
+lookup-table cases broadly across the 1,825 recorded velocity triplets,
+running a selection of 1000 random velocity sets. Each test case is allotted
+a 30-minute optimization budget and ends when the first feasible solution is found
+or the time budget is exhausted.
+The second is a focused global-landscape study intended to explore each selected
+case more thoroughly. For this study, 100 lookup-table rows are
+selected evenly among the list of 1825 velocity triplets, 
+so that the selected cases cover the range of velocity pairings throughout the
+table rather than clustering in specific regions. Each selected velocity case is
+assigned a two-hour optimization budget with no cap on the number of solutions.
+The list of selected velocity cases for both evaluation sets is provided in \cref{app:selected_lut_rows}.
 
 Table~\ref{tab:ball_velocity_lookup} summarizes the range and grid spacing of the lookup-table entries. 
 
@@ -570,5 +575,110 @@ $v_z$ & $2.625000$ & $5.500000$ & $0.125000$ \\
 \end{table}
 
 \subsection{Algorithm-Specific Hyperparameters}
-\todoX{RRT*-GBO: Joint-space distance metrics for $r_{ball,joint}$ and task-space metrics for $r_{connect}$.}
-\todoX{P-HO: Initial $\pm 2\pi$ joint position relaxations, 10x dynamic limit relaxations, and initial guess generation strategies.}
+
+Tables~\cref{tab:params_mc_gbo_robot,tab:params_pho_robot,tab:params_rrt_gbo_robot} list 
+the algorithm-specific hyperparameters used for the robotic manipulator \ac{NLPn}. 
+The values in those tables correspond to the 100-LUT global-landscape study. 
+The 1000-LUT study uses the same settings unless an override is listed in Table~\ref{tab:robot-study-hyperparameter-overrides}. 
+The \ac{IPSO} method is not evaluated for this problem.
+
+\begin{table}[htbp]
+    \centering
+    \caption{Hyperparameters that differ between the 1000-LUT and 100-LUT global robotic-manipulator studies.}
+    \label{tab:robot-study-hyperparameter-overrides}
+    \begin{tabularx}{\textwidth}{l l c c}
+        \toprule
+        \textbf{Algorithm} & \textbf{Parameter} & \textbf{1000-LUT study} & \textbf{100-LUT global study} \\
+        \midrule
+        MC & $N_{MC}$ & $24$ & $200$ \\
+        MC & $T_{\max}$ & $1800\,\mathrm{s}$ & $7200\,\mathrm{s}$ \\
+        MC & $N_{\mathrm{sol,max}}$ & $1$ & $0$ (unlimited) \\
+        P-HO & $N_{\mathrm{iters}}$ & 50 & $500$ \\
+        P-HO & $T_{\max}$ & $1800\,\mathrm{s}$ & $7200\,\mathrm{s}$ \\
+        P-HO & $N_{\mathrm{sol,max}}$ & $1$ & $0$ (unlimited) \\
+        RRT$^{*}$-GBO & $N_{\mathrm{runs}}$ & 5000 & $1500$ \\
+        RRT$^{*}$-GBO & $T_{\max}$ & $1800\,\mathrm{s}$ & $7200\,\mathrm{s}$ \\
+        RRT$^{*}$-GBO & $N_{\mathrm{sol,max}}$ & $1$ & $0$ (unlimited) \\
+        Local GBO & $N_{runs}$ & $1$ & $1$ \\
+        Local GBO & $T_{\max}$ & $400\,\mathrm{s}$ & $400\,\mathrm{s}$ \\
+        \bottomrule
+    \end{tabularx}
+\end{table}
+
+% === MC-GBO TABLE ===
+\begin{table}[htbp]
+    \centering
+    \begin{threeparttable}
+        \caption{Monte Carlo Gradient-Based Optimization (MC-GBO) hyperparameters for the robotic manipulator.}
+        \label{tab:params_mc_gbo_robot}
+        \begin{tabularx}{\textwidth}{l l X}
+            \toprule
+            \textbf{Parameter} & \textbf{Value} & \textbf{Description} \\
+            \midrule
+            $N_{MC}$ & $200$ & Total number of independent Monte Carlo random seeds evaluated. \\
+            $N_{\text{parallel}}$ & \tnote{$\dagger$} & Number of optimizations executed concurrently. \\
+            $T_{\max}$ & $7200.0\,\mathrm{s}$ & Maximum allowable wall-clock computation time. \\
+            $N_{\text{sol, max}}$ & $0$ & Maximum number of feasible solutions; $0$ denotes unlimited solutions. \\
+            \bottomrule
+        \end{tabularx}
+        \begin{tablenotes}[flushleft]
+            \footnotesize
+            \item[$\dagger$] The number of parallel workers depends on workstation resources. Workstations 1--4 used 8, 6, 4, and 8 workers, respectively.
+        \end{tablenotes}
+    \end{threeparttable}
+\end{table}
+
+% === P-HO TABLE ===
+\begin{longtable}{@{}p{0.24\textwidth}p{0.16\textwidth}p{0.54\textwidth}@{}}
+    \caption{Probabilistic Homotopy Optimization (P-HO) hyperparameters for the robotic manipulator.}
+    \label{tab:params_pho_robot}\\
+        \toprule
+        \textbf{Parameter} & \textbf{Value} & \textbf{Description} \\
+        \midrule
+\endfirsthead
+
+        \toprule
+        \textbf{Parameter} & \textbf{Value} & \textbf{Description} \\
+        \midrule
+\endhead
+
+        \bottomrule
+\endfoot
+
+        $N_{\text{iters}}$ & $500$ & Maximum number of homotopy iterations. \\
+        $T_{\max}$ & $7200.0$\,s & Maximum allowable wall-clock computation time. \\
+        $N_{\text{sol, max}}$ & $0$ & Maximum number of feasible solutions; $0$ denotes unlimited solutions. \\
+        $\rho_{\mathcal{A}}$ & $0.7$ & Solve-to-sample ratio threshold regulating phase transitions. \\
+        $P_g$ & $0.3$ & Probability of explicitly targeting the goal parameter $\boldsymbol{\lambda} = \mathbf{1}_d$. \\
+        $N_{\text{init}}$ & $5$ & Number of initial solutions used to seed the PHO optimization. \\
+        \bottomrule
+\end{longtable}
+
+% === RRT*-GBO TABLE ===
+\begin{table}[htbp]
+    \centering
+    \caption{Algorithm-specific hyperparameters for Rapidly-exploring Random Tree Star with GBO (RRT*-GBO) for the robotic manipulator.}
+    \label{tab:params_rrt_gbo_robot}
+    \begin{tabularx}{\textwidth}{l l X}
+        \toprule
+        \textbf{Parameter} & \textbf{Value} & \textbf{Description} \\
+        \midrule
+        $N_{\text{runs}}$ & $1500$ & Maximum number of tree expansion runs. \\
+        $T_{\max}$ & $7200.0$\,s & Maximum allowable wall-clock computation time. \\
+        $N_{\text{sol, max}}$ & $0$ & Maximum number of feasible solutions; $0$ denotes unlimited solutions. \\
+        $r_{\text{prune,joint}}$ & $0.1$\,rad & Joint-space distance below which samples are considered redundant. \\
+        $r_{\text{ball,joint}}$ & $0.7$\,rad & Joint-space radius for local steering and neighborhood queries. \\
+        Truncation & True & Projects out-of-ball samples to the joint-space boundary instead of rejecting them. \\
+        $r_{\text{connect,position}}$ & $0.5$\,m & Position radius for the goal connection. \\
+        $r_{\text{connect,approach axis}}$ & $0.8$\,rad & Approach-axis angle for the goal connection. \\
+        $W_{\text{prune}}$ & $20$ & Pruning window size for tracking recent node addition attempts to dynamically adjust the pruning radius. \\
+        $\varepsilon_{\text{cost}}$ & $10^{-4}$ & Minimum relative cost improvement tolerance for rewiring acceptance. \\
+        $t_f$ & $1.741009$\,s & Final time for the edge BVP solve. \\
+        Edge $n_{\text{via}}$ & $11$ & Number of via points used for discretizing local edge BVP solves. \\
+        Edge $n_{\text{fcv}}$ & $1$ & Number of free interior control vertices per local edge BVP solve. \\
+        Goal-edge $n_{\text{via}}$ & $11$ & Number of via points used for discretizing goal-edge BVP solves. \\
+        Goal-edge $n_{\text{fcv}}$ & $3$ & Number of free interior control vertices per goal-edge BVP solve. \\
+        \bottomrule
+    \end{tabularx}
+\end{table}
+

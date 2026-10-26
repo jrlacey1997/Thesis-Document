@@ -1,9 +1,10 @@
 \documentclass[tikz, border=10pt]{standalone}
 \usepackage{xcolor}
-\usetikzlibrary{calc}
+\usetikzlibrary{calc, arrows.meta, decorations.markings}
 
 \definecolor{purple1}{RGB}{148, 0, 211}
 \definecolor{green1}{RGB}{0, 150, 80}
+\definecolor{pathOrange}{RGB}{230, 130, 40}
 
 \begin{document}
 \begin{tikzpicture}[
@@ -18,7 +19,7 @@
 
     % 1. Outer Bounding Box
     \draw[thick] (0,0) rectangle (6,4.5);
-    \node[font=\sffamily\small] at (5.75, 0.2) {(4)};
+    \node[font=\sffamily\small] at (5.75, 0.2) {(d)};
 
     % 2. Obstacles (Top & Bottom Gray Blocks)
     \fill[obstacle] (1.6, 1.8) rectangle (2.1, 4.0); % Top obstacle
@@ -65,11 +66,13 @@
     \draw[main edge] (n8) to[bend left=50] (n10);
 
     % Smooth final path over the top obstacle and down to the goal
-    \draw[orange, line width=2.5pt]
+    \draw[pathOrange, very thick,
+        postaction={decorate},
+        decoration={markings, mark=at position 0.72 with {\arrow{Latex}}}]
         (root)
         .. controls (1.1,3.2) and (1.3,4.4) .. (2.3,4.4)
         .. controls (3.4,4.4) and (4.7,4.1) ..
-        node[midway, below=8pt, sloped, font=\sffamily\bfseries\small] {smoothed trajectory}
+        node[midway, below=8pt, sloped, text=pathOrange, font=\sffamily\bfseries\small] {smoothed trajectory}
         (goal);
 
     % Curved Connection over Middle Obstacle

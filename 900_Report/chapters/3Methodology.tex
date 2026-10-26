@@ -1,21 +1,3 @@
-\todoZ{3.1: Cover SO(3) parameterizations with quaternions, MRPs, and axis-angle representations}
-\todoZ{3.1: Detail conversions, singularities, and representation choices for optimization versus sampling}
-\todoZ{3.1: Define the Modified (Craig) Denavit-Hartenberg convention for the 7-DOF manipulator}
-\todoZ{3.2: Formulate spacecraft attitude dynamics on SO(3)}
-\todoZ{3.2: Formulate 7-DOF robotic manipulator dynamics}
-\todoZ{3.2: Define state, input, and kinodynamic constraint envelopes for both systems}
-\todoZ{3.2: Specify actuator, joint, angular-velocity, and angular-acceleration limits}
-\todoZ{3.3: Formalize the continuous-time optimal control problem}
-\todoZ{3.3: Transcribe the OCP into a discrete nonlinear program}
-\todoZ{3.3: Detail B-spline parameterization of state and control trajectories}
-\todoZ{3.3: Describe the IPOPT interface, discretization, and constraint handling}
-\todoZ{3.4: Present MC-GBO, RRT*-GBO, P-HO, and IPSO consistently}
-\todoZ{3.4: Describe naive versus uniform SO(3) sampling}
-\todoZ{3.4: Define Arm7 sampling bounds}
-\todoZ{3.5: Detect kinodynamic and boundary violations along B-spline trajectories}
-\todoZ{3.5: Locally densify time-grid nodes to enforce feasibility}
-\todoZ{3.6: Prove and analytically verify the unconstrained SO(3) maneuver baseline}
-
 \chapter{Methodology}
 \label{sec:methodology}
 
@@ -709,8 +691,8 @@ boundary and interior control vertices:
     \in
     \mathbb{R}^{4 \times n_{ctrl}},
 \end{equation}
-where $\mathbf{P}_0$ contains the first $n_{\mathrm{BC}}$ control
-vertices, $\mathbf{P}_f$ contains the last $n_{\mathrm{BC}}$ control
+where $\mathbf{P}_0$ contains the first $n_{\mathrm{BC,0}}$ control
+vertices, $\mathbf{P}_f$ contains the last $n_{\mathrm{BC,f}}$ control
 vertices, and $\mathbf{P}_{\mathrm{int}}$ contains the interior free
 control vertices.
 
@@ -718,7 +700,7 @@ Consequently,
 \begin{equation}
     n_{ctrl}
     =
-    n_{\mathrm{FCV}}+2n_{\mathrm{BC}},
+    n_{\mathrm{BC,0}} + n_{\mathrm{FCV}} + n_{\mathrm{BC,f}},
 \end{equation}
 where $n_{\mathrm{FCV}}$ is the number of free control vertices. After
 the exterior vertices are determined from the boundary conditions, only
@@ -736,7 +718,7 @@ from the active control-vertex entries at the initial and final times:
         \boldsymbol{\varphi}^{(2)}_0
     \end{bmatrix}
     \in
-    \mathbb{R}^{n_{\mathrm{BC}}\times n_{\mathrm{BC}}},
+    \mathbb{R}^{n_{\mathrm{BC,0}}\times n_{\mathrm{BC,0}}},
 \end{equation}
 \begin{equation}
     \mathbf{B}_f
@@ -747,7 +729,7 @@ from the active control-vertex entries at the initial and final times:
         \boldsymbol{\varphi}^{(2)}_f
     \end{bmatrix}
     \in
-    \mathbb{R}^{n_{\mathrm{BC}}\times n_{\mathrm{BC}}},
+    \mathbb{R}^{n_{\mathrm{BC,f}}\times n_{\mathrm{BC,f}}},
 \end{equation}
 where
 \begin{equation}
@@ -755,17 +737,16 @@ where
     =
     \boldsymbol{\varphi}^{(r)}(t_0)
 \end{equation}
-contains the first $n_{\mathrm{BC}}$ entries, and
+contains the first $n_{\mathrm{BC,0}}$ entries, and
 \begin{equation}
     \boldsymbol{\varphi}^{(r)}_f
     =
     \boldsymbol{\varphi}^{(r)}(t_f)
 \end{equation}
-contains the last $n_{\mathrm{BC}}$ entries.
+contains the last $n_{\mathrm{BC,f}}$ entries.
 
-For the default case, $n_{\mathrm{BC}}=3$, the prescribed boundary
-conditions are quaternion position, quaternion rate, and quaternion
-acceleration:
+For the default case, $n_{\mathrm{BC,0}}=n_{\mathrm{BC,f}}=3$, the prescribed boundary
+conditions are quaternion position, angular velocity, and angular acceleration, with the latter two converted to quaternion first and second derivatives for enforcing the analytical boundary conditions:
 \begin{equation}
     \mathbf{Y}_0
     =
@@ -821,7 +802,7 @@ The exterior control vertices are therefore obtained analytically as
 \begin{quote} 
     \textit{Invertibility note.} For a clamped B-spline, the zeroth-order basis function at $t=0$ depends only on the first control vertex.
     The first derivative introduces the second control vertex, the second derivative introduces the third control vertex, and so on. 
-    Therefore, for $N_{\mathrm{BC}}=3$, 
+    Therefore, for $n_{\mathrm{BC,0}}=3$, 
     \begin{equation} 
         \mathbf{B}_0 = 
         \begin{bmatrix}
@@ -850,9 +831,9 @@ The exterior control vertices are therefore obtained analytically as
     \end{equation}
     The diagonal entries are nonzero if 
     \begin{equation} 
-        \text{degree} \geq N_{\mathrm{BC}}-1, 
+        \text{degree} \geq n_{\mathrm{BC,0}}-1, 
     \end{equation} 
-    Hence, 
+    Hence the triangular structure ensures that the matrices are nonsingular, 
     \begin{equation} 
         \det(\mathbf{B}_0)\neq 0, \qquad
         \det(\mathbf{B}_f)\neq 0, 
@@ -862,7 +843,7 @@ The exterior control vertices are therefore obtained analytically as
 
 The quaternion derivatives appearing in $\mathbf{Y}_0$ and $\mathbf{Y}_f$ are obtained from the angular quantities using \cref{eq:q_dot_from_omega}--\cref{eq:q_dddot_from_omega}. 
 
-If $n_{\mathrm{BC}}=4$, jerk is also imposed at both boundaries. In that
+If $n_{\mathrm{BC,0}}=n_{\mathrm{BC,f}}=4$, jerk is also imposed at both boundaries. In that
 case,
 \begin{equation}
     \mathbf{Y}_0
@@ -1285,7 +1266,7 @@ The remaining exterior vertices are reconstructed analytically from the boundary
 
 Because the terminal joint position is not set directly in the ball-catching problem, $\mathbf{c}_{n_{\mathrm{ctrl}}-1}$ is determined indirectly by the terminal end-effector and approach-axis constraints.
 
-For a fixed-endpoint problem, the terminal joint position is prescribed:
+For a problem with a fixed joint-space endpoint, the terminal joint position is prescribed:
 \begin{equation}
     \mathbf{c}_{n_{\mathrm{ctrl}}-1}
     =
@@ -1497,15 +1478,15 @@ analytically. For the spacecraft, only the interior control vertices $\mathbf{P}
     \begin{equation}
         \mathbf{w}_{\text{spacecraft}} = \mathbf{P}_{\text{int,sc}} \in \mathbb{R}^{4 n_{\text{free}}}.
     \end{equation}
-    $n_{\text{bc}}$ may equal either six or eight, depending on whether angular jerk is included in the boundary conditions.
-    \item \textbf{7-DOF Robotic Arm Decision Vector:} Parameterized by 7 B-spline joint curves ($n_{\text{ctrl}}$ control vertices per curve) with $n_{\text{free}} = n_{\text{ctrl}} - n_{\text{bc}}$ free interior control vertices per joint:
+    $n_{\text{bc}} = n_{\text{bc,0}} + n_{\text{bc,f}}$ may equal either six or eight, depending on whether angular jerk is included in the boundary conditions.
+    \item \textbf{7-DOF Robotic Arm Decision Vector:} Parameterized by seven B-spline joint curves ($n_{\text{ctrl}}$ control vertices per curve) with $n_{\text{free}} = n_{\text{ctrl}} - n_{\text{bc}}$ free interior control vertices per joint:
     \begin{equation}
         \mathbf{w}_{\text{robot}} = 
         \begin{bmatrix} 
             \mathbf{P}_{\text{int}} \quad \mathbf{P}_f \quad t_f 
         \end{bmatrix} \in \mathbb{R}^{7 n_{\text{free}} + 1}.
     \end{equation}
-    $n_{\text{bc}}$ equals five; the boundary conditions on catch position, approach angle, and time do not reduce the number of decision variables because the final control vertex is not constrained to a single configuration.
+    For the purpose of defining the number of free variables, $n_{\text{bc}} = n_{\text{bc,0}} + n_{\text{bc,f}} = 5$; the boundary conditions on catch position, approach angle, and time do not reduce the number of decision variables because the final control vertex is not constrained to a single configuration.
 \end{itemize}
 
 To prevent inter-sample constraint violation between discretization nodes, the continuous B-spline trajectories should be over-sampled---i.e. they should contain more via points than control points $n_{\mathrm{via}} > n_{\mathrm{ctrl}}$. 
@@ -1543,7 +1524,7 @@ Each algorithm is further detailed in the following subsections.
 
 \subsection{Monte Carlo Gradient-Based Optimization (MC-GBO)}
 
-\ac{MC-GBO} serves as the naive-baseline multistart approach to  global trajectory optimization, where multiple wholly independent initial trajectory guesses are generated and optimized to explore the search space.
+\ac{MC-GBO} serves as the naive-baseline multistart approach to  global trajectory optimization, where multiple wholly independent initial trajectory guesses are generated and optimized to explore the search space, as visualized in \cref{fig:mc-gbo-trajectory-optimization}.
 The advantages of \ac{MC-GBO} include its simplicity and ease of parallelization.
 However, its main drawbacks are its lack of guidance between each independent optimization run---which results in numerous redundant solves---its direct, single-stage approach to solving the fully constrained, tight tolerance, highly nonlinear problem, and its difficulty in handling increasingly complex and constrained scenarios.
 \cref{alg:mc-gbo} details the procedure for this straightforward multistart approach:
@@ -1556,6 +1537,14 @@ Once any of the stopping criteria are met (maximum iterations $N_{MC}$, desired 
 Critically, \ac{MC-GBO} can parallelize the entire optimization process, as each Monte Carlo iteration is independent. 
 Modern libraries and frameworks for parallel computing can be leveraged to significantly reduce the overall computation time by distributing the optimization tasks across multiple processors.
 This parallelizability is the saving grace of \ac{MC-GBO}, allowing it to efficiently explore a large number of initial guesses without being bottlenecked by sequential optimization runs, thus keeping it relatively competitive to more sophisticated global optimization approaches.
+
+\begin{figure}[htbp]
+    \centering
+    \includegraphics[width=0.72\textwidth]{tikz/MC_Demo.pdf}
+    \caption{Illustration of \ac{MC-GBO} showing multiple independently and randomly generated initial guess trajectories (dashed) and their corresponding optimized final trajectories (solid) navigating an environment with obstacles.
+            Each refined trajectory is a local \ac{GBO}-based optimum; global search is achieved through the multiple independent initial guesses.}
+    \label{fig:mc-gbo-trajectory-optimization}
+\end{figure}
 
 \begin{algorithm}[H]
 \caption{\texttt{MC\_GBO}}
@@ -1696,7 +1685,8 @@ The clipping function ensures the newly interpolated configuration strictly adhe
 
 The more significant consideration for the robotic manipulator model is coming to terms with the goal being an arc corresponding to the ballistic path of the ball, rather than a fixed final pose.
 As such, the distance metrics for $r_{connect}$ evaluate the proximity of the end-effector to the entire arc of the ball's trajectory, and calculate the shortest distance to the arc and the corresponding ball time along its trajectory at that point.
-This final position and time is used as the initial guess for the free-time \ac{BVP}, though they may update during the solution process.
+The corresponding point on the ball trajectory provides the initial guess for the terminal position of the end-effector and catch time $t_f$.
+The \ac{GBO} solve then treats $t_f$ as a free decision variable and adjusts it, together with the terminal joint configuration and trajectory control vertices, until the terminal catching constraints are satisfied within the prescribed time bounds.
 For non-goal edges, the \ac{BVP} is modified slightly: rather than a free-time, free-position problem, the final position is fixed to the configuration of the newly added node and each edge time is a fixed span--as described for the spacecraft model.
 Thus, when goal rewiring occurs, often an entirely new path to a new point along the ball's trajectory is found, rather than a traditional rewiring of the existing successful path.
 
@@ -1871,26 +1861,33 @@ Specifically, \ac{P-HO} demonstrates a robustness to common topological pitfalls
     \item \textbf{Disconnected and Abbreviated Paths:} Due to the sampling strategy, \ac{P-HO} can effectively navigate between disconnected and abbreviated homotopy paths, using solutions from previously explored branches as warm starts to bridge gaps in the solution manifold \cite{Pardis24}.
 \end{itemize}
 
-\begin{figure}[H]
+% \begin{figure}[H]
+%     \centering
+%     \subfloat[Initialization of the relaxed \ac{NLPn}, $\lambda = 0$. A single seed is generated.]{%
+%         \includegraphics[width=0.48\textwidth]{PHO/PHO_01.png}%
+%     }%
+%     \hfill
+%     \subfloat[First homotopy sample, $\lambda = 0.8$. The single seed is used as a warm start and uncovers solutions of two homotopy classes.]{%
+%         \includegraphics[width=0.48\textwidth]{PHO/PHO_80.png}%
+%     }%
+%     \\
+%     \subfloat[Second homotopy sample, $\lambda = 0.35$. The algorithm continues to explore the solution space using previous solutions as warm starts.]{%
+%         \includegraphics[width=0.48\textwidth]{PHO/PHO_35.png}%
+%     }%
+%     \hfill
+%     \subfloat[Goal homotopy sample, $\lambda = 1$. The algorithm attempts a fully constrained solve, resulting in 3 distinct homotopy classes.]{%
+%         \includegraphics[width=0.48\textwidth]{PHO/PHO_100.png}%
+%     }%
+%     \caption{\ac{P-HO} demonstrates stochastic sampling and the resulting ability to navigate between different homotopy classes in the solution space.}
+%     \label{fig:pho_navigation}
+% \end{figure}
+\begin{figure}[htbp]
     \centering
-    \subfloat[Initialization of the relaxed \ac{NLPn}, $\lambda = 0$. A single seed is generated.]{%
-        \includegraphics[width=0.48\textwidth]{PHO/PHO_01.png}%
-    }%
-    \hfill
-    \subfloat[First homotopy sample, $\lambda = 0.8$. The single seed is used as a warm start and uncovers solutions of two homotopy classes.]{%
-        \includegraphics[width=0.48\textwidth]{PHO/PHO_80.png}%
-    }%
-    \\
-    \subfloat[Second homotopy sample, $\lambda = 0.35$. The algorithm continues to explore the solution space using previous solutions as warm starts.]{%
-        \includegraphics[width=0.48\textwidth]{PHO/PHO_35.png}%
-    }%
-    \hfill
-    \subfloat[Goal homotopy sample, $\lambda = 1$. The algorithm attempts a fully constrained solve, resulting in 3 distinct homotopy classes.]{%
-        \includegraphics[width=0.48\textwidth]{PHO/PHO_100.png}%
-    }%
-    \caption{\ac{P-HO} demonstrates stochastic sampling and the resulting ability to navigate between different homotopy classes in the solution space.}
+    \includegraphics[width=\textwidth]{tikz/PHO_Demo.pdf}
+    \caption{Illustration of \ac{P-HO} demonstrating stochastic sampling and the resulting ability to navigate between different homotopy classes in the solution space. The colored trajectories show candidate solutions obtained as the homotopy parameter progresses from the relaxed problem to the fully constrained goal problem.}
     \label{fig:pho_navigation}
 \end{figure}
+
 
 
 \begin{algorithm}[H]
@@ -1945,9 +1942,17 @@ $N_{sol} \leftarrow 0$; \\[0.5ex]
 \subsection{Inverse Dynamics Particle Swarm Optimization (IPSO)}
 
 \ac{IPSO} is a metaheuristic, derivative-free global trajectory optimization framework based on swarm intelligence and differential flatness, originally introduced by Spiller et al. \cite{Spiller16,Spiller18} specifically for spacecraft slew trajectory optimization.
+\cref{fig:ipso-particle-update} illustrates the particle update mechanism in \ac{IPSO}, highlighting the contributions of the inertia, individual-best, and social-best components to the overall velocity update.
 In this work, \ac{IPSO} synthesizes and adapts the algorithms presented in \cite{Spiller16,Spiller18} into a hybrid multistart framework specifically for the spacecraft model alone.
 Unlike gradient-based methods that rely on derivates to perform updates, \ac{IPSO} leverages a population of candidate solutions (particles) that explore the search space collectively, guided by both individual and neighborhood experiences.
 The implementation combines Spiller's original near-optimal \ac{IPSO} strategies with follow-on \ac{GBO} refinement to settle results into local optima.
+
+\begin{figure}[htbp]
+    \centering
+    \includegraphics[width=0.72\textwidth]{tikz/IPSO_Demo.pdf}
+    \caption{Illustration of the \ac{IPSO} particle update, showing the inertia, individual-best, and social-best vector components contributing to the velocity update.}
+    \label{fig:ipso-particle-update}
+\end{figure}
 
 The inverse-dynamics formulation is central to the \ac{IPSO} approach. 
 Following Spiller, the particles parameterize flat-output trajectories and their derivatives, while the required control torques are obtained from the equations of motion \cite{Spiller16,Spiller18}. 
@@ -1984,7 +1989,7 @@ Several specifics of algorithm functions are enumerated as:
     Violations are penalized on a per-element basis. 
     Additionally, torque and angular-rate limits are always evaluated strictly; 
     $\delta$ relaxes only the exclusion-zone constraint during the adaptive tightening phase, adding a degree of homotopy to the optimization process.
-    \item \texttt{update\_velocity()}: Updates the individual particle velocities based on personal best, local best, and global best particle positions.
+    \item \texttt{update\_velocity()}: Updates the individual particle velocities based on personal best, local best, and global best particle positions as shown in \cref{fig:ipso-particle-update}.
     \begin{equation}
         v_{j,d}^{k+1} =
         r\Big[w^{k}v_{j,d}^{k} + u_{p,j,d}^{k}c_p \left(p_{j,d}^{k}-x_{j,d}^{k}\right) + u_{l,j,d}^{k}c_l^{k} \left(l_{j,d}^{k}-x_{j,d}^{k}\right) + u_{g,j,d}^{k}c_g^{k} \left(g_{d}^{k}-x_{j,d}^{k}\right) \Big],
